@@ -30,21 +30,9 @@
         {
           "identifier": "default",
           "windows": ["main"],
-"permissions": [
+          "permissions": [
             "core:default",
-            "shell:allow-open",
-            "fs:allow-write-text-file",
-            "fs:allow-read-text-file",
-            "fs:allow-write-file",
-            "fs:allow-read-file",
-            {
-              "identifier": "fs:scope",
-              "allow": [
-                { "path": "$APPDATA/*" },
-                { "path": "$DOCUMENT/*" },
-                { "path": "$RESOURCE/*" }
-              ]
-            }
+            "shell:allow-open"
           ]
         }
       ]
@@ -52,7 +40,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["msi", "exe"],
+    "targets": ["msi", "nsis"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

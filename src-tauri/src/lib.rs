@@ -1,6 +1,7 @@
 // Rust后端主模块 - 多模态无接触式心理问题早期预警系统
 
 use std::sync::Arc;
+use tauri::Manager;
 use tokio::sync::Mutex;
 
 pub mod commands;
