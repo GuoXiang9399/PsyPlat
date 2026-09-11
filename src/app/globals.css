@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply bg-slate-900 text-slate-300;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-slate-800 rounded-xl border border-slate-700 p-6;
+  }
+  .btn-primary {
+    @apply bg-blue-500 hover:bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors;
+  }
+  .btn-secondary {
+    @apply border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10 font-semibold px-5 py-2.5 rounded-lg transition-colors;
+  }
+  .input-field {
+    @apply bg-slate-800 border-2 border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:border-blue-500 focus:outline-none transition-colors;
+  }
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-blue-500/10 transition-all cursor-pointer;
+  }
+  .nav-item.active {
+    @apply bg-blue-500/15 text-blue-400 font-semibold;
+  }
+  .stat-card {
+    @apply bg-slate-800 rounded-xl border border-slate-700 p-5;
+  }
+  .step-indicator {
+    @apply flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium;
+  }
+  .step-indicator.active {
+    @apply bg-blue-500 text-white;
+  }
+  .step-indicator.completed {
+    @apply bg-emerald-500/20 text-emerald-400;
+  }
+  .step-indicator.pending {
+    @apply bg-slate-700 text-slate-500;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}

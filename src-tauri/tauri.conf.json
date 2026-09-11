@@ -1,0 +1,73 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "心理预警系统",
+  "version": "1.0.0",
+  "identifier": "com.neurowell.psych-warning",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:3000",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "多模态无接触式心理问题早期预警系统",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 1200,
+        "minHeight": 800,
+        "center": true,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "focus": true
+      }
+    ],
+    "security": {
+      "csp": null,
+      "capabilities": [
+        {
+          "identifier": "default",
+          "windows": ["main"],
+          "permissions": [
+            "core:default",
+            "shell:allow-open",
+            "fs:allow-write-text-file",
+            "fs:allow-read-text-file",
+            "fs:allow-write-file",
+            "fs:allow-read-file",
+            "fs:scope": [
+              "$APPDATA/*",
+              "$DOCUMENT/*"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["msi", "exe"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": [],
+    "copyright": "NeuroWell",
+    "category": "Medical",
+    "shortDescription": "多模态无接触式心理问题早期预警系统",
+    "longDescription": "融合鼠标轨迹、摄像头视频及无接触式传感技术，构建不依赖可穿戴设备的多模态预警体系",
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "",
+      "wix": {
+        "language": ["zh-CN"]
+      }
+    }
+  }
+}
