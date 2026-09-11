@@ -40,7 +40,6 @@ impl MouseTrackerService {
         let max_duration = Duration::from_secs(duration_sec as u64);
 
         tokio::spawn(async move {
-            let mut rng = rand::thread_rng();
             let mut last_x: f64 = 400.0;
             let mut last_y: f64 = 300.0;
 

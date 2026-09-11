@@ -34,7 +34,6 @@ impl CameraService {
         let max_duration = Duration::from_secs(duration_sec as u64);
 
         tokio::spawn(async move {
-            let mut rng = rand::thread_rng();
             let mut hr_samples = Vec::new();
             let mut blink_samples = Vec::new();
             let mut gaze_samples = Vec::new();
@@ -96,7 +95,6 @@ impl CameraService {
         }
         drop(lf);
 
-        let rng = rand::thread_rng();
         let emotions = vec!["中性", "焦虑", "悲伤", "愤怒", "恐惧", "快乐"];
         let emotion_idx = (rand::random::<f64>() * emotions.len() as f64) as usize % emotions.len();
 
