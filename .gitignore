@@ -1,0 +1,45 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# build output（next export 产物，由 CI / tauri 构建时生成）
+/dist/
+
+# tauri
+/src-tauri/target/
+
+# 本地数据目录（打包时随安装程序携带空 Data 目录，仅保留占位文件）
+/src-tauri/Data/*
+!/src-tauri/Data/.gitkeep
+
+# testing
+/coverage
+
+# misc
+.DS_Store
+*.pem
+
+# debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env
+.env.*
+!.env.example
+
+# typescript（Next.js 自动生成）
+next-env.d.ts
+
+# 编辑器
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# 工具临时产物
+.dumate/
+.tmp/

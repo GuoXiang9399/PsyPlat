@@ -30,17 +30,21 @@
         {
           "identifier": "default",
           "windows": ["main"],
-          "permissions": [
+"permissions": [
             "core:default",
             "shell:allow-open",
             "fs:allow-write-text-file",
             "fs:allow-read-text-file",
             "fs:allow-write-file",
             "fs:allow-read-file",
-            "fs:scope": [
-              "$APPDATA/*",
-              "$DOCUMENT/*"
-            ]
+            {
+              "identifier": "fs:scope",
+              "allow": [
+                { "path": "$APPDATA/*" },
+                { "path": "$DOCUMENT/*" },
+                { "path": "$RESOURCE/*" }
+              ]
+            }
           ]
         }
       ]
@@ -56,7 +60,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [],
+    "resources": ["Data"],
     "copyright": "NeuroWell",
     "category": "Medical",
     "shortDescription": "多模态无接触式心理问题早期预警系统",

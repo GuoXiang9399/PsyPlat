@@ -1,569 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>河南大学基础医学院心理站 - 本地预览 Preview</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
-  body {
-    background: #EAE3D5; color: #64748b;
-    font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
-    font-size: 14px; -webkit-font-smoothing: antialiased;
-  }
-  svg { display: inline-block; vertical-align: middle; flex-shrink: 0; }
-  .app { display: flex; height: 100vh; }
 
-  /* ===== 侧边栏 ===== */
-  .sidebar { width: 256px; background: #ffffff; border-right: 1px solid #e5d8c2; display: flex; flex-direction: column; flex-shrink: 0; transition: width .2s ease; }
-  .sidebar.collapsed { width: 64px; }
-  .logo-box { padding: 12px; border-bottom: 1px solid #e5d8c2; }
-  .logo-inner { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .sidebar.collapsed .logo-inner { justify-content: center; }
-  .logo-title { font-size: 14px; font-weight: 700; color: #334155; line-height: 1.3; white-space: nowrap; overflow: hidden; flex: 1; }
-  .sidebar.collapsed .logo-title { display: none; }
-  .collapse-btn {
-    flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
-    border: none; background: transparent; border-radius: 8px; color: #94a3b8; cursor: pointer; transition: all .15s;
-  }
-  .collapse-btn:hover { background: #f2e9da; color: #A8905F; }
-  .nav { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
-  .nav-btn {
-    width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px;
-    border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer;
-    background: transparent; border: 1px solid transparent; color: #94a3b8; transition: all .15s;
-  }
-  .sidebar.collapsed .nav-btn { justify-content: center; padding: 10px 0; }
-  .nav-label { white-space: nowrap; }
-  .sidebar.collapsed .nav-label { display: none; }
-  .nav-btn:hover { background: #f2e9da; color: #475569; }
-  .nav-btn.active { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.3); }
-
-  /* ===== 主内容 ===== */
-  .main { flex: 1; overflow: auto; padding: 24px; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-  .space-y\:6 > * + * { margin-top: 24px; }
-
-  /* 卡片与通用 */
-  .card { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; }
-  .p-4 { padding: 16px; } .p-6 { padding: 24px; }
-  .banner {
-    background: linear-gradient(90deg, #A8905F, #8F7A4E); border-radius: 8px; padding: 24px; color: #fff;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .banner h1 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  .banner p { color: #F7F2E8; }
-  .banner svg { color: rgba(255,255,255,.35); }
-  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .stat-card { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 16px; }
-  .stat-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .stat-label { color: #94a3b8; font-size: 14px; }
-  .stat-num { font-size: 22px; font-weight: 700; color: #334155; }
-  .stat-num.red { color: #ef4444; }
-  .stat-sub { font-size: 12px; color: #a9946f; margin-top: 4px; }
-  .stat-icon { width: 20px; height: 20px; }
-  .c-blue { color: #A8905F; } .c-green { color: #22c55e; } .c-red { color: #ef4444; } .c-orange { color: #C9B895; } .c-yellow { color: #eab308; } .c-purple { color: #a855f7; }
-
-  /* 表格 */
-  .table-card { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; overflow: hidden; }
-  .table-head { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #e5d8c2; }
-  .table-head h2 { font-size: 16px; font-weight: 600; color: #334155; }
-  .link-blue { color: #A8905F; font-size: 14px; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; font-family: inherit; }
-  .link-blue:hover { color: #8F7A4E; }
-  table { width: 100%; border-collapse: collapse; }
-  thead th { text-align: left; padding: 12px; color: #94a3b8; font-size: 14px; font-weight: 500; border-bottom: 1px solid #e5d8c2; white-space: nowrap; }
-  tbody tr { border-bottom: 1px solid rgba(229,216,194,.5); }
-  tbody tr:hover { background: rgba(168,144,95,.05); }
-  tbody td { padding: 12px; font-size: 14px; color: #475569; white-space: nowrap; }
-
-  /* 徽章 */
-  .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-  .b-red { background: rgba(239,68,68,.12); color: #dc2626; }
-  .b-orange { background: rgba(168,144,95,.12); color: #8F7A4E; }
-  .b-yellow { background: rgba(234,179,8,.15); color: #ca8a04; }
-  .b-green { background: rgba(34,197,94,.12); color: #16a34a; }
-  .b-blue { background: rgba(168,144,95,.12); color: #A8905F; }
-  .b-purple { background: rgba(168,85,247,.12); color: #9333ea; }
-
-  /* 按钮 */
-  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; font-family: inherit; transition: all .15s; }
-  .btn-primary { background: #A8905F; color: #fff; }
-  .btn-primary:hover { background: #8F7A4E; }
-  .btn-primary:disabled { background: #e5d8c2; opacity: .6; cursor: not-allowed; }
-  .btn-ghost { background: #ffffff; color: #64748b; border: 1px solid #e5d8c2; }
-  .btn-ghost:hover { background: #f2e9da; color: #475569; }
-  .btn-ghost:disabled { opacity: .5; cursor: not-allowed; }
-  .btn-row { display: flex; gap: 12px; }
-
-  /* 表单 */
-  input[type="text"], input[type="number"], input[type="password"], select {
-    width: 100%; background: #F7F2E8; border: 1px solid #e5d8c2; border-radius: 8px;
-    padding: 8px 12px; color: #475569; font-size: 14px; font-family: inherit; outline: none;
-  }
-  input:focus, select:focus { border-color: #A8905F; }
-  select option { background: #ffffff; }
-  label.field-label { display: block; font-size: 14px; color: #94a3b8; margin-bottom: 4px; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  input[type="range"] { flex: 1; accent-color: #A8905F; }
-  input[type="checkbox"] { width: 16px; height: 16px; accent-color: #A8905F; border-radius: 4px; }
-  .range-row { display: flex; align-items: center; gap: 16px; }
-  .range-num { width: 80px; text-align: center; }
-  .check-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #F7F2E8; border-radius: 8px; }
-  .check-row label { font-size: 14px; color: #334155; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-  .check-desc { font-size: 12px; color: #a9946f; margin-top: 4px; }
-  .check-simple { display: flex; align-items: center; gap: 12px; }
-
-  /* ===== 测评页 ===== */
-  .steps-bar { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 16px; display: flex; align-items: center; }
-  .step-node { display: flex; flex-direction: column; align-items: center; }
-  .step-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
-  .step-circle.done { background: rgba(34,197,94,.12); color: #16a34a; border: 1px solid rgba(34,197,94,.3); }
-  .step-circle.now { background: rgba(168,144,95,.15); color: #A8905F; border: 1px solid rgba(168,144,95,.35); }
-  .step-circle.todo { background: #F7F2E8; color: #94a3b8; border: 1px solid #e5d8c2; }
-  .step-label { font-size: 12px; margin-top: 4px; }
-  .step-label.now { color: #A8905F; } .step-label.done { color: #16a34a; } .step-label.todo { color: #94a3b8; }
-  .step-line { flex: 1; height: 2px; margin: 0 8px; }
-  .step-line.done { background: rgba(34,197,94,.3); }
-  .step-line.todo { background: #e5d8c2; }
-
-  /* 全屏工具栏 */
-  .fs-bar { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .fs-hint { font-size: 14px; color: #64748b; display: flex; align-items: center; gap: 8px; }
-  .fs-hint svg { color: #A8905F; }
-  .fs-note { background: rgba(168,144,95,.08); border: 1px solid rgba(168,144,95,.3); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #8F7A4E; }
-  .s3-overview { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: #64748b; }
-  .s3-overview b { color: #A8905F; }
-  .ov-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-  .ov-dot.on { background: #22c55e; } .ov-dot.off { background: #e5d8c2; }
-
-  .consent-list { list-style: none; display: flex; flex-direction: column; gap: 4px; color: #94a3b8; margin: 8px 0; }
-  .consent-list li { display: flex; align-items: flex-start; gap: 8px; }
-  .consent-list li::before { content: "•"; color: #a9946f; }
-  .agree-btn { flex: 1; padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; cursor: pointer; font-family: inherit; transition: all .15s; }
-  .agree-on { background: rgba(34,197,94,.12); color: #16a34a; border: 1px solid rgba(34,197,94,.3); }
-  .agree-off { background: #ffffff; color: #64748b; border: 1px solid #e5d8c2; }
-  .agree-off.selected { background: rgba(239,68,68,.1); color: #dc2626; border: 1px solid rgba(239,68,68,.3); }
-  .agree-off:not(.selected):hover { background: #f2e9da; }
-
-  .question-box { background: #F7F2E8; border-radius: 8px; padding: 16px; }
-  .question-text { font-size: 14px; color: #475569; margin-bottom: 12px; }
-  .option-row { display: flex; gap: 8px; }
-  .opt { flex: 1; padding: 8px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; background: #ffffff; color: #94a3b8; border: 1px solid #e5d8c2; font-family: inherit; transition: all .15s; }
-  .opt:hover { background: #f2e9da; }
-  .opt.sel { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.35); }
-  .a-row { display: flex; flex-wrap: wrap; gap: 4px; }
-  .a-opt { flex: 0 0 auto; min-width: 52px; padding: 6px 6px; border-radius: 4px; font-size: 11px; cursor: pointer; background: #ffffff; color: #94a3b8; border: 1px solid #e5d8c2; font-family: inherit; transition: all .15s; }
-  .a-opt:hover { background: #f2e9da; }
-  .a-opt.sel { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.35); }
-
-  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spinner { margin: 0 auto 12px; }
-  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #a9946f; margin-bottom: 4px; }
-  .progress-track { width: 100%; background: #f2e9da; border-radius: 999px; height: 8px; }
-  .progress-fill { background: #A8905F; height: 8px; border-radius: 999px; transition: width .1s; }
-
-  .result-block { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 24px; text-align: center; }
-  .result-risk { display: inline-block; padding: 16px 32px; border-radius: 12px; font-size: 24px; font-weight: 700; border: 1px solid; }
-  .sub-panel { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 24px; }
-  .sub-nav { width: 192px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-  .sub-btn { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; background: transparent; border: 1px solid transparent; color: #94a3b8; font-family: inherit; transition: all .15s; }
-  .sub-btn:hover { background: #f2e9da; color: #475569; }
-  .sub-btn.active { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.3); }
-  .flex-gap-6 { display: flex; gap: 24px; }
-  .sec-title { font-size: 16px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-  .sec-title svg { color: #A8905F; }
-  .tree-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; color: #475569; font-size: 14px; }
-  .tree-item:hover { color: #A8905F; }
-  .tree-item .tt { color: #a9946f; }
-  .about-icon-box { width: 64px; height: 64px; background: rgba(168,144,95,.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #A8905F; }
-  .privacy-card { background: rgba(234,179,8,.1); border: 1px solid rgba(234,179,8,.35); border-radius: 8px; padding: 24px; }
-  .privacy-card h3 { color: #b45309; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-  .privacy-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #475569; }
-  .privacy-card li { display: flex; align-items: flex-start; gap: 8px; }
-  .step-list { display: flex; flex-direction: column; gap: 12px; }
-  .step-item { display: flex; align-items: flex-start; gap: 12px; }
-  .step-num { width: 28px; height: 28px; background: rgba(168,144,95,.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #A8905F; flex-shrink: 0; }
-  .step-body { flex: 1; padding-bottom: 12px; border-bottom: 1px solid rgba(229,216,194,.6); }
-  .step-title { font-size: 14px; font-weight: 500; color: #334155; }
-  .step-desc { font-size: 12px; color: #a9946f; margin-top: 2px; }
-  .version-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .version-item { display: flex; align-items: center; gap: 12px; }
-  .version-k { font-size: 12px; color: #a9946f; }
-  .version-v { font-size: 14px; color: #334155; font-weight: 500; }
-
-  .page-title { font-size: 20px; font-weight: 700; color: #334155; }
-  .flex-between { display: flex; align-items: center; justify-content: space-between; }
-  .flex-center { display: flex; align-items: center; gap: 8px; }
-  .text-sm { font-size: 14px; } .text-xs { font-size: 12px; } .text-slate-400 { color: #94a3b8; }
-  .search-box { position: relative; flex: 1; }
-  .search-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #a9946f; }
-  .search-box input { padding-left: 36px; }
-  .filter-box { position: relative; }
-  .filter-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #a9946f; z-index: 1; }
-  .filter-box select { padding-left: 36px; width: 170px; }
-  .mt-2 { margin-top: 8px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
-  .mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-4 { margin-bottom: 16px; }
-
-  /* ===== 管理密码弹窗 ===== */
-  .modal-mask { position: fixed; inset: 0; background: rgba(30,41,59,.45); display: flex; align-items: center; justify-content: center; z-index: 50; }
-  .modal { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 12px; padding: 24px; width: 384px; box-shadow: 0 20px 50px rgba(0,0,0,.18); }
-  .d-modal { width: 680px; max-width: 92vw; max-height: 86vh; overflow-y: auto; }
-  .detail-btn { background: rgba(168,144,95,.1); color: #A8905F; border: 1px solid rgba(168,144,95,.3); border-radius: 6px; padding: 4px 10px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; font-family: inherit; transition: background .15s; white-space: nowrap; }
-  .detail-btn:hover { background: rgba(168,144,95,.2); }
-  .d-basic { background: #F7F2E8; border: 1px solid #e5d8c2; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #64748b; line-height: 1.9; margin-bottom: 12px; }
-  .d-card { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
-  .d-card-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #F7F2E8; border-bottom: 1px solid #e5d8c2; font-size: 14px; color: #334155; }
-  .d-score { font-size: 13px; color: #64748b; font-weight: 400; }
-  .d-num { color: #A8905F; font-size: 15px; font-weight: 700; }
-  .d-qs { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-  .d-q { background: #F7F2E8; border-radius: 8px; padding: 10px 12px; }
-  .d-q-text { font-size: 13px; color: #475569; margin-bottom: 8px; line-height: 1.6; }
-  .d-opts { display: flex; flex-wrap: wrap; gap: 8px; }
-  .d-opt { font-size: 12px; padding: 4px 10px; border-radius: 4px; background: #ffffff; color: #94a3b8; border: 1px solid #e5d8c2; }
-  .d-opt.on { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.35); font-weight: 500; }
-  .traj-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; font-size: 12px; color: #94a3b8; border-bottom: 1px solid #e5d8c2; }
-  .traj-list { padding: 10px 12px; font-size: 12px; color: #64748b; line-height: 1.9; max-height: 160px; overflow-y: auto; word-break: break-all; }
-  .traj-note { font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.6; }
-  .scale-score { font-weight: 600; color: #475569; }
-  .table-card th { cursor: pointer; user-select: none; }
-  .table-card th .sort-arrow { font-size: 10px; color: #A8905F; }
-  th#th-risk, th#th-status { cursor: pointer; }
-  .modal-title { font-size: 18px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 8px; }
-  .modal-title svg { color: #A8905F; }
-  .modal-desc { font-size: 14px; color: #64748b; margin-bottom: 12px; }
-  .icon-btn { background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px; }
-  .icon-btn:hover { color: #475569; }
-  .pwd-err { font-size: 12px; color: #ef4444; margin-top: 8px; }
-</style>
-</head>
-<body>
-
-<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="i-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A5 5 0 0 0 5 7c0 1.3.5 2.5 1.3 3.4A4.5 4.5 0 0 0 4 14a4 4 0 0 0 2.7 3.8A4.5 4.5 0 0 0 12 21a4.5 4.5 0 0 0 5.3-3.2A4 4 0 0 0 20 14a4.5 4.5 0 0 0-2.3-3.7A5 5 0 0 0 14.5 2a4.7 4.7 0 0 0-5 0Z"/><path d="M12 2v19"/><path d="M8.5 8.5 9 9"/><path d="M15 8.5 14.5 9"/><path d="M8.5 14 9 13.5"/><path d="M15 14l-.5-.5"/></symbol>
-  <symbol id="i-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
-  <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></symbol>
-  <symbol id="i-db" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
-  <symbol id="i-set" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
-  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
-  <symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></symbol>
-  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
-  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
-  <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
-  <symbol id="i-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
-  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
-  <symbol id="i-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
-  <symbol id="i-chev-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol>
-  <symbol id="i-chev-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol>
-  <symbol id="i-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
-  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
-  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
-  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
-  <symbol id="i-rotate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
-  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></symbol>
-  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
-  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></symbol>
-  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
-  <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></symbol>
-  <symbol id="i-file-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/></symbol>
-  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
-  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
-  <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M2 14h4"/><path d="M10 8h4"/><path d="M18 16h4"/></symbol>
-  <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></symbol>
-  <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
-  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
-  <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 15h3"/><path d="M1 9h3"/><path d="M1 15h3"/></symbol>
-  <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7l10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></symbol>
-  <symbol id="i-git" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
-  <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
-  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></symbol>
-  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></symbol>
-  <symbol id="i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
-  <symbol id="i-compress" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></symbol>
-  <symbol id="i-panel-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></symbol>
-  <symbol id="i-panel-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></symbol>
-  <symbol id="i-mouse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></symbol>
-  <symbol id="i-cam" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></symbol>
-  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
-  <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></symbol>
-  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
-</svg>
-
-<div class="app">
-  <!-- ======== 侧边栏 ======== -->
-  <aside class="sidebar" id="sidebar">
-    <div class="logo-box">
-      <div class="logo-inner">
-        <div class="logo-title">河南大学基础医学院心理站</div>
-        <button class="collapse-btn" id="collapseBtn" title="折叠侧边栏" aria-label="折叠侧边栏">
-          <svg width="18" height="18"><use href="#i-panel-l"/></svg>
-        </button>
-      </div>
-    </div>
-    <nav class="nav" id="nav">
-      <button class="nav-btn active" data-tab="dashboard"><svg width="20" height="20"><use href="#i-dash"/></svg><span class="nav-label">首页概览</span></button>
-      <button class="nav-btn" data-tab="assessment"><svg width="20" height="20"><use href="#i-doc"/></svg><span class="nav-label">心理测评</span></button>
-      <button class="nav-btn" data-tab="data"><svg width="20" height="20"><use href="#i-db"/></svg><span class="nav-label">数据管理</span></button>
-      <button class="nav-btn" data-tab="settings"><svg width="20" height="20"><use href="#i-set"/></svg><span class="nav-label">系统设置</span></button>
-      <button class="nav-btn" data-tab="about"><svg width="20" height="20"><use href="#i-info"/></svg><span class="nav-label">关于系统</span></button>
-    </nav>
-  </aside>
-
-  <!-- ======== 主内容 ======== -->
-  <main class="main">
-
-    <!-- ==================== 首页概览 ==================== -->
-    <section class="tab-panel active" id="tab-dashboard">
-      <div class="space-y\:6">
-        <div class="banner">
-          <div>
-            <h1>河南大学基础医学院心理站</h1>
-          </div>
-        </div>
-
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-head"><span class="stat-label">今日测评</span><svg class="stat-icon c-blue"><use href="#i-doc"/></svg></div>
-            <div class="stat-num">12</div>
-            <div class="stat-sub">较昨日 +3</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-head"><span class="stat-label">本月累计</span><svg class="stat-icon c-green"><use href="#i-users"/></svg></div>
-            <div class="stat-num">156</div>
-            <div class="stat-sub">目标完成 78%</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-head"><span class="stat-label">高风险预警</span><svg class="stat-icon c-red"><use href="#i-alert"/></svg></div>
-            <div class="stat-num red">3</div>
-            <div class="stat-sub">需关注人数</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-head"><span class="stat-label">准确率</span><svg class="stat-icon c-purple"><use href="#i-target"/></svg></div>
-            <div class="stat-num">94.2%</div>
-            <div class="stat-sub">模型评估</div>
-          </div>
-        </div>
-
-        <div class="table-card">
-          <div class="table-head">
-            <h2>最近活动</h2>
-            <button class="link-blue">查看全部 <svg width="16" height="16"><use href="#i-chev-r"/></svg></button>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr><th>ID</th><th>学号</th><th>时间</th><th>完成状态</th></tr></thead>
-              <tbody id="dash-rows"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-primary" id="btn-start-assessment"><svg width="16" height="16"><use href="#i-arrow-r"/></svg>开始新测评</button>
-          <button class="btn btn-ghost"><svg width="16" height="16"><use href="#i-activity"/></svg>查看统计</button>
-          <button class="btn btn-ghost"><svg width="16" height="16"><use href="#i-clock"/></svg>历史记录</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== 心理测评 ==================== -->
-    <section class="tab-panel" id="tab-assessment">
-      <div class="space-y\:6">
-        <!-- 全屏工具条（覆盖整个心理测评流程，步骤 1-4 通用） -->
-        <div class="fs-bar" id="fs-bar">
-          <span class="fs-hint"><svg width="16" height="16"><use href="#i-expand"/></svg>心理测评全流程可开启全屏模式，不受其他界面干扰。</span>
-          <button class="btn btn-primary" id="btn-fs"><svg width="16" height="16"><use href="#i-expand"/></svg> 全屏模式</button>
-        </div>
-        <div class="fs-note" id="fs-note" style="display:none">已进入全屏模式，测评过程中不会触碰到屏幕其他区域；可按 Esc 键或点击上方按钮退出。</div>
-        <!-- 步骤条 -->
-        <div class="steps-bar" id="steps-bar"></div>
-        <!-- 步骤内容 -->
-        <div id="step-content"></div>
-        <!-- 底部导航 -->
-        <div class="flex-between" id="step-nav" style="padding-top:16px">
-          <button class="btn btn-ghost" id="btn-prev"><svg width="16" height="16"><use href="#i-chev-l"/></svg>上一步</button>
-          <button class="btn btn-primary" id="btn-next">下一步 <svg width="16" height="16"><use href="#i-chev-r"/></svg></button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== 数据管理 ==================== -->
-    <section class="tab-panel" id="tab-data">
-      <div class="space-y\:6">
-        <div class="flex-between">
-          <h1 class="page-title">数据管理</h1>
-          <div class="flex-center text-sm text-slate-400"><svg width="16" height="16"><use href="#i-db"/></svg>共 <span id="data-count">8</span> 条记录</div>
-        </div>
-
-        <div class="stat-grid">
-          <div class="stat-card"><div class="stat-head"><span class="stat-label">总记录数</span><svg class="stat-icon c-blue"><use href="#i-file-check"/></svg></div><div class="stat-num" id="stat-total">8</div></div>
-          <div class="stat-card"><div class="stat-head"><span class="stat-label">高风险</span><svg class="stat-icon c-red"><use href="#i-alert"/></svg></div><div class="stat-num red" id="stat-high">2</div></div>
-          <div class="stat-card"><div class="stat-head"><span class="stat-label">待审核</span><svg class="stat-icon c-yellow"><use href="#i-users"/></svg></div><div class="stat-num" id="stat-pending" style="color:#ca8a04">2</div></div>
-          <div class="stat-card"><div class="stat-head"><span class="stat-label">已完成</span><svg class="stat-icon c-green"><use href="#i-target"/></svg></div><div class="stat-num c-green" id="stat-completed">5</div></div>
-        </div>
-
-        <div class="flex" style="display:flex; gap:12px; flex-wrap:wrap">
-          <div class="search-box" style="flex:1; min-width:200px">
-            <svg width="16" height="16"><use href="#i-search"/></svg>
-            <input type="text" id="data-search" placeholder="搜索学号或ID...">
-          </div>
-          <div class="filter-box">
-            <svg width="16" height="16"><use href="#i-filter"/></svg>
-            <select id="data-filter">
-              <option value="all">整体风险：全部</option>
-              <option value="低风险">低风险</option>
-              <option value="轻度风险">轻度风险</option>
-              <option value="中度风险">中度风险</option>
-              <option value="高风险">高风险</option>
-            </select>
-          </div>
-          <button class="btn btn-primary" id="btn-export"><svg width="16" height="16"><use href="#i-download"/></svg>导出CSV</button>
-        </div>
-
-        <div class="flex" id="scale-filter-row" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px">
-          <span style="font-size:12px; color:#a9946f; font-weight:500; white-space:nowrap">量表风险筛选：</span>
-          <span id="scale-filters" style="display:inline-flex; gap:8px; flex-wrap:wrap"></span>
-          <button id="scale-filter-clear" style="font-size:12px; color:#a9946f; text-decoration:underline; background:none; border:none; cursor:pointer; padding:2px">清除量表筛选</button>
-        </div>
-
-        <div class="table-card">
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr id="data-thead">
-                <th id="th-id">ID <span class="sort-arrow"></span></th>
-                <th id="th-studentId">学号 <span class="sort-arrow"></span></th>
-                <th id="th-time">时间 <span class="sort-arrow"></span></th>
-                <th id="th-phq9">PHQ-9 <span class="sort-arrow"></span></th>
-                <th id="th-gad7">GAD-7 <span class="sort-arrow"></span></th>
-                <th id="th-cssrs">C-SSRS <span class="sort-arrow"></span></th>
-                <th id="th-nssi">NSSI <span class="sort-arrow"></span></th>
-                <th id="th-pss10">PSS-10 <span class="sort-arrow"></span></th>
-                <th id="th-psqi">PSQI <span class="sort-arrow"></span></th>
-                <th id="th-sias6">SIAS-6 <span class="sort-arrow"></span></th>
-                <th id="th-aslec">ASLEC <span class="sort-arrow"></span></th>
-                <th id="th-risk">整体风险 <span class="sort-arrow"></span></th>
-                <th id="th-status">状态 <span class="sort-arrow"></span></th>
-                <th>操作</th>
-              </tr></thead>
-              <tbody id="data-rows"></tbody>
-            </table>
-          </div>
-          <div class="p-6" id="data-empty" style="display:none; text-align:center; color:#a9946f; font-size:14px">没有找到匹配的记录</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== 系统设置 ==================== -->
-    <section class="tab-panel" id="tab-settings">
-      <div class="space-y\:6">
-        <div class="flex-between">
-          <h1 class="page-title">系统设置</h1>
-          <div class="btn-row">
-            <button class="btn btn-primary" id="btn-save"><svg width="16" height="16"><use href="#i-save"/></svg><span id="save-label">保存设置</span></button>
-            <button class="btn btn-ghost"><svg width="16" height="16"><use href="#i-rotate"/></svg>重置</button>
-          </div>
-        </div>
-
-        <div class="flex-gap-6">
-          <div class="sub-nav" id="sub-nav">
-            <button class="sub-btn active" data-sub="capture"><svg width="16" height="16"><use href="#i-eye"/></svg>采集设置</button>
-            <button class="sub-btn" data-sub="privacy"><svg width="16" height="16"><use href="#i-shield"/></svg>隐私保护</button>
-            <button class="sub-btn" data-sub="warning"><svg width="16" height="16"><use href="#i-bell"/></svg>预警配置</button>
-            <button class="sub-btn" data-sub="system"><svg width="16" height="16"><use href="#i-sliders"/></svg>系统选项</button>
-          </div>
-
-          <div class="flex-1 card p-6" id="sub-content" style="flex:1"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== 关于系统 ==================== -->
-    <section class="tab-panel" id="tab-about">
-      <div class="space-y\:6">
-        <h1 class="page-title">关于系统</h1>
-
-        <div class="card p-6">
-          <div style="display:flex; gap:16px; align-items:flex-start">
-            <div class="about-icon-box"><svg width="32" height="32"><use href="#i-brain"/></svg></div>
-            <div>
-              <h2 style="font-size:16px; font-weight:600; color:#334155; margin-bottom:8px">多模态无接触式心理问题早期预警系统</h2>
-              <p style="font-size:14px; color:#a9946f; line-height:1.6">
-                本系统通过整合量表评估、鼠标行为分析和面部微表情识别三种模态数据，利用深度学习模型进行心理问题早期预警。
-                系统设计注重隐私保护，所有数据处理均在本地完成，不依赖网络连接，适合在高校等场景部署使用。
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="privacy-card">
-          <div style="display:flex; gap:12px; align-items:flex-start">
-            <svg width="24" height="24" class="c-yellow" style="margin-top:2px"><use href="#i-alert"/></svg>
-            <div style="flex:1">
-              <h3>隐私保护声明</h3>
-              <ul>
-                <li><svg width="16" height="16" class="c-yellow" style="margin-top:2px"><use href="#i-lock"/></svg><span>所有测评数据采用 AES-256 加密存储，密钥由用户本地管理</span></li>
-                <li><svg width="16" height="16" class="c-yellow" style="margin-top:2px"><use href="#i-eye"/></svg><span>视频采集仅提取特征向量，不保存任何原始图像数据</span></li>
-                <li><svg width="16" height="16" class="c-yellow" style="margin-top:2px"><use href="#i-shield"/></svg><span>学号等个人信息经过单向哈希处理，无法逆向还原</span></li>
-                <li><svg width="16" height="16" class="c-yellow" style="margin-top:2px"><use href="#i-cpu"/></svg><span>AI 模型推理完全在本地运行，不涉及任何云端传输</span></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="card p-6">
-          <h2 class="sec-title"><svg width="20" height="20" class="c-blue"><use href="#i-cpu"/></svg>技术架构</h2>
-          <div id="tech-tree"></div>
-        </div>
-
-        <div class="card p-6">
-          <h2 class="sec-title"><svg width="20" height="20" class="c-blue"><use href="#i-doc"/></svg>使用说明</h2>
-          <div class="step-list">
-            <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">基本信息</div><div class="step-desc">输入学号、年龄、性别等基本信息</div></div></div>
-            <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">知情同意</div><div class="step-desc">阅读并同意隐私声明和知情同意书</div></div></div>
-            <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">心理测评</div><div class="step-desc">完成 PHQ-9 / GAD-7 量表，答题过程中自动采集鼠标与面部数据（可全屏进行）</div></div></div>
-            <div class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">结束</div><div class="step-desc">测评完成，数据已安全提交，由心理站工作人员统一跟进</div></div></div>
-          </div>
-        </div>
-
-        <div class="card p-6">
-          <h2 class="sec-title"><svg width="20" height="20" class="c-blue"><use href="#i-tag"/></svg>版本信息</h2>
-          <div class="version-grid">
-            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-tag"/></svg><div><div class="version-k">系统版本</div><div class="version-v">v2.1.0</div></div></div>
-            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-cal"/></svg><div><div class="version-k">发布日期</div><div class="version-v">2026-09-01</div></div></div>
-            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-user"/></svg><div><div class="version-k">开发者</div><div class="version-v">河南大学基础医学院心理站</div></div></div>
-            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-mail"/></svg><div><div class="version-k">联系邮箱</div><div class="version-v">support@psych-warning.dev</div></div></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-</div>
-
-<!-- ======== 管理密码验证弹窗 ======== -->
-<div class="modal-mask" id="pwd-mask" style="display:none">
-  <div class="modal">
-    <div class="flex-between mb-2">
-      <h2 class="modal-title"><svg width="20" height="20"><use href="#i-lock"/></svg>管理密码验证</h2>
-      <button class="icon-btn" id="pwd-close" aria-label="关闭"><svg width="20" height="20"><use href="#i-x"/></svg></button>
-    </div>
-    <p class="modal-desc">访问「<span id="pwd-tab-name"></span>」需要管理权限，请输入管理密码。</p>
-    <input type="password" id="pwd-input" placeholder="请输入管理密码">
-    <p class="pwd-err" id="pwd-err" style="display:none">密码错误，请重新输入</p>
-    <div class="btn-row mt-4" style="justify-content:flex-end">
-      <button class="btn btn-ghost" id="pwd-cancel">取消</button>
-      <button class="btn btn-primary" id="pwd-confirm">确认</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-mask" id="detail-mask" style="display:none">
-  <div class="modal d-modal">
-    <div id="detail-body"></div>
-  </div>
-</div>
-
-<script>
 (function () {
   "use strict";
 
@@ -672,22 +107,11 @@
   var dashStatusClass = { completed: "b-green", incomplete: "b-blue" };
 
   function rowHtml(r) {
-    // 数据管理表格：所有量表分值 + 每个量表独立风险等级
-    var html = '<tr>' +
-      '<td>' + r.id + '</td><td>' + r.sid + '</td><td>' + r.time + '</td>' +
-      scaleMeta.map(function (m) {
-        var hasData = (m.key === 'nssi' || m.key === 'cssrs')
-          ? (((r[m.key] || []).length || 0) > 0)
-          : true;
-        var score = hasData ? (m.score(r) ?? 0) : '—';
-        var risk = m.risk(r);
-        return '<td style="white-space:nowrap"><span class="scale-score">' + score + '</span>' +
-          '<span class="badge ' + riskClass[risk] + '" style="margin-left:5px;font-size:10px;padding:1px 5px">' + risk + '</span></td>';
-      }).join('') +
+    return '<tr>' +
+      '<td>' + r.id + '</td><td>' + r.sid + '</td><td>' + r.time + '</td><td>' + r.p + '</td><td>' + r.g + '</td>' +
       '<td><span class="badge ' + riskClass[r.risk] + '">' + r.risk + '</span></td>' +
       '<td><span class="badge ' + statusClass[r.st] + '">' + statusText[r.st] + '</span></td>' +
       '<td><button class="detail-btn" onclick="openDetail(&quot;' + r.id + '&quot;)">' + icon("i-eye", 14) + ' 查看明细</button></td></tr>';
-    return html;
   }
 
   /* ============ 记录明细弹窗（量表全部选项与逐题作答结果） ============ */
@@ -840,21 +264,7 @@
     return h;
   }
 
-  function scaleSummaryHtml(r) {
-    return '<div class="d-card"><div class="d-card-head"><b>各量表分值 · 风险等级</b>' +
-      '<span class="d-score" style="color:#94a3b8">点击查看下方逐题明细</span></div>' +
-      '<div class="d-qs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px">' +
-      scaleMeta.map(function (m) {
-        var hasData = (m.key === 'nssi' || m.key === 'cssrs') ? (((r[m.key] || []).length || 0) > 0) : true;
-        var score = hasData ? (m.score(r) ?? 0) : '—';
-        var risk = m.risk(r);
-        return '<div class="d-opt" style="display:flex;justify-content:space-between;align-items:center;color:#475569;background:#F7F2E8;border:none;padding:7px 10px">' +
-          '<span style="font-size:12px;color:#64748b;font-weight:500">' + m.label + '</span>' +
-          '<span style="white-space:nowrap"><b style="color:#334155">' + score + '</b> <span class="badge ' + riskClass[risk] + '" style="margin-left:4px;font-size:10px;padding:1px 5px">' + risk + '</span></span></div>';
-      }).join('') + '</div></div>';
-  }
-
-  /* 鼠标轨迹可视化：按采样顺序绘制折线（奶油色主题），标注起点/终点 */
+  // 鼠标轨迹可视化：按采样顺序绘制折线（奶油色主题），标注起点/终点
   function drawTraj(canvas, traj) {
     if (!canvas || !traj || traj.length === 0) return;
     var ctx = canvas.getContext("2d");
@@ -881,17 +291,10 @@
     });
     ctx.stroke();
     traj.forEach(function (p, i) {
-      var isClick = p.k === "c";
-      var isEdge = i === 0 || i === traj.length - 1;
-      ctx.fillStyle = isClick ? "#dc2626" : (isEdge ? "#8F7A4E" : "#A8905F");
+      ctx.fillStyle = (i === 0 || i === traj.length - 1) ? "#8F7A4E" : "#A8905F";
       ctx.beginPath();
-      if (isClick) {
-        var r = 3;
-        ctx.fillRect(px(p.x) - r, py(p.y) - r, r * 2, r * 2);
-      } else {
-        ctx.arc(px(p.x), py(p.y), isEdge ? 3.2 : 1.4, 0, Math.PI * 2);
-        ctx.fill();
-      }
+      ctx.arc(px(p.x), py(p.y), (i === 0 || i === traj.length - 1) ? 3.2 : 1.6, 0, Math.PI * 2);
+      ctx.fill();
     });
     var first = traj[0], last = traj[traj.length - 1];
     ctx.fillStyle = "#8F7A4E";
@@ -917,9 +320,9 @@
         '<canvas id="traj-canvas" width="560" height="220" style="width:100%;border-radius:8px;background:#F7F2E8"></canvas>' +
         '<div style="background:#F7F2E8;border-radius:8px;overflow:hidden;margin-top:10px">' +
           '<div class="traj-head">坐标序列（x, y, 相对时间 ms）<span>共 ' + traj.length + ' 点</span></div>' +
-          '<div class="traj-list">' + traj.map(function (p) { return "(" + p.x + ", " + p.y + ", " + p.t + "ms" + (p.k === "c" ? "[点击]" : "") + ")"; }).join("  ") + '</div>' +
+          '<div class="traj-list">' + traj.map(function (p) { return "(" + p.x + ", " + p.y + ", " + p.t + "ms)"; }).join("  ") + '</div>' +
         '</div>' +
-        '<p class="traj-note">鼠标行为在测评答题过程中全量采集（记录每一次鼠标挪动与点击动作，红色方块为点击点），用于行为特征分析，不涉及键盘输入内容。</p>';
+        '<p class="traj-note">鼠标轨迹在测评答题过程中自动采集（约 80ms 一个采样点），用于行为特征分析，不涉及键盘输入内容。</p>';
     } else {
       trajHtml += '<p class="traj-note">本次测评未采集到鼠标轨迹样本（可能因设备/浏览器限制或作答时间过短），其余测评数据不受影响。</p>';
     }
@@ -942,10 +345,9 @@
         '<p><span class="badge ' + riskClass[r.risk] + '">' + r.risk + '</span>' +
         '　<span class="badge ' + statusClass[r.st] + '">' + statusText[r.st] + '</span></p>' +
       '</div>' +
-scaleSummaryHtml(r) +
-questionBlock(phq9Q, r.phq9, "PHQ-9 抑郁症筛查量表", r.p, 27) +
-questionBlock(gad7Q, r.gad7, "GAD-7 广泛性焦虑量表", r.g, 21) +
-suppDetailHtml(r) +
+      questionBlock(phq9Q, r.phq9, "PHQ-9 抑郁症筛查量表", r.p, 27) +
+      questionBlock(gad7Q, r.gad7, "GAD-7 广泛性焦虑量表", r.g, 21) +
+      suppDetailHtml(r) +
       trajHtml +
       '<div class="btn-row" style="justify-content:flex-end">' +
         '<button class="btn btn-primary" id="detail-ok">关闭</button>' +
@@ -992,23 +394,22 @@ suppDetailHtml(r) +
     function mkPsqi(p, g) {
       var psqi = {
         bed: 23,
-        latency: 15,
+        latency: p >= 15 ? 55 : p >= 8 ? 30 : 15,
         wake: 7,
-        hours: 7,
-        d: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        quality: g >= 12 ? 3 : g >= 7 ? 2 : 1,
-        meds: g >= 15 ? 2 : 0,
-        day: g >= 12 ? 2 : 1,
-        energy: p >= 12 ? 2 : 1
+        hours: p >= 15 ? 5 : p >= 8 ? 6 : 7,
+        quality: p >= 15 ? 3 : p >= 8 ? 2 : 0,
+        d: [p >= 15 ? 3 : 1, 0, 0, 0, 0, p >= 15 ? 2 : 0, 0, g >= 12 ? 2 : 1, 0, 0],
+        meds: p >= 18 ? 2 : 0, day: p >= 12 ? 2 : 1, energy: p >= 12 ? 2 : 1
       };
       var res = scorePsqi(psqi);
       return { psqi: psqi, comps: res.comps, score: res.total };
     }
-    function mkPss10(p) { return fillScore(Math.min(30, p + 6), 10); }
-    function mkSias6(g) { return fillScore(Math.min(18, g + 4), 6); }
+    function mkPss10(p) { return fillScore(Math.min(30, p + 2), 10); }
+    function mkSias6(g) { return fillScore(Math.min(18, g + 3), 6); }
     function mkAslec(p) {
       var arr = new Array(27).fill(0);
-      for (var i = 0; i < 27; i++) arr[i] = i < p ? (i % 3) + 1 : 0;
+      var cnt = Math.min(6, Math.round(p / 4));
+      for (var i = 0; i < cnt; i++) arr[i] = (i % 5) + 1;
       return arr;
     }
     var base = [
@@ -1035,10 +436,10 @@ suppDetailHtml(r) +
         phq9: r.phq9, gad7: r.gad7, p: r.p, g: r.g,
         cssrs: cssrs, cssrsPositive: cssrs.filter(function (v) { return v === 1; }).length,
         nssi: nssi,
-        pss10: pp, pss10Score: pp.reduce(function (s, v, i) { return s + ([3, 4, 6, 7].indexOf(i) >= 0 ? 4 - v : v); }, 0),
+        pss10: pp, pss10Score: scorePss10(pp),
         psqi: ps.psqi, psqiComps: ps.comps, psqiScore: ps.score,
-        sias6: ss, sias6Score: ss.reduce(function (s, v) { return s + v; }, 0),
-        aslec: al, aslecScore: al.reduce(function (s, v) { return s + v; }, 0), aslecCount: al.filter(function (v) { return v > 0; }).length,
+        sias6: ss, sias6Score: scoreSias6(ss),
+        aslec: al, aslecScore: scoreAslec(al).total, aslecCount: scoreAslec(al).count,
         risk: r.risk, st: r.st, traj: r.traj, cam: r.cam, riskFlags: flags
       };
     });
@@ -1054,21 +455,6 @@ suppDetailHtml(r) +
       return Array.isArray(list) && list.length > 0 ? list : null;
     } catch (e) { return null; }
   }
-
-  /* ---- 数据管理：各量表列定义（分值 + 独立风险等级，与 source records.ts 一致） ---- */
-  var RISK_ORDER = { "低风险": 0, "轻度风险": 1, "中度风险": 2, "高风险": 3 };
-  var scaleMeta = [
-    { key: "phq9",  label: "PHQ-9",  score: function (r) { return r.p ?? 0; },        risk: function (r) { return depRiskOf(r.p ?? 0); } },
-    { key: "gad7",  label: "GAD-7",  score: function (r) { return r.g ?? 0; },        risk: function (r) { return anxRiskOf(r.g ?? 0); } },
-    { key: "cssrs", label: "C-SSRS", score: function (r) { return r.cssrsPositive ?? 0; }, risk: function (r) { return cssrsRiskOf(r.cssrsPositive ?? 0); } },
-    { key: "nssi",  label: "NSSI",   score: function (r) { return (r.nssi || [])[0] ?? 0; }, risk: function (r) { return nssiRiskOf(r.nssi || [], r.phq9); } },
-    { key: "pss10", label: "PSS-10", score: function (r) { return r.pss10Score ?? 0; }, risk: function (r) { return pss10RiskOf(r.pss10Score ?? 0); } },
-    { key: "psqi",  label: "PSQI",   score: function (r) { return r.psqiScore ?? 0; }, risk: function (r) { return psqiRiskOf(r.psqiScore ?? 0); } },
-    { key: "sias6", label: "SIAS-6", score: function (r) { return r.sias6Score ?? 0; },risk: function (r) { return sias6RiskOf(r.sias6Score ?? 0); } },
-    { key: "aslec", label: "ASLEC",  score: function (r) { return r.aslecScore ?? 0; },risk: function (r) { return aslecRiskOf(r.aslecScore ?? 0); } }
-  ];
-  var dataSortKey = "time", dataSortDir = "desc", dataScaleFilter = {};
-  var SORT_KEYS = ["id", "studentId", "time", "phq9", "gad7", "cssrs", "nssi", "pss10", "psqi", "sias6", "aslec", "risk", "status"];
 
   var dataTbody = document.getElementById("data-rows");
   var searchInput = document.getElementById("data-search");
@@ -1087,90 +473,26 @@ suppDetailHtml(r) +
     document.getElementById("stat-completed").textContent = done;
   }
 
-  // 量表风险筛选下拉：每个量表单独筛（data-key=量表 key）
-  function renderScaleFilters() {
-    var box = document.getElementById("scale-filters");
-    box.innerHTML = scaleMeta.map(function (m) {
-      var cur = dataScaleFilter[m.key] || "all";
-      var opts = ["all", "低风险", "轻度风险", "中度风险", "高风险"].map(function (v) {
-        return '<option value="' + v + '">' + (v === "all" ? m.label + "：全部" : v) + '</option>';
-      }).join("");
-      return '<select data-key="' + m.key + '" class="scale-filter-sel" style="background:#fff;border:1px solid #e5d8c2;border-radius:8px;padding:5px 8px;font-size:12px;color:#64748b;outline:none">' + opts + '</select>';
-    }).join("");
-  }
-  function sortValueOf(r, key) {
-    if (key === "id" || key === "studentId" || key === "time") return r[key];
-    if (key === "risk") return RISK_ORDER[r.risk] ?? 0;
-    if (key === "status") return r.st;
-    var m = scaleMeta.filter(function (x) { return x.key === key; })[0];
-    return m ? (m.score(r) ?? 0) : 0;
-  }
   function renderData() {
     var q = searchInput.value.trim();
     var f = filterSelect.value;
     var list = dataRecords.filter(function (r) {
-      var okSearch = !q || (r.sid || "").indexOf(q) >= 0 || (r.id || "").indexOf(q) >= 0;
+      var okSearch = !q || r.sid.indexOf(q) >= 0 || r.id.indexOf(q) >= 0;
       var okRisk = f === "all" || r.risk === f;
-      var okScales = true;
-      for (var k in dataScaleFilter) {
-        if (!dataScaleFilter[k] || dataScaleFilter[k] === "all") continue;
-        var m = scaleMeta.filter(function (x) { return x.key === k; })[0];
-        if (m && m.risk(r) !== dataScaleFilter[k]) { okScales = false; break; }
-      }
-      return okSearch && okRisk && okScales;
-    });
-    var dir = dataSortDir === "asc" ? 1 : -1;
-    list.sort(function (a, b) {
-      var va = sortValueOf(a, dataSortKey), vb = sortValueOf(b, dataSortKey);
-      if (typeof va === "number" && typeof vb === "number") return (va - vb) * dir;
-      return String(va).localeCompare(String(vb), "zh-CN") * dir;
+      return okSearch && okRisk;
     });
     dataTbody.innerHTML = list.map(rowHtml).join("");
     emptyBox.style.display = list.length === 0 ? "block" : "none";
-    // 表头排序箭头
-    SORT_KEYS.forEach(function (k) {
-      var th = document.getElementById("th-" + k);
-      if (!th) return;
-      var arrow = th.querySelector(".sort-arrow");
-      if (arrow) arrow.textContent = (dataSortKey === k) ? (dataSortDir === "asc" ? " ▲" : " ▼") : " ↕";
-    });
     renderStats();
   }
   searchInput.addEventListener("input", renderData);
   filterSelect.addEventListener("change", renderData);
-  document.getElementById("scale-filters").addEventListener("change", function (e) {
-    var key = e.target.getAttribute("data-key");
-    if (!key) return;
-    dataScaleFilter[key] = e.target.value;
-    renderData();
-  });
-  document.getElementById("scale-filter-clear").addEventListener("click", function () {
-    dataScaleFilter = {};
-    document.querySelectorAll(".scale-filter-sel").forEach(function (s) { s.value = "all"; });
-    renderData();
-  });
-  SORT_KEYS.forEach(function (k) {
-    var th = document.getElementById("th-" + k);
-    if (!th) return;
-    th.style.cursor = "pointer";
-    th.addEventListener("click", function () {
-      if (dataSortKey === k) dataSortDir = (dataSortDir === "asc" ? "desc" : "asc");
-      else { dataSortKey = k; dataSortDir = (k === "id" || k === "studentId") ? "asc" : "desc"; }
-      renderData();
-    });
-  });
-  renderScaleFilters();
   renderData();
 
   document.getElementById("btn-export").addEventListener("click", function () {
-    var headers = ["ID", "学号", "时间"];
-    scaleMeta.forEach(function (m) { headers.push(m.label + "分值", m.label + "风险"); });
-    headers.push("整体风险", "状态");
+    var headers = ["ID", "学号", "时间", "PHQ-9", "GAD-7", "风险等级", "状态"];
     var rows = dataRecords.map(function (r) {
-      var cells = [r.id, r.sid, r.time];
-      scaleMeta.forEach(function (m) { cells.push(m.score(r) ?? 0, m.risk(r)); });
-      cells.push(r.risk, statusText[r.st]);
-      return cells.join(",");
+      return [r.id, r.sid, r.time, r.p, r.g, r.risk, statusText[r.st]].join(",");
     });
     var csv = "\ufeff" + headers.join(",") + "\n" + rows.join("\n");
     var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -1623,7 +945,7 @@ suppDetailHtml(r) +
     "容易烦恼或急躁",
     "感到好像有可怕的事要发生"
   ];
-  // ---- 补充量表（自杀风险筛查 C-SSRS/NSSI + 扩充画像 PSS-10/PSQI/SIAS-6/ASLEC） ----
+  // ---- 补充量表（第一层核心预警 / 第二层扩充画像） ----
   var cssrsQ = [
     "过去一个月内，是否希望自己死去，或希望睡着后不再醒来？",
     "过去一个月内，是否想过要结束自己的生命？",
@@ -1748,7 +1070,15 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     return html;
   }
 
-  /* NSSI/PSQI/ASLEC 专用卡片 */
+  /* 第一层/第二层 分组容器与 NSSI/PSQI/ASLEC 专用卡片 */
+  function layerBox(level, titleTxt, subTxt, borderColor, innerHtml) {
+    return '<div class="card p-6" style="border-left:4px solid ' + borderColor + '">' +
+      '<div class="flex-between" style="margin-bottom:8px"><div>' +
+      '<h3 class="sec-title" style="margin-bottom:2px">' + titleTxt + '</h3>' +
+      '<p class="text-sm" style="color:#94a3b8;margin:0">' + subTxt + '</p></div>' +
+      '<span class="badge" style="background:rgba(' + (level === 1 ? '239,68,68' : '249,115,22') + ',.12);color:' + (level === 1 ? '#dc2626' : '#ea580c') + '">' + (level === 1 ? "第一层 · 核心预警" : "第二层 · 扩充画像") + '</span></div>' +
+      '<div style="display:flex;flex-direction:column;gap:14px">' + innerHtml + '</div></div>';
+  }
   function nssiCard(answered) {
     var done = nssiAns[0] >= 0;
     var html = '<div class="card p-6"><div class="flex-between" style="margin-bottom:4px">' +
@@ -1883,17 +1213,19 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       var sias6Done = sias6Ans.every(function (a) { return a >= 0; });
       var aslecDone = aslecAns.every(function (a) { return a >= 0; });
       html =
-        '<div style="display:flex;flex-direction:column;gap:24px">' +
         s3Overview() +
         questionCard("PHQ-9 抑郁症筛查量表", "i-chart", phq9Q, phq9, "data-q", phq9Done) +
         questionCard("GAD-7 广泛性焦虑量表", "i-chart", gad7Q, gad7, "data-g", gad7Done) +
-        questionCard("C-SSRS 自杀严重度评定量表", "i-chart", cssrsQ, cssrsAns, "data-c", cssrsDone, cssrsOpts, "过去一个月内，是否出现过以下想法或行为？（任一选择\u201c是\u201d即触发高危预警）") +
-        nssiCard(nssiDone) +
-        questionCard("PSS-10 感知压力量表", "i-chart", pss10Q, pss10Ans, "data-p", pss10Done, pss10Opts, "过去一个月里，以下情况发生的频率如何？（标注 * 的题目为反向计分题）", PSS10_REV) +
-        psqiCard(psqiValid) +
-        questionCard("SIAS-6 社交焦虑量表", "i-chart", sias6Q, sias6Ans, "data-s", sias6Done, sias6Opts, "过去两周里，在社交情境中的体验如何？") +
-        aslecCard() +
-        '</div>';
+        layerBox(1, "第一层 · 核心预警", "直接关联风险分级与干预转介，请务必如实作答。", "#f87171",
+          questionCard("C-SSRS 自杀严重度评定量表", "i-chart", cssrsQ, cssrsAns, "data-c", cssrsDone, cssrsOpts, "过去一个月内，是否出现过以下想法或行为？（任一选择\u201c是\u201d即触发高危预警）") +
+          nssiCard(nssiDone)
+        ) +
+        layerBox(2, "第二层 · 扩充画像", "覆盖睡眠、压力、社交与生活事件，辅助刻画心理状态全景。", "#fb923c",
+          questionCard("PSS-10 感知压力量表", "i-chart", pss10Q, pss10Ans, "data-p", pss10Done, pss10Opts, "过去一个月里，以下情况发生的频率如何？（标注 * 的题目为反向计分题）", PSS10_REV) +
+          psqiCard(psqiValid) +
+          questionCard("SIAS-6 社交焦虑量表", "i-chart", sias6Q, sias6Ans, "data-s", sias6Done, sias6Opts, "过去两周里，在社交情境中的体验如何？") +
+          aslecCard()
+        );
     } else if (step === 4) {
       html =
       '<div class="card p-6" style="padding:48px 24px;text-align:center">' +
@@ -2049,29 +1381,26 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
   function autoStartCollect() {
     if (step !== 3) return;
     if (mouseStatus === "idle") {
-      // 全量采集：监听每一次 mousemove（鼠标挪动的所有动作）与 click（点击动作），
-      // 直到提交测评（saveAssessmentRecord）时停止，覆盖整个答题过程
+      // 真实鼠标轨迹采样：监听 mousemove，节流约 80ms 记一个点，满 60 点或 3 秒兜底完成
       mouseStatus = "running"; mouseProgress = 0;
       mouseTraj = [];
-      var t0 = performance.now();
-      function pushPt(e, k) {
-        if (mouseTraj.length >= 50000) return; // 安全上限，防止极端场景写入量过大
+      var lastT = 0;
+      function onMove(e) {
+        var now = performance.now();
+        if (now - lastT < 80) return;
+        lastT = now;
+        var first = mouseTraj[0];
         mouseTraj.push({
           x: Math.round(e.clientX),
           y: Math.round(e.clientY),
-          t: Math.round(performance.now() - t0),
-          k: k
+          t: Math.round(now - (first ? first.t : now))
         });
+        mouseProgress = Math.min(100, Math.round(mouseTraj.length * (100 / 60)));
+        if (mouseTraj.length >= 60) finishMouseTrack();
       }
-      function onMove(e) { pushPt(e, "m"); }
-      function onClick(e) { pushPt(e, "c"); }
       document.addEventListener("mousemove", onMove);
-      document.addEventListener("click", onClick);
-      mouseStopFn = function () {
-        document.removeEventListener("mousemove", onMove);
-        document.removeEventListener("click", onClick);
-      };
-      // 全量采集：不设 80ms 节流、不设 60 点上限，直至提交测评时停止
+      mouseStopFn = function () { document.removeEventListener("mousemove", onMove); };
+      // 轨迹采集覆盖整个答题过程：不设超时，直至提交测评（saveAssessmentRecord）时停止
     }
     if (camStatus === "idle") {
       camStatus = "running"; camProgress = 0; camMode = "normal";
@@ -2187,23 +1516,6 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     return { comps: comps, total: comps.reduce(function (s, v) { return s + v; }, 0) };
   }
   function psqiLevelOf(t) { return t <= 5 ? "睡眠正常" : t <= 10 ? "轻度睡眠障碍" : t <= 15 ? "中度睡眠障碍" : "重度睡眠障碍"; }
-  /* ---- 各量表独立风险等级（数据管理表格，与 source src/lib/records.ts 一致） ---- */
-  function riskLevelOfScore(score, bounds) {
-    for (var i = 0; i < bounds.length; i++) if (score <= bounds[i][0]) return bounds[i][1];
-    return "高风险";
-  }
-  function depRiskOf(score) { return riskLevelOfScore(score, [[4, "低风险"], [9, "轻度风险"], [14, "中度风险"]]); }
-  function anxRiskOf(score) { return depRiskOf(score); }
-  function cssrsRiskOf(pos) { return pos > 0 ? "高风险" : "低风险"; }
-  function nssiRiskOf(n, p) {
-    if ((n[0] || 0) !== 1) return "低风险";
-    if (p && (p[8] || -1) > 0) return "高风险";
-    return "中度风险";
-  }
-  function pss10RiskOf(score) { return riskLevelOfScore(score, [[13, "低风险"], [19, "轻度风险"], [26, "中度风险"]]); }
-  function psqiRiskOf(score) { return riskLevelOfScore(score, [[5, "低风险"], [10, "轻度风险"], [15, "中度风险"]]); }
-  function sias6RiskOf(score) { return riskLevelOfScore(score, [[6, "低风险"], [12, "轻度风险"], [18, "中度风险"]]); }
-  function aslecRiskOf(score) { return riskLevelOfScore(score, [[15, "低风险"], [35, "轻度风险"], [60, "中度风险"]]); }
   function buildRisk(p, g, c, n) {
     var flags = [];
     var pScore = p.reduce(function (s, a) { return s + (a >= 0 && a <= 3 ? a : 0); }, 0);
@@ -2255,12 +1567,7 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       risk: riskRes.label,
       riskFlags: riskRes.flags,
       st: "completed",
-      traj: (function (arr) {
-        var first = arr && arr.length ? arr[0] : null;
-        return arr.map(function (p) {
-          return { x: p.x, y: p.y, t: Math.max(0, (p.t || 0) - (first ? first.t : 0)), k: p.k };
-        });
-      })(typeof mouseTraj !== "undefined" ? mouseTraj : []),
+      traj: (typeof mouseTraj !== "undefined" ? mouseTraj : []).slice(),
       cam: (typeof camMode !== "undefined" ? camMode : "normal")
     };
     dataRecords.push(rec);
@@ -2292,6 +1599,4 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
   renderStep();
   updateNav();
 })();
-</script>
-</body>
-</html>
+

@@ -8,7 +8,7 @@
 #   3) 打包：Windows MSI + EXE（NSIS）
 #
 # 注意：
-#   * 仓库暂无 package-lock.json，故使用 `npm install`（勿改为 npm ci）
+#   * 使用已提交的 package-lock.json 执行 `npm ci`，保证依赖版本可复现
 #   * 仓库暂无 src-tauri/icons，CI 会自动生成占位图标；正式图标就绪后将自动跳过
 # ============================================================================
 
@@ -47,12 +47,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Build frontend (next export -> dist/)
         run: npm run build
@@ -95,12 +95,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/AppData/Local/npm-cache
-          key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: Install npm dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       # tauri.conf.json 引用了 icons/，若仓库缺少图标则自动生成占位图标，
       # 保证 CI 可构建；已存在正式图标时本步骤直接跳过。

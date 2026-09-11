@@ -19,10 +19,21 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
-        .setup(|app| {
-            let app_dir = app.path().app_data_dir()
-                .expect("Failed to get app data dir");
-            std::fs::create_dir_all(&app_dir)?;
+.setup(|app| {
+            // 数据保存在安装目录下的 Data 文件夹内（随应用一起打包，便于用户直接查看与备份）
+            let resource_dir = app.path().resource_dir()
+                .expect("Failed to get resource dir");
+            let data_dir = resource_dir.join("Data");
+            // 安装位置不可写时（如 Program Files），兜底使用系统应用数据目录
+            let app_dir = match std::fs::create_dir_all(&data_dir) {
+                Ok(_) => data_dir,
+                Err(_) => {
+                    let fallback = app.path().app_data_dir()
+                        .expect("Failed to get app data dir");
+                    std::fs::create_dir_all(&fallback)?;
+                    fallback
+                }
+            };
             let db_path = app_dir.join("psych_warning.db");
 
             let state = tokio::runtime::Runtime::new()
