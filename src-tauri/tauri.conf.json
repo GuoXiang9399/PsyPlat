@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "心理预警系统",
+  "productName": "PsyPlat",
   "version": "1.0.0",
   "identifier": "com.neurowell.psych-warning",
   "build": {
