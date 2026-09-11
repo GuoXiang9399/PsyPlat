@@ -31,15 +31,17 @@ hex = "0.4"
 
 # Database
 rusqlite = { version = "0.31", features = ["bundled", "chrono"] }
-sqlite = "0.36"
+
+# CSV export
+csv = "1"
+
+# Random numbers (for simulation placeholders)
+rand = "0.8"
 
 # Logging
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
-# Random
-csv = "1"
-rand = "0.8"
 
 # Computer vision (optional - for advanced features)
 # opencv = { version = "0.91", optional = true }
