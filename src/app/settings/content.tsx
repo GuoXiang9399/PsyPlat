@@ -26,11 +26,67 @@ import {
 import {
   AssessmentRecord,
   loadRecords,
-  persistRecords
+  persistRecords,
+  computeMouseMetrics,
+  behaviorSignalsOf,
+  BEHAVIOR_SIGNAL_LABELS,
+  MouseMetrics,
+  TrajectoryPoint
 } from '@/lib/records'
 
 type TabKey = 'dashboard' | 'assessment' | 'data' | 'settings' | 'about'
 type SettingsTab = 'capture' | 'privacy' | 'warning' | 'system'
+
+// 鼠标轨迹调试：行为指标摘要（实时计算，依据调研文档；旧记录无存储指标时现场计算）
+function MouseMetricsSummary({
+  traj,
+  metrics
+}: {
+  traj: TrajectoryPoint[]
+  metrics: MouseMetrics | null
+}) {
+  const m = metrics || computeMouseMetrics(traj)
+  if (!m) return null
+  const signals = behaviorSignalsOf(m)
+  const items: { label: string; value: string }[] = [
+    { label: '时长', value: (m.duration / 1000).toFixed(1) + ' s' },
+    { label: '点数', value: String(m.points) },
+    { label: '位移', value: Math.round(m.distance) + ' px' },
+    { label: '平均速度', value: m.avgSpeed.toFixed(4) },
+    { label: '速度变异', value: m.speedCV.toFixed(3) },
+    { label: '停顿', value: m.pauseCount + ' 次 / ' + (m.pauseRatio * 100).toFixed(1) + ' %' },
+    { label: '方向反转', value: m.xFlips + ' / ' + m.yFlips + '（横/纵）' },
+    { label: '弯曲度', value: m.curvature.toFixed(2) },
+    { label: '抖动分', value: String(m.tremorScore) },
+    { label: '启动潜伏', value: m.initLatency + ' ms' }
+  ]
+  return (
+    <div className="bg-warm-100 rounded-lg p-3">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs font-medium text-slate-500">行为指标摘要</span>
+        <span className="text-[11px] text-slate-400">启发式计算 · 非诊断</span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1 text-[11px] text-slate-500">
+        {items.map(it => (
+          <div key={it.label} className="flex items-baseline justify-between gap-2">
+            <span>{it.label}</span>
+            <b className="text-slate-700">{it.value}</b>
+          </div>
+        ))}
+      </div>
+      {signals.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {signals.map(s => (
+            <span key={s} className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-100/80 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+              {BEHAVIOR_SIGNAL_LABELS[s]}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // 鼠标轨迹调试画布：与数据管理页同款奶油色绘制（起点/终点标注 + 采样节点）
 function DebugTrajCanvas({ traj }: { traj: { x: number; y: number; t: number }[] }) {
@@ -447,7 +503,7 @@ const [pwdForm, setPwdForm] = useState({ oldPwd: '', newPwd: '', confirmPwd: '' 
                   </div>
                 </div>
                 <p className="text-xs text-slate-500 mb-3">
-                  选择任意一条已采集的测评记录，可查看其鼠标轨迹采样点、坐标序列与相对时间，确认行为数据采集是否正常（测评第 3 步答题时自动采集，约 80ms 一个点、上限 60 点）。
+                  选择任意一条已采集的测评记录，可查看其鼠标轨迹行为指标摘要、采样点、坐标序列与相对时间，确认行为数据采集是否正常（测评第 3 步答题时全量采集每一次鼠标挪动与点击动作，用于行为特征分析）。
                 </p>
                 {trajRecords.length === 0 ? (
                   <div className="bg-white rounded-lg p-4 text-sm text-slate-400 border border-warm-300">
@@ -485,6 +541,7 @@ const [pwdForm, setPwdForm] = useState({ oldPwd: '', newPwd: '', confirmPwd: '' 
                             采集模式 {selectedTraj.cameraMode === 'degraded' ? '摄像头降级' : '正常'}
                           </span>
                         </div>
+                        <MouseMetricsSummary traj={selectedTraj.mouseTrajectory ?? []} metrics={selectedTraj.mouseMetrics ?? null} />
                         <DebugTrajCanvas traj={selectedTraj.mouseTrajectory ?? []} />
                         <div className="bg-warm-100 rounded-lg overflow-hidden">
                           <div className="px-3 py-2 text-xs text-slate-400 border-b border-warm-300/60 flex items-center justify-between">

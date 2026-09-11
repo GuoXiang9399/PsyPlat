@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Fragment } from 'react'
 import {
   FileText,
   LayoutDashboard,
@@ -28,7 +28,9 @@ import {
   riskOptions,
   scoreOf,
   appendRecord,
-  makeRecordId
+  makeRecordId,
+  computeMouseMetrics,
+  behaviorSignalsOf
 } from '@/lib/records'
 import {
   cssrsQuestions,
@@ -196,6 +198,7 @@ const handleNext = () => {
       const psqiResult = scorePsqi(psqiAnswers)
       const aslecResult = scoreAslec(aslecAnswers)
       const riskResult = buildRisk(phq9Answers, gad7Answers, cssrsAnswers, nssiAnswers)
+      const metrics = computeMouseMetrics(traj)
       const record: AssessmentRecord = {
         id: makeRecordId(),
         studentId: basicInfo.studentId.trim(),
@@ -228,6 +231,9 @@ const handleNext = () => {
         mouseTrajectory: traj.map(p => ({ x: p.x, y: p.y, t: Math.max(0, p.t - (traj[0] ? traj[0].t : 0)), k: p.k })),
         mouseSamples: traj.length,
         cameraMode: cameraModeRef.current,
+        // 行为动力学指标与信号（依据《鼠标轨迹心理学研究调研》落地；旧记录无此字段）
+        mouseMetrics: metrics,
+        behaviorSignals: behaviorSignalsOf(metrics),
       }
       appendRecord(record)
     }
@@ -970,12 +976,12 @@ return (
 
       {/* 步骤指示器 */}
       <div className="bg-white rounded-lg p-4 border border-warm-300">
-        <div className="flex items-center justify-between">
+<div className="flex items-center">
           {Array.from({ length: totalSteps }).map((_, index) => {
             const step = index + 1
             return (
-              <div key={step} className="flex items-center flex-1">
-                <div className="flex flex-col items-center">
+              <Fragment key={step}>
+                <div className="flex flex-col items-center w-20">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
                     step < currentStep
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30'
@@ -985,7 +991,7 @@ return (
                   }`}>
                     {step < currentStep ? <Check className="w-4 h-4" /> : step}
                   </div>
-                  <span className={`text-xs mt-1 ${
+                  <span className={`text-xs mt-1 whitespace-nowrap ${
                     step === currentStep ? 'text-orange-500' : step < currentStep ? 'text-green-400' : 'text-slate-500'
                   }`}>
                     {stepLabels[step - 1]}
@@ -996,7 +1002,7 @@ return (
                     step < currentStep ? 'bg-green-500/30' : 'bg-warm-200'
                   }`} />
                 )}
-              </div>
+              </Fragment>
             )
           })}
         </div>

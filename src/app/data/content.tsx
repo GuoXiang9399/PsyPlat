@@ -34,7 +34,13 @@ import {
   pss10RiskOf,
   psqiRiskOf,
   sias6RiskOf,
-  aslecRiskOf
+  aslecRiskOf,
+  BEHAVIOR_SIGNAL_LABELS,
+  BehaviorSignal,
+  MouseMetrics,
+  computeMouseMetrics,
+  behaviorSignalsOf,
+  TrajectoryPoint
 } from '@/lib/records'
 import {
   emptyPsqiAnswers,
@@ -127,6 +133,70 @@ function TrajectoryCanvas({ traj }: { traj: { x: number; y: number; t: number; k
       style={{ background: '#F7F2E8', maxHeight: 220 }}
       aria-label="鼠标轨迹图"
     />
+  )
+}
+
+// 行为动力学特征卡：指标表 + 信号标签（依据调研文档，启发式规则，非临床诊断）
+function MouseMetricsCard({ metrics, signals }: { metrics: MouseMetrics | null; signals?: BehaviorSignal[] }) {
+  if (!metrics) {
+    return (
+      <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 text-sm text-amber-700">
+        旧版本记录，无行为指标数据（该记录采集于升级前）。
+      </div>
+    )
+  }
+  const sigs = signals || []
+  const rows: { label: string; value: string; hint?: boolean }[] = [
+    { label: '总时长', value: (metrics.duration / 1000).toFixed(1) + ' s' },
+    { label: '采样点数', value: String(metrics.points) },
+    { label: '点击数', value: String(metrics.clicks) },
+    { label: '总位移', value: Math.round(metrics.distance) + ' px' },
+    { label: '平均速度', value: metrics.avgSpeed.toFixed(4) + ' px/ms' },
+    { label: '速度变异系数', value: metrics.speedCV.toFixed(3), hint: metrics.speedCV > 1.8 },
+    { label: '峰值速度', value: metrics.maxSpeed.toFixed(4) + ' px/ms' },
+    { label: '停顿次数', value: String(metrics.pauseCount), hint: metrics.pauseCount > 6 },
+    { label: '停顿时间占比', value: (metrics.pauseRatio * 100).toFixed(1) + ' %', hint: metrics.pauseRatio > 0.35 },
+    { label: '启动潜伏', value: metrics.initLatency + ' ms', hint: metrics.initLatency > 1500 },
+    { label: '方向反转(横/纵)', value: metrics.xFlips + ' / ' + metrics.yFlips, hint: metrics.xFlips + metrics.yFlips > 8 },
+    { label: '弯曲度', value: metrics.curvature.toFixed(2), hint: metrics.curvature > 1.9 },
+    { label: '抖动分', value: String(metrics.tremorScore), hint: metrics.tremorScore >= 3 }
+  ]
+  return (
+    <div className="rounded-xl border border-[#E3D9C6] bg-[#F7F2E8] p-4">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <h4 className="text-sm font-semibold text-[#5C4A32]">行为动力学特征</h4>
+        <span className="rounded-full bg-[#EAE3D5] px-2 py-0.5 text-xs text-[#8F7A4E]">启发式规则 · 非诊断</span>
+      </div>
+      <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-xs sm:grid-cols-4">
+        {rows.map((r) => (
+          <div key={r.label} className="flex items-baseline justify-between gap-2">
+            <span className="text-[#8F7A4E]">{r.label}</span>
+            <b className={r.hint ? 'text-amber-600' : 'text-[#5C4A32]'}>{r.value}</b>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 border-t border-[#E3D9C6] pt-2.5">
+        <div className="mb-1.5 text-xs font-medium text-[#8F7A4E]">行为信号</div>
+        {sigs.length === 0 ? (
+          <div className="text-xs text-[#5C4A32]">未见明显异常信号。</div>
+        ) : (
+          <div className="flex flex-wrap gap-1.5">
+            {sigs.map((s) => (
+              <span
+                key={s}
+                className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-100/80 px-2 py-0.5 text-xs font-medium text-amber-700"
+              >
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber-500" />
+                {BEHAVIOR_SIGNAL_LABELS[s]}
+              </span>
+            ))}
+          </div>
+        )}
+        <p className="mt-2 text-[11px] leading-relaxed text-[#8F7A4E]">
+          依据鼠标运动学研究（轨迹弯曲、速度剖面、方向反转、停顿）的启发式解读，仅供筛查参考，不代表临床诊断；请结合量表结果综合评估。
+        </p>
+      </div>
+    </div>
   )
 }
 
@@ -267,6 +337,8 @@ export function DataContent() {
         if (record.id === 'A004' || record.id === 'A006') return 'intervened' as const
         return 'completed' as const
       })(b)
+      const traj = mkTraj(12)
+      const metrics = computeMouseMetrics(traj)
       return {
         id: b.id,
         studentId: b.studentId,
@@ -296,8 +368,10 @@ export function DataContent() {
         aslecScore: aslec.reduce((s, v) => s + v, 0),
         aslecCount: aslec.filter(v => v > 0).length,
         status,
-        mouseTrajectory: mkTraj(12),
+        mouseTrajectory: traj,
         mouseSamples: 12,
+        mouseMetrics: metrics,
+        behaviorSignals: behaviorSignalsOf(metrics),
         cameraMode: 'normal',
       }
     })
@@ -978,6 +1052,12 @@ const handleExportCSV = () => {
                   </div>
                 </div>
               </div>
+
+              {/* 行为动力学特征（依据调研文档：轨迹弯曲 / 速度剖面 / 方向反转 / 停顿） */}
+              <MouseMetricsCard
+                metrics={selected.mouseMetrics ?? null}
+                signals={selected.behaviorSignals ?? []}
+              />
 
               {/* 鼠标轨迹（行为数据）——测评第 3 步答题过程中自动采样 */}
               <div className="bg-white rounded-lg border border-warm-300 overflow-hidden">

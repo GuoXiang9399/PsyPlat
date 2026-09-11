@@ -127,7 +127,9 @@ jobs:
           $bmp.Save($src, [System.Drawing.Imaging.ImageFormat]::Png)
           $g.Dispose()
           $bmp.Dispose()
-          npm run tauri icon $src -o src-tauri/icons
+          # 注意：npm run 后必须加 -- 分隔符，否则 npm 会把 -o 当作自身选项吞掉，
+          # 导致 tauri icon 收到多余位置参数而失败（unexpected argument）
+          npm run tauri -- icon $src -o src-tauri/icons
 
       - name: Build Tauri bundle (MSI + EXE)
         run: npm run tauri:build

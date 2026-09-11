@@ -117,7 +117,7 @@
 
   /* ===== 测评页 ===== */
   .steps-bar { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 16px; display: flex; align-items: center; }
-  .step-node { display: flex; flex-direction: column; align-items: center; }
+  .step-node { display: flex; flex-direction: column; align-items: center; flex: 0 0 80px; }
   .step-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
   .step-circle.done { background: rgba(34,197,94,.12); color: #16a34a; border: 1px solid rgba(34,197,94,.3); }
   .step-circle.now { background: rgba(168,144,95,.15); color: #A8905F; border: 1px solid rgba(168,144,95,.35); }
@@ -306,6 +306,7 @@
       <button class="nav-btn active" data-tab="dashboard"><svg width="20" height="20"><use href="#i-dash"/></svg><span class="nav-label">首页概览</span></button>
       <button class="nav-btn" data-tab="assessment"><svg width="20" height="20"><use href="#i-doc"/></svg><span class="nav-label">心理测评</span></button>
       <button class="nav-btn" data-tab="data"><svg width="20" height="20"><use href="#i-db"/></svg><span class="nav-label">数据管理</span></button>
+      <button class="nav-btn" data-tab="analysis"><svg width="20" height="20"><use href="#i-chart"/></svg><span class="nav-label">数据分析</span></button>
       <button class="nav-btn" data-tab="settings"><svg width="20" height="20"><use href="#i-set"/></svg><span class="nav-label">系统设置</span></button>
       <button class="nav-btn" data-tab="about"><svg width="20" height="20"><use href="#i-info"/></svg><span class="nav-label">关于系统</span></button>
     </nav>
@@ -454,6 +455,18 @@
       </div>
     </section>
 
+    <!-- ==================== 数据分析 ==================== -->
+    <section class="tab-panel" id="tab-analysis">
+      <div class="space-y\:6" id="analysis-body">
+        <div class="flex-between">
+          <h1 class="page-title">数据分析（探索性分析）</h1>
+          <button class="btn" id="btn-analysis-refresh" style="background:#fff;border:1px solid #e5d8c2;color:#8F7A4E"><svg width="16" height="16"><use href="#i-refresh"/></svg>刷新数据</button>
+        </div>
+        <div class="anal-note" id="anal-note" style="display:none"></div>
+        <div id="anal-content"></div>
+      </div>
+    </section>
+
     <!-- ==================== 系统设置 ==================== -->
     <section class="tab-panel" id="tab-settings">
       <div class="space-y\:6">
@@ -596,7 +609,7 @@
   }
 
   /* ============ 全局：管理密码 ============ */
-  var PROTECTED = { data: "数据管理", settings: "系统设置", about: "关于系统" };
+  var PROTECTED = { data: "数据管理", analysis: "数据分析", settings: "系统设置", about: "关于系统" };
   function getAdminPwd() {
     try { return localStorage.getItem("psyc_admin_pwd") || "123456"; } catch (e) { return "123456"; }
   }
@@ -642,6 +655,7 @@
     document.querySelectorAll(".tab-panel").forEach(function (p) { p.classList.remove("active"); });
     document.getElementById("tab-" + tab).classList.add("active");
     if (tab === "data" && typeof renderData === "function") renderData();
+    if (tab === "analysis" && typeof renderAnalysis === "function") renderAnalysis();
   }
   navBtns.forEach(function (btn) {
     btn.addEventListener("click", function () {
@@ -900,6 +914,153 @@
     ctx.fillText("终点 " + last.t + "ms", px(last.x) - 18, py(last.y) + 14);
   }
 
+  /* ============ 行为动力学指标（与 src/lib/records.ts 一致，依据调研文档） ============ */
+  var PAUSE_MS = 600, MOVE_EPS = 24;
+  var BEHAVIOR_SIGNAL_LABELS = {
+    low_effort: "低努力快速作答（建议复核）",
+    retardation: "行动迟滞倾向（需结合量表确认）",
+    hesitation: "答题犹豫度偏高",
+    mind_wandering: "注意力波动提示",
+    tremor: "手部抖动偏多（弱信号）"
+  };
+  function computeMouseMetrics(traj) {
+    var pts = (traj || []).filter(function (p) { return p && p.x >= 0 && p.y >= 0 && typeof p.t === "number"; });
+    if (pts.length < 3) return null;
+    var clicks = pts.filter(function (p) { return p.k === "c"; }).length;
+    var t0 = pts[0].t;
+    var duration = Math.max(1, pts[pts.length - 1].t - t0);
+    var distance = 0, maxSpeed = 0, speedSum = 0, speedSq = 0, speedN = 0;
+    var pauseCount = 0, pauseTotal = 0, xFlips = 0, yFlips = 0, tremorScore = 0, tremorRun = 0;
+    var prevDirX = 0, prevDirY = 0, initLatency = 0, hasInit = false;
+    for (var i = 1; i < pts.length; i++) {
+      var dx = pts[i].x - pts[i - 1].x;
+      var dy = pts[i].y - pts[i - 1].y;
+      var dt = Math.max(1, pts[i].t - pts[i - 1].t);
+      var d = Math.sqrt(dx * dx + dy * dy);
+      distance += d;
+      var v = d / dt;
+      if (v > maxSpeed) maxSpeed = v;
+      speedSum += v; speedSq += v * v; speedN++;
+      if (d < MOVE_EPS && dt > PAUSE_MS) { pauseCount++; pauseTotal += dt; }
+      if (d > MOVE_EPS) {
+        var dirX = dx >= 0 ? 1 : -1;
+        var dirY = dy >= 0 ? 1 : -1;
+        if (prevDirX !== 0 && dirX !== prevDirX) xFlips++;
+        if (prevDirY !== 0 && dirY !== prevDirY) yFlips++;
+        prevDirX = dirX; prevDirY = dirY;
+        if (dt < 120 && d >= 2 && d < MOVE_EPS * 2) {
+          tremorRun++;
+          if (tremorRun >= 3) tremorScore++;
+        } else { tremorRun = 0; }
+      } else { tremorRun = 0; }
+      if (!hasInit && d > MOVE_EPS) { initLatency = pts[i].t - t0; hasInit = true; }
+    }
+    var avgSpeed = speedN > 0 ? speedSum / speedN : 0;
+    var speedVar = speedN > 0 ? Math.max(0, speedSq / speedN - avgSpeed * avgSpeed) : 0;
+    var speedStd = Math.sqrt(speedVar);
+    var straightDist = Math.sqrt(Math.pow(pts[pts.length - 1].x - pts[0].x, 2) + Math.pow(pts[pts.length - 1].y - pts[0].y, 2));
+    return {
+      duration: duration,
+      points: pts.length,
+      clicks: clicks,
+      distance: Math.round(distance),
+      avgSpeed: Number(avgSpeed.toFixed(4)),
+      speedCV: avgSpeed > 0 ? Number((speedStd / avgSpeed).toFixed(3)) : 0,
+      maxSpeed: Number(maxSpeed.toFixed(4)),
+      pauseCount: pauseCount,
+      pauseRatio: duration > 0 ? Number((pauseTotal / duration).toFixed(3)) : 0,
+      initLatency: initLatency,
+      xFlips: xFlips, yFlips: yFlips,
+      curvature: straightDist > 0 ? Number((distance / straightDist).toFixed(3)) : 1,
+      tremorScore: tremorScore
+    };
+  }
+  function behaviorSignalsOf(m) {
+    if (!m) return [];
+    var signals = [];
+    var quick = Math.max(60000, m.duration * 0.5);
+    if (m.duration < quick && m.clicks < 5 && m.pauseRatio < 0.05) signals.push("low_effort");
+    if (m.avgSpeed > 0 && m.avgSpeed < 0.12 && m.pauseRatio > 0.35 && m.initLatency > 1500) signals.push("retardation");
+    if (m.curvature > 1.9 && (m.xFlips + m.yFlips) > 8 && m.pauseCount > 6) signals.push("hesitation");
+    if (m.speedCV > 1.8 && m.curvature > 1.6) signals.push("mind_wandering");
+    if (m.tremorScore >= 3) signals.push("tremor");
+    return signals;
+  }
+  function metricsCardHtml(r) {
+    var m = r.mouseMetrics || computeMouseMetrics(r.traj || []);
+    if (!m) {
+      return '<div class="d-card" style="border-color:#fde68a;background:#fffbeb">' +
+        '<div class="d-card-head"><b>行为动力学特征</b><span class="d-score" style="color:#b45309">启发式规则 · 非诊断</span></div>' +
+        '<p class="traj-note" style="color:#b45309">旧版本记录，无行为指标数据（该记录采集于升级前）。</p></div>';
+    }
+    var signals = r.behaviorSignals || behaviorSignalsOf(m);
+    var rows = [
+      ["总时长", (m.duration / 1000).toFixed(1) + " s", false],
+      ["采样点数", "" + m.points, false],
+      ["点击数", "" + m.clicks, false],
+      ["总位移", Math.round(m.distance) + " px", false],
+      ["平均速度", m.avgSpeed.toFixed(4) + " px/ms", false],
+      ["速度变异系数", m.speedCV.toFixed(3), m.speedCV > 1.8],
+      ["峰值速度", m.maxSpeed.toFixed(4) + " px/ms", false],
+      ["停顿次数", "" + m.pauseCount, m.pauseCount > 6],
+      ["停顿时间占比", (m.pauseRatio * 100).toFixed(1) + " %", m.pauseRatio > 0.35],
+      ["启动潜伏", m.initLatency + " ms", m.initLatency > 1500],
+      ["方向反转(横/纵)", m.xFlips + " / " + m.yFlips, (m.xFlips + m.yFlips) > 8],
+      ["弯曲度", m.curvature.toFixed(2), m.curvature > 1.9],
+      ["抖动分", "" + m.tremorScore, m.tremorScore >= 3]
+    ];
+    var rowHtml = rows.map(function (row) {
+      return '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">' +
+        '<span style="color:#8F7A4E">' + row[0] + '</span>' +
+        '<b style="color:' + (row[2] ? "#d97706" : "#5C4A32") + '">' + row[1] + '</b></div>';
+    }).join("");
+    var sigHtml = signals.length === 0
+      ? '<div style="font-size:12px;color:#5C4A32">未见明显异常信号。</div>'
+      : '<div style="display:flex;flex-wrap:wrap;gap:6px">' + signals.map(function (s) {
+          return '<span style="display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(217,119,6,.35);background:rgba(252,211,77,.25);color:#b45309;font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px">' +
+            '<span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;display:inline-block"></span>' + BEHAVIOR_SIGNAL_LABELS[s] + '</span>';
+        }).join("") + '</div>';
+    return '<div class="d-card" style="background:#F7F2E8;border-color:#E3D9C6">' +
+      '<div class="d-card-head"><b>行为动力学特征</b><span class="d-score" style="color:#8F7A4E">启发式规则 · 非诊断</span></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 14px;font-size:12px;padding:10px 12px">' + rowHtml + '</div>' +
+      '<div style="padding:10px 12px;border-top:1px solid #E3D9C6">' +
+        '<div style="font-size:12px;font-weight:500;color:#8F7A4E;margin-bottom:6px">行为信号</div>' + sigHtml +
+        '<p class="traj-note" style="margin-top:8px">依据鼠标运动学研究（轨迹弯曲、速度剖面、方向反转、停顿）的启发式解读，仅供筛查参考，不代表临床诊断；请结合量表结果综合评估。</p>' +
+      '</div></div>';
+  }
+  function metricsSummaryHtml(r) {
+    var m = r.mouseMetrics || computeMouseMetrics(r.traj || []);
+    if (!m) return "";
+    var signals = r.behaviorSignals || behaviorSignalsOf(m);
+    var items = [
+      ["时长", (m.duration / 1000).toFixed(1) + " s"],
+      ["点数", "" + m.points],
+      ["位移", Math.round(m.distance) + " px"],
+      ["平均速度", m.avgSpeed.toFixed(4)],
+      ["速度变异", m.speedCV.toFixed(3)],
+      ["停顿", m.pauseCount + " 次 / " + (m.pauseRatio * 100).toFixed(1) + " %"],
+      ["方向反转", m.xFlips + " / " + m.yFlips + "（横/纵）"],
+      ["弯曲度", m.curvature.toFixed(2)],
+      ["抖动分", "" + m.tremorScore],
+      ["启动潜伏", m.initLatency + " ms"]
+    ];
+    var itemHtml = items.map(function (it) {
+      return '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">' +
+        '<span style="color:#94a3b8">' + it[0] + '</span><b style="color:#334155">' + it[1] + '</b></div>';
+    }).join("");
+    var sigHtml = signals.length > 0
+      ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' + signals.map(function (s) {
+          return '<span style="display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(217,119,6,.35);background:rgba(252,211,77,.25);color:#b45309;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px">' + BEHAVIOR_SIGNAL_LABELS[s] + '</span>';
+        }).join("") + '</div>'
+      : "";
+    return '<div style="background:#F7F2E8;border-radius:8px;padding:12px;margin-bottom:10px">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
+        '<span style="font-size:12px;font-weight:500;color:#64748b">行为指标摘要</span>' +
+        '<span style="font-size:11px;color:#94a3b8">启发式计算 · 非诊断</span></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px 14px;font-size:11px;color:#64748b">' + itemHtml + '</div>' +
+      sigHtml + '</div>';
+  }
+
   function openDetail(id) {
     var r = null;
     for (var i = 0; i < dataRecords.length; i++) if (dataRecords[i].id === id) { r = dataRecords[i]; break; }
@@ -946,6 +1107,7 @@ scaleSummaryHtml(r) +
 questionBlock(phq9Q, r.phq9, "PHQ-9 抑郁症筛查量表", r.p, 27) +
 questionBlock(gad7Q, r.gad7, "GAD-7 广泛性焦虑量表", r.g, 21) +
 suppDetailHtml(r) +
+      metricsCardHtml(r) +
       trajHtml +
       '<div class="btn-row" style="justify-content:flex-end">' +
         '<button class="btn btn-primary" id="detail-ok">关闭</button>' +
@@ -1039,7 +1201,9 @@ suppDetailHtml(r) +
         psqi: ps.psqi, psqiComps: ps.comps, psqiScore: ps.score,
         sias6: ss, sias6Score: ss.reduce(function (s, v) { return s + v; }, 0),
         aslec: al, aslecScore: al.reduce(function (s, v) { return s + v; }, 0), aslecCount: al.filter(function (v) { return v > 0; }).length,
-        risk: r.risk, st: r.st, traj: r.traj, cam: r.cam, riskFlags: flags
+        risk: r.risk, st: r.st, traj: r.traj, cam: r.cam, riskFlags: flags,
+        mouseMetrics: computeMouseMetrics(r.traj),
+        behaviorSignals: behaviorSignalsOf(computeMouseMetrics(r.traj))
       };
     });
   })();
@@ -1180,6 +1344,482 @@ suppDetailHtml(r) +
     a.click();
     URL.revokeObjectURL(a.href);
   });
+
+  /* ============ 数据分析页（探索性分析，与正式版 analysis 模块一致） ============ */
+  var ANL_RISK_ORDER = ["低风险", "轻度风险", "中度风险", "高风险"];
+  var ANL_METRIC_LABELS = {
+    duration: "总时长(ms)", points: "采样点数", distance: "总位移(px)", avgSpeed: "平均速度(px/ms)",
+    speedCV: "速度变异系数", pauseCount: "停顿次数", pauseRatio: "停顿占比", initLatency: "启动潜伏(ms)",
+    flips: "方向反转合计", curvature: "弯曲度", tremorScore: "抖动分"
+  };
+  var ANL_METRIC_KEYS = ["duration", "points", "distance", "avgSpeed", "speedCV", "pauseCount", "pauseRatio", "initLatency", "flips", "curvature", "tremorScore"];
+  var ANL_SCALE_COLS = [
+    { key: "phq9", label: "PHQ-9 抑郁" },
+    { key: "gad7", label: "GAD-7 焦虑" },
+    { key: "pss10", label: "PSS-10 压力" },
+    { key: "psqi", label: "PSQI 睡眠" },
+    { key: "sias6", label: "SIAS-6 社交焦虑" },
+    { key: "aslec", label: "ASLEC 生活事件" },
+    { key: "risk", label: "整体风险档" }
+  ];
+  var ANL_SIGNAL_LABELS = {
+    low_effort: "低努力快速作答", retardation: "行动迟滞倾向", hesitation: "答题犹豫度偏高",
+    mind_wandering: "注意力波动", tremor: "手部抖动偏多"
+  };
+  var ANL_CAMERA_LABELS = { normal: "摄像头可用(normal)", degraded: "降级(degraded)", unknown: "旧记录(无字段)" };
+  function anlSummarize(vals) {
+    var v = (vals || []).filter(function (x) { return x !== null && x !== undefined && !isNaN(x); });
+    if (v.length === 0) return null;
+    var sorted = v.slice().sort(function (a, b) { return a - b; });
+    var n = sorted.length;
+    var mean = sorted.reduce(function (s, x) { return s + x; }, 0) / n;
+    var median = n % 2 === 1 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+    var sd = n > 1 ? Math.sqrt(sorted.reduce(function (s, x) { return s + Math.pow(x - mean, 2); }, 0) / (n - 1)) : 0;
+    return { n: n, mean: mean, median: median, sd: sd, min: sorted[0], max: sorted[n - 1] };
+  }
+  function anlRanks(vals) {
+    var idx = vals.map(function (v, i) { return { v: v, i: i }; }).sort(function (a, b) { return a.v - b.v; });
+    var ranks = new Array(vals.length);
+    var i = 0;
+    while (i < idx.length) {
+      var j = i;
+      while (j + 1 < idx.length && idx[j + 1].v === idx[i].v) j++;
+      var avg = (i + j) / 2 + 1;
+      for (var k = i; k <= j; k++) ranks[idx[k].i] = avg;
+      i = j + 1;
+    }
+    return ranks;
+  }
+  function anlSpearman(xs, ys) {
+    var n = Math.min(xs.length, ys.length);
+    if (n < 3) return null;
+    var x = xs.slice(0, n), y = ys.slice(0, n);
+    var rx = anlRanks(x), ry = anlRanks(y);
+    var mx = rx.reduce(function (s, v) { return s + v; }, 0) / n;
+    var my = ry.reduce(function (s, v) { return s + v; }, 0) / n;
+    var sxx = 0, syy = 0, sxy = 0;
+    for (var i = 0; i < n; i++) {
+      var dx = rx[i] - mx, dy = ry[i] - my;
+      sxx += dx * dx; syy += dy * dy; sxy += dx * dy;
+    }
+    if (sxx === 0 || syy === 0) return null;
+    return sxy / Math.sqrt(sxx * syy);
+  }
+  function anlEffect(r) {
+    var a = Math.abs(r);
+    if (a < 0.1) return "可忽略";
+    if (a < 0.3) return "弱";
+    if (a < 0.5) return "中等";
+    return "强";
+  }
+  function anlRiskNum(risk) {
+    return ANL_RISK_ORDER.indexOf(risk) >= 0 ? ANL_RISK_ORDER.indexOf(risk) : 0;
+  }
+  function anlScaleScores(r) {
+    return {
+      phq9: r.p || 0, gad7: r.g || 0, pss10: r.pss10Score || 0, psqi: r.psqiScore || 0,
+      sias6: r.sias6Score || 0, aslec: r.aslecScore || 0, risk: anlRiskNum(r.risk)
+    };
+  }
+  function anlMetricsRow(m) {
+    return {
+      duration: m.duration, points: m.points, distance: m.distance, avgSpeed: m.avgSpeed,
+      speedCV: m.speedCV, pauseCount: m.pauseCount, pauseRatio: m.pauseRatio, initLatency: m.initLatency,
+      xFlips: m.xFlips, yFlips: m.yFlips, curvature: m.curvature, tremorScore: m.tremorScore,
+      flips: (m.xFlips || 0) + (m.yFlips || 0)
+    };
+  }
+  function anlCorrMatrix(records) {
+    var withM = (records || []).filter(function (r) { return r.mouseMetrics; });
+    var cells = ANL_METRIC_KEYS.map(function () {
+      return ANL_SCALE_COLS.map(function () { return { rho: null, n: 0, effect: "-" }; });
+    });
+    var scaleVec = ANL_SCALE_COLS.map(function (c) { return withM.map(function (r) { return anlScaleScores(r)[c.key] || 0; }); });
+    var metricVec = ANL_METRIC_KEYS.map(function (rk) { return withM.map(function (r) { return anlMetricsRow(r.mouseMetrics)[rk]; }); });
+    ANL_METRIC_KEYS.forEach(function (rk, ri) {
+      ANL_SCALE_COLS.forEach(function (c, ci) {
+        var xs = [], ys = [];
+        for (var i = 0; i < withM.length; i++) {
+          var x = metricVec[ri][i], y = scaleVec[ci][i];
+          if (x === null || x === undefined || isNaN(x)) continue;
+          if (y === null || y === undefined || isNaN(y)) continue;
+          xs.push(x); ys.push(y);
+        }
+        var rho = anlSpearman(xs, ys);
+        cells[ri][ci] = { rho: rho, n: xs.length, effect: rho === null ? "-" : anlEffect(rho) };
+      });
+    });
+    return { maxN: withM.length, cells: cells };
+  }
+  function anlSignalRows(records) {
+    var keys = [];
+    (records || []).forEach(function (r) {
+      (r.behaviorSignals || []).forEach(function (s) { if (keys.indexOf(s) < 0) keys.push(s); });
+    });
+    var order = ["low_effort", "retardation", "hesitation", "mind_wandering", "tremor"];
+    keys.sort(function (a, b) { return order.indexOf(a) - order.indexOf(b) || (a < b ? -1 : a > b ? 1 : 0); });
+    return keys.map(function (s) {
+      var recs = (records || []).filter(function (r) { return (r.behaviorSignals || []).some(function (b) { return b === s; }); });
+      var low = recs.filter(function (r) { return r.risk === "低风险"; }).length;
+      var mild = recs.filter(function (r) { return r.risk === "轻度风险"; }).length;
+      var moderate = recs.filter(function (r) { return r.risk === "中度风险"; }).length;
+      var high = recs.filter(function (r) { return r.risk === "高风险"; }).length;
+      return { signal: s, count: recs.length, low: low, mild: mild, moderate: moderate, high: high, highPct: recs.length > 0 ? Math.round(high / recs.length * 100) : 0 };
+    });
+  }
+  function anlCameraRows(records) {
+    var modeMap = {};
+    (records || []).forEach(function (r) {
+      var m = r.cam || r.cameraMode || "unknown";
+      if (!modeMap[m]) modeMap[m] = [];
+      modeMap[m].push(r);
+    });
+    return Object.keys(modeMap).map(function (mode) {
+      var recs = modeMap[mode];
+      var high = recs.filter(function (r) { return r.risk === "高风险"; }).length;
+      var avg = function (key) {
+        var vals = recs.map(function (r) { return key === "phq9" ? (r.p || 0) : (r.pss10Score || 0); });
+        return vals.length > 0 ? Number((vals.reduce(function (s, v) { return s + v; }, 0) / vals.length).toFixed(1)) : null;
+      };
+      return { mode: mode, count: recs.length, high: high, highPct: recs.length > 0 ? Math.round(high / recs.length * 100) : 0, avgPhq9: avg("phq9"), avgPss10: avg("pss10") };
+    });
+  }
+  /* ---- 分析图 SVG 生成（与正式版同口径，无外部依赖） ---- */
+  var ANL_RISK_COLORS = { "低风险": "#16a34a", "轻度风险": "#ca8a04", "中度风险": "#ea580c", "高风险": "#dc2626" };
+  var ANL_CAM_COLORS = { normal: "#16a34a", degraded: "#ea580c", unknown: "#94a3b8" };
+  function anlEsc(s) { return String(s === null || s === undefined ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function anlDonut(items, size, thickness, centerValue, centerLabel) {
+    var r = (size - thickness) / 2;
+    var circ = 2 * Math.PI * r;
+    var total = 0;
+    items.forEach(function (it) { total += it.value; });
+    var acc = 0, seg = "";
+    items.forEach(function (it) {
+      if (it.value <= 0 || total === 0) return;
+      var frac = it.value / total;
+      var dash = Math.max(frac * circ - 2, 0.5);
+      seg += '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="' + it.color + '" stroke-width="' + thickness + '" stroke-dasharray="' + dash + ' ' + (circ - dash) + '" stroke-dashoffset="' + (-acc * circ) + '" transform="rotate(-90 ' + size / 2 + ' ' + size / 2 + ')"/>';
+      acc += frac;
+    });
+    return '<svg width="100%" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '" role="img">' +
+      '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="#f1f5f9" stroke-width="' + thickness + '"/>' +
+      seg +
+      '<text x="50%" y="48%" text-anchor="middle" font-size="24" font-weight="700" fill="#334155">' + centerValue + '</text>' +
+      '<text x="50%" y="63%" text-anchor="middle" font-size="11" fill="#94a3b8">' + anlEsc(centerLabel) + '</text></svg>';
+  }
+  function anlLegend(items) {
+    return '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:#64748b">' +
+      items.map(function (it) {
+        return '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:' + it.color + ';display:inline-block"></span>' + anlEsc(it.label) +
+          (it.value !== undefined ? ' <b style="color:#334155">' + it.value + '</b>' : '') + '</span>';
+      }).join("") + '</div>';
+  }
+  function anlHeatmap(rows, cols, cells) {
+    var cellW = 52, cellH = 30, padL = 118, padT = 30;
+    var W = padL + cols.length * cellW + 12;
+    var H = padT + rows.length * cellH + 10;
+    function rhoColor(rho) {
+      if (rho === null) return "#f1f5f9";
+      var t = Math.min(Math.abs(rho), 1);
+      return rho >= 0 ? "rgba(217,119,6," + (0.12 + t * 0.72).toFixed(2) + ")" : "rgba(37,99,235," + (0.12 + t * 0.72).toFixed(2) + ")";
+    }
+    function txtColor(rho) { return rho !== null && Math.abs(rho) >= 0.55 ? "#ffffff" : "#475569"; }
+    var rowLabels = rows.map(function (rk, ri) {
+      return '<text x="' + (padL - 8) + '" y="' + (padT + ri * cellH + cellH / 2 + 4) + '" text-anchor="end" font-size="11" fill="#475569">' + anlEsc(ANL_METRIC_LABELS[rk]) + '</text>';
+    }).join("");
+    var colLabels = cols.map(function (c, ci) {
+      var label = c.label.length > 6 ? c.label.slice(0, 6) + "…" : c.label;
+      return '<text x="' + (padL + ci * cellW + cellW / 2) + '" y="' + (padT - 10) + '" text-anchor="middle" font-size="10.5" fill="#64748b">' + anlEsc(label) + '</text>';
+    }).join("");
+    var cellSvg = "";
+    rows.forEach(function (rk, ri) {
+      cols.forEach(function (c, ci) {
+        var rho = cells[ri][ci].rho;
+        var x = padL + ci * cellW, y = padT + ri * cellH;
+        cellSvg += '<rect x="' + x + '" y="' + y + '" width="' + (cellW - 2) + '" height="' + (cellH - 2) + '" rx="3" fill="' + rhoColor(rho) + '"/>' +
+          '<text x="' + (x + (cellW - 2) / 2) + '" y="' + (y + (cellH - 2) / 2 + 4) + '" text-anchor="middle" font-size="11" font-weight="' + (rho !== null && Math.abs(rho) >= 0.3 ? 700 : 400) + '" fill="' + txtColor(rho) + '">' +
+          (rho === null ? "–" : (rho >= 0 ? "+" : "") + rho.toFixed(2)) + '</text>';
+      });
+    });
+    return '<svg width="100%" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img">' + rowLabels + colLabels + cellSvg + '</svg>';
+  }
+  function anlStackedBars(rows, parts) {
+    var W = 520, H = 210, padL = 108, padB = 34, padT = 18, right = 12;
+    var chartW = W - padL - right, chartH = H - padT - padB;
+    var maxTotal = Math.max.apply(null, rows.map(function (r) { return r.total; }).concat([1]));
+    var niceMax = Math.max(5, Math.ceil(maxTotal / 5) * 5);
+    var bw = Math.min(56, (chartW - (rows.length - 1) * 18) / rows.length);
+    var ticks = [0, niceMax / 2, niceMax];
+    var tickSvg = ticks.map(function (t) {
+      var y = padT + chartH - (t / niceMax) * chartH;
+      return '<line x1="' + padL + '" y1="' + y + '" x2="' + (padL + chartW) + '" y2="' + y + '" stroke="#eef0f4" stroke-dasharray="3 3"/>' +
+        '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" text-anchor="end" font-size="10" fill="#94a3b8">' + t + '</text>';
+    }).join("");
+    var barSvg = rows.map(function (row, ri) {
+      var x = padL + ri * (bw + 18), yOff = 0, seg = "";
+      row.parts.forEach(function (p, pi) {
+        if (p <= 0) return;
+        var h = Math.max((p / niceMax) * chartH, 1.5);
+        seg += '<rect x="' + x + '" y="' + (padT + chartH - yOff - h) + '" width="' + bw + '" height="' + h + '" fill="' + parts[pi].color + '" opacity="0.88"/>';
+        yOff += h;
+      });
+      if (row.total > 0) seg += '<text x="' + (x + bw / 2) + '" y="' + (padT + chartH - yOff - 5) + '" text-anchor="middle" font-size="10.5" font-weight="600" fill="#475569">' + row.total + '</text>';
+      seg += '<text x="' + (x + bw / 2) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="10.5" fill="#64748b">' + anlEsc(row.label) + '</text>';
+      return seg;
+    }).join("");
+    return '<svg width="100%" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img">' + tickSvg + barSvg +
+      '<line x1="' + padL + '" y1="' + (padT + chartH) + '" x2="' + (padL + chartW) + '" y2="' + (padT + chartH) + '" stroke="#cbd5e1"/>' +
+      '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + chartH) + '" stroke="#cbd5e1"/></svg>';
+  }
+  function anlGroupBars(groups, series) {
+    var W = 500, H = 230, padL = 46, padB = 34, padT = 16, right = 12;
+    var chartW = W - padL - right, chartH = H - padT - padB;
+    var gw = chartW / groups.length;
+    var bw = Math.min(46, (gw - 16) / series.length);
+    var gridSvg = [0, 0.25, 0.5, 0.75, 1].map(function (f) {
+      var y = padT + chartH * (1 - f);
+      return '<line x1="' + padL + '" y1="' + y + '" x2="' + (padL + chartW) + '" y2="' + y + '" stroke="#eef0f4" stroke-dasharray="3 3"/>' +
+        '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" text-anchor="end" font-size="10" fill="#94a3b8">' + Math.round(f * 100) + '%</text>';
+    }).join("");
+    var barSvg = groups.map(function (g, gi) {
+      var seg = "";
+      series.forEach(function (s, si) {
+        var v = g.values[si];
+        if (v === null || v === undefined) return;
+        var h = Math.max((v / s.max) * chartH, 1.5);
+        var x = padL + gi * gw + 8 + si * bw;
+        seg += '<rect x="' + x + '" y="' + (padT + chartH - h) + '" width="' + bw + '" height="' + h + '" fill="' + s.color + '" opacity="0.85" rx="2"/>' +
+          '<text x="' + (x + bw / 2) + '" y="' + (padT + chartH - h - 4) + '" text-anchor="middle" font-size="10.5" font-weight="600" fill="#475569">' + v + '</text>';
+      });
+      seg += '<text x="' + (padL + gi * gw + gw / 2) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="10.5" fill="#64748b">' + anlEsc(g.label) + '</text>';
+      return seg;
+    }).join("");
+    return '<svg width="100%" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img">' + gridSvg + barSvg +
+      '<line x1="' + padL + '" y1="' + (padT + chartH) + '" x2="' + (padL + chartW) + '" y2="' + (padT + chartH) + '" stroke="#cbd5e1"/>' +
+      '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + chartH) + '" stroke="#cbd5e1"/></svg>';
+  }
+  function anlRangeBars(rows) {
+    var W = 560, H = 34 * rows.length + 20, padL = 148, padR = 16, top = 6;
+    var chartW = W - padL - padR;
+    function xOf(v, lo, hi) { return hi === lo ? padL + chartW / 2 : padL + ((v - lo) / (hi - lo)) * chartW; }
+    var rowSvg = rows.map(function (r, ri) {
+      var y = top + ri * 34 + 12;
+      var x0 = xOf(r.min, r.min, r.max), x1 = xOf(r.max, r.min, r.max);
+      return '<text x="' + (padL - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-size="10.5" fill="#475569">' + anlEsc(r.label) + '</text>' +
+        '<line x1="' + x0 + '" y1="' + y + '" x2="' + x1 + '" y2="' + y + '" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>' +
+        '<circle cx="' + xOf(r.mean, r.min, r.max) + '" cy="' + y + '" r="3.5" fill="#A8905F"/>' +
+        '<circle cx="' + xOf(r.median, r.min, r.max) + '" cy="' + y + '" r="3.5" fill="#dc2626"/>' +
+        '<text x="' + Math.min(x1 + 6, W - 4) + '" y="' + (y + 4) + '" font-size="9.5" fill="#94a3b8">' + r.min.toFixed(0) + "–" + r.max.toFixed(0) + '</text>';
+    }).join("");
+    return '<svg width="100%" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img">' + rowSvg + '</svg>';
+  }
+  function renderAnalysis() {
+    var records = dataRecords || [];
+    var body = document.getElementById("anal-content");
+    var note = document.getElementById("anal-note");
+    if (!body) return;
+    if (records.length === 0) {
+      note.style.display = "block";
+      note.innerHTML = '<div style="background:#F7F2E8;border:1px solid #E3D9C6;border-radius:10px;padding:40px 20px;text-align:center;color:#8F7A4E">暂无测评记录。完成至少一份心理测评后，即可在此查看探索性分析。</div>';
+      body.innerHTML = "";
+      return;
+    }
+    note.style.display = "none";
+    var total = records.length;
+    var withTraj = records.filter(function (r) { return r.traj && r.traj.length > 0; }).length;
+    var withM = records.filter(function (r) { return r.mouseMetrics; }).length;
+    var withSig = records.filter(function (r) { return r.behaviorSignals && r.behaviorSignals.length > 0; }).length;
+    var highN = records.filter(function (r) { return r.risk === "高风险"; }).length;
+    var camNormal = records.filter(function (r) { return (r.cam || r.cameraMode || "unknown") === "normal"; }).length;
+    var camDegraded = records.filter(function (r) { return (r.cam || r.cameraMode || "unknown") === "degraded"; }).length;
+    var pct = function (x) { return total > 0 ? Math.round(x / total * 100) + "%" : "0%"; };
+    var corr = anlCorrMatrix(records);
+    var signals = anlSignalRows(records);
+    var camera = anlCameraRows(records);
+    // 轨迹指标描述统计
+    var withMet = records.filter(function (r) { return r.mouseMetrics; });
+    var distRows = ANL_METRIC_KEYS.map(function (key) {
+      var vals = withMet.map(function (r) { return anlMetricsRow(r.mouseMetrics)[key]; }).filter(function (v) { return v !== undefined && v !== null && !isNaN(v); });
+      return { label: ANL_METRIC_LABELS[key], sum: anlSummarize(vals) };
+    });
+    var riskBadge = function (level, num) {
+      var cls = { "高风险": "b-red", "中度风险": "b-orange", "轻度风险": "b-yellow", "低风险": "b-green" }[level] || "b-green";
+      return '<span class="badge ' + cls + '">' + level + '</span> <span style="color:#5C4A32">' + num + '</span>';
+    };
+    var corrCell = function (cell) {
+      if (cell.rho === null) return '<span style="color:#b8b8b8">–</span>';
+      var a = Math.abs(cell.rho);
+      var color = a < 0.1 ? "#8F7A4E" : a < 0.3 ? "#5C4A32" : a < 0.5 ? "#b45309" : "#dc2626";
+      return '<div style="color:' + color + ';font-size:14px">' + (cell.rho >= 0 ? "+" : "") + cell.rho.toFixed(2) +
+        '<div style="font-size:10px;color:#a5a5a5;font-weight:400">' + cell.effect + '·n=' + cell.n + '</div></div>';
+    };
+    var html = "";
+    // 样本概况
+    html += '<div class="stat-grid">' +
+      '<div class="stat-card"><div class="stat-head"><span class="stat-label">测评记录总数</span></div><div class="stat-num">' + total + '</div></div>' +
+      '<div class="stat-card"><div class="stat-head"><span class="stat-label">含鼠标轨迹</span></div><div class="stat-num">' + withTraj + '</div><div style="font-size:12px;color:#8F7A4E">' + pct(withTraj) + '</div></div>' +
+      '<div class="stat-card"><div class="stat-head"><span class="stat-label">含行为指标</span></div><div class="stat-num">' + withM + '</div><div style="font-size:12px;color:#8F7A4E">' + pct(withM) + '</div></div>' +
+      '<div class="stat-card"><div class="stat-head"><span class="stat-label">摄像头可用(normal)</span></div><div class="stat-num">' + camNormal + '</div></div>' +
+      '<div class="stat-card"><div class="stat-head"><span class="stat-label">摄像头降级(degraded)</span></div><div class="stat-num">' + camDegraded + '</div></div>' +
+      '<div class="stat-card"><div class="stat-head"><span class="stat-label">高风险记录</span></div><div class="stat-num red">' + highN + '</div></div>' +
+      '</div>';
+    // 样本构成图：风险分布 + 摄像头状态（环形图）
+    var riskDistItems = ANL_RISK_ORDER.filter(function (r) { return records.filter(function (x) { return x.risk === r; }).length > 0; })
+      .map(function (r) { return { label: r, value: records.filter(function (x) { return x.risk === r; }).length, color: ANL_RISK_COLORS[r] }; });
+    var camDistMap = {};
+    records.forEach(function (r) { var m = r.cam || r.cameraMode || "unknown"; camDistMap[m] = (camDistMap[m] || 0) + 1; });
+    var camDistItems = Object.keys(camDistMap).map(function (m) { return { label: ANL_CAMERA_LABELS[m] || m, value: camDistMap[m], color: ANL_CAM_COLORS[m] || "#94a3b8" }; });
+    html += '<div class="table-card" style="margin-top:16px">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6"><h3 class="sec-title" style="margin:0">样本构成（分析图）</h3>' +
+      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">风险等级与摄像头采集状态在全部记录中的占比分布。</p></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;padding:18px">' +
+      '<div style="display:flex;flex-direction:column;align-items:center;gap:10px">' +
+      anlDonut(riskDistItems, 170, 24, total, "记录总数") +
+      anlLegend(riskDistItems) + '</div>' +
+      '<div style="display:flex;flex-direction:column;align-items:center;gap:10px">' +
+      anlDonut(camDistItems, 170, 24, total, "记录总数") +
+      anlLegend(camDistItems) + '</div>' +
+      '</div></div>';
+    // 量表 x 轨迹相关矩阵
+    html += '<div class="table-card" style="margin-top:16px">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6">' +
+      '<h3 class="sec-title" style="margin:0">量表分数 × 鼠标轨迹指标（Spearman 相关）</h3>' +
+      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">探索性相关，样本 n 显示在各格；方向为正号表示指标随分数同向变化。相关≠因果，不作显著性检验。' +
+      (corr.maxN < 5 ? '<span style="color:#b45309">样本不足 5 条时相关不稳定，仅供直观参考。</span>' : '') + '</p></div>' +
+      '<div style="padding:16px 18px;border-bottom:1px solid #F0E8DA">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:12px;font-weight:500;color:#64748b">分析图 · Spearman 相关热力图</span></div>' +
+      anlHeatmap(ANL_METRIC_KEYS, ANL_SCALE_COLS, corr.cells) +
+      '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;font-size:11px;color:#94a3b8">' +
+      '<span>负相关</span><svg width="90" height="10"><defs><linearGradient id="corr-grad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(37,99,235,.85)"/><stop offset="50%" stop-color="#f1f5f9"/><stop offset="100%" stop-color="rgba(217,119,6,.85)"/></linearGradient></defs><rect width="90" height="10" fill="url(#corr-grad)" rx="3"/></svg><span>正相关</span>' +
+      '<span style="margin-left:auto">灰 = 样本不足或无相关，– = 无法计算</span></div></div>' +
+      '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E3D9C6">' +
+      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px;white-space:nowrap">轨迹指标</th>' +
+      ANL_SCALE_COLS.map(function (c) { return '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px;white-space:nowrap">' + c.label + '</th>'; }).join("") +
+      '</tr></thead><tbody>' +
+      ANL_METRIC_KEYS.map(function (rk, ri) {
+        return '<tr style="border-bottom:1px solid #F0E8DA">' +
+          '<td style="padding:10px 14px;color:#5C4A32;font-size:13px;white-space:nowrap;font-weight:500">' + ANL_METRIC_LABELS[rk] + '</td>' +
+          ANL_SCALE_COLS.map(function (c, ci) { return '<td style="padding:10px 14px">' + corrCell(corr.cells[ri][ci]) + '</td>'; }).join("") +
+          '</tr>';
+      }).join("") + '</tbody></table></div></div>';
+    // 行为信号 x 风险等级
+    var sigChart = signals.length === 0 ? "" :
+      '<div style="padding:16px 18px;border-bottom:1px solid #F0E8DA">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px"><span style="font-size:12px;font-weight:500;color:#64748b">分析图 · 各信号记录的风险等级堆叠分布</span>' +
+      anlLegend(ANL_RISK_ORDER.map(function (r) { return { label: r, color: ANL_RISK_COLORS[r] }; })) + '</div>' +
+      anlStackedBars(signals.map(function (s) {
+        return { label: ANL_SIGNAL_LABELS[s.signal] || s.signal, parts: [s.low, s.mild, s.moderate, s.high], total: s.count };
+      }), ANL_RISK_ORDER.map(function (r) { return { label: r, color: ANL_RISK_COLORS[r] }; })) + '</div>';
+    var sigRows = signals.length === 0
+      ? '<p style="padding:16px 18px;color:#8F7A4E;font-size:13px">暂无命中行为信号的记录。</p>'
+      : '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E3D9C6">' +
+        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">行为信号</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">记录数</th>' +
+        ANL_RISK_ORDER.map(function (r) { return '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">' + r + '</th>'; }).join("") +
+        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">高风险占比</th>' +
+        '</tr></thead><tbody>' +
+        signals.map(function (s) {
+          return '<tr style="border-bottom:1px solid #F0E8DA">' +
+            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px;white-space:nowrap">' + (ANL_SIGNAL_LABELS[s.signal] || s.signal) + '</td>' +
+            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + s.count + '</td>' +
+            '<td style="padding:10px 14px">' + riskBadge("低风险", s.low) + '</td>' +
+            '<td style="padding:10px 14px">' + riskBadge("轻度风险", s.mild) + '</td>' +
+            '<td style="padding:10px 14px">' + riskBadge("中度风险", s.moderate) + '</td>' +
+            '<td style="padding:10px 14px">' + riskBadge("高风险", s.high) + '</td>' +
+            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + s.highPct + '%</td></tr>';
+        }).join("") + '</tbody></table></div>';
+    html += '<div class="table-card" style="margin-top:16px">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6">' +
+      '<h3 class="sec-title" style="margin:0">行为信号 × 风险等级交叉</h3>' +
+      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">命中各行为信号（鼠标轨迹启发式规则）的记录在四档风险中的分布；同一记录可命中多个信号。</p></div>' + sigChart + sigRows + '</div>';
+    // 视频采集状态 x 量表/风险
+    var camChart = camera.length === 0 ? "" :
+      '<div style="padding:16px 18px;border-bottom:1px solid #F0E8DA">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px"><span style="font-size:12px;font-weight:500;color:#64748b">分析图 · 各采集状态下平均量表分数（柱高按量表满分归一）</span>' +
+      anlLegend([
+        { label: "平均 PHQ-9（满分 27）", color: "#A8905F" },
+        { label: "平均 PSS-10（满分 50）", color: "#ea580c" }
+      ]) + '</div>' +
+      anlGroupBars(camera.map(function (row) {
+        return { label: (ANL_CAMERA_LABELS[row.mode] || row.mode).replace(/\s*\(.*\)/, ""), values: [row.avgPhq9, row.avgPss10] };
+      }), [
+        { label: "平均 PHQ-9", color: "#A8905F", max: 27 },
+        { label: "平均 PSS-10", color: "#ea580c", max: 50 }
+      ]) +
+      '<p style="font-size:11px;color:#94a3b8;margin-top:6px">纵轴为占量表满分的百分比（便于在同一图上比较）；柱顶标注为实际平均分。</p></div>';
+    var camRows = camera.length === 0
+      ? '<p style="padding:16px 18px;color:#8F7A4E;font-size:13px">暂无记录。</p>'
+      : '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E3D9C6">' +
+        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">采集状态</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">记录数</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">高风险数</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">高风险占比</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">平均 PHQ-9</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">平均 PSS-10</th>' +
+        '</tr></thead><tbody>' +
+        camera.map(function (row) {
+          return '<tr style="border-bottom:1px solid #F0E8DA">' +
+            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px;white-space:nowrap">' + (ANL_CAMERA_LABELS[row.mode] || row.mode) + '</td>' +
+            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + row.count + '</td>' +
+            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + row.high + '</td>' +
+            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + row.highPct + '%</td>' +
+            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (row.avgPhq9 === null ? "–" : row.avgPhq9) + '</td>' +
+            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (row.avgPss10 === null ? "–" : row.avgPss10) + '</td></tr>';
+        }).join("") + '</tbody></table></div>';
+    html += '<div class="table-card" style="margin-top:16px">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6">' +
+      '<h3 class="sec-title" style="margin:0">视频采集状态 × 量表分数</h3>' +
+      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">当前平台摄像头仅做可用性检测（normal / degraded），未存储视频帧；该交叉表展示不同采集状态下量表分数的概况，用于排查采集环境（如降级样本是否系统性地伴随特定作答模式）。</p></div>' +
+      camChart +
+      camRows +
+      '<div style="padding:12px 18px;border-top:1px solid #F0E8DA;background:#FBF7EF;font-size:12px;color:#8F7A4E">' +
+      '视频行为信号（面部动作单元、表情贫乏度、注视等）的采集建议与心理学依据详见《调研-摄像头信息心理学研究.md》，当前版本尚未落库帧级指标，待阶段化增强后此卡将扩展为帧级特征关联分析。</div></div>';
+    // 轨迹指标分布
+    var distRowsHave = distRows.filter(function (m) { return m.sum; });
+    var rangeRows = distRowsHave.map(function (m) {
+      return { label: m.label, min: m.sum.min, max: m.sum.max, median: m.sum.median, mean: m.sum.mean, n: m.sum.n };
+    });
+    var distChart = (distRowsHave.length === 0 || !rangeRows.some(function (r) { return r.max > r.min; }))
+      ? '<p style="padding:12px 18px;color:#8F7A4E;font-size:13px">当前样本各指标取值全相同（或暂无可分析的记录），暂时无法绘制范围图。</p>'
+      : '<div style="padding:16px 18px;border-bottom:1px solid #F0E8DA">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px"><span style="font-size:12px;font-weight:500;color:#64748b">分析图 · 各指标数值范围与均值/中位数（各指标独立标尺）</span>' +
+        '<div style="display:flex;align-items:center;gap:12px;font-size:11px;color:#64748b">' +
+        '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#A8905F;display:inline-block"></span>均值</span>' +
+        '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#dc2626;display:inline-block"></span>中位数</span>' +
+        '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:14px;height:4px;border-radius:2px;background:#cbd5e1;display:inline-block"></span>最小–最大</span>' +
+        '</div></div>' + anlRangeBars(rangeRows) + '</div>';
+    var distRowsHtml = distRows.map(function (m) {
+      var s = m.sum;
+      return '<tr style="border-bottom:1px solid #F0E8DA">' +
+        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px;white-space:nowrap;font-weight:500">' + m.label + '</td>' +
+        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.n : 0) + '</td>' +
+        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.mean.toFixed(2) : "–") + '</td>' +
+        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.median.toFixed(2) : "–") + '</td>' +
+        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.sd.toFixed(2) : "–") + '</td>' +
+        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.min.toFixed(0) : "–") + '</td>' +
+        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.max.toFixed(0) : "–") + '</td></tr>';
+    }).join("");
+    html += '<div class="table-card" style="margin-top:16px">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6">' +
+      '<h3 class="sec-title" style="margin:0">鼠标轨迹指标分布（描述统计）</h3>' +
+      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">基于全部含行为指标记录；均值/中位数/标准差/最小/最大，用于观察批次分布与异常作答。</p></div>' +
+      distChart +
+      '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E3D9C6">' +
+      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">指标</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">n</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">均值</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">中位数</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">标准差</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">最小</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">最大</th>' +
+      '</tr></thead><tbody>' + distRowsHtml + '</tbody></table></div></div>';
+    // 免责声明
+    html += '<div style="margin-top:16px;border:1px solid #e7c98a;background:#fdf6e3;border-radius:10px;padding:14px 18px;font-size:13px;color:#9a6700">' +
+      '<b>本页面所有统计与相关均为探索性分析</b>，样本量小、存在个体差异与情境噪声，不构成心理健康评估结论；相关关系不代表因果关系。' +
+      '请结合原始测评记录与量表结果综合判断，重要结论需专业人员复核。</div>';
+    body.innerHTML = html;
+  }
+  document.getElementById("btn-analysis-refresh").addEventListener("click", renderAnalysis);
 
   /* ============ 系统设置页 ============ */
   var subBtns = document.querySelectorAll("#sub-nav .sub-btn");
@@ -1362,7 +2002,7 @@ suppDetailHtml(r) +
           '<button class="btn btn-ghost" id="btn-traj-clear" style="font-size:12px;padding:6px 10px">' + icon("i-trash", 14) + ' 清空轨迹</button>' +
         '</div>' +
       '</div>' +
-      '<p class="check-desc mb-2">选择任意一条已采集的测评记录，可查看其鼠标轨迹采样点、坐标序列与相对时间，确认行为数据采集是否正常（测评第 3 步答题时自动采集，约 80ms 一个点、上限 60 点）。</p>';
+      '<p class="check-desc mb-2">选择任意一条已采集的测评记录，可查看其鼠标轨迹行为指标摘要、采样点、坐标序列与相对时间，确认行为数据采集是否正常（测评第 3 步答题时全量采集每一次鼠标挪动与点击动作，用于行为特征分析）。</p>';
     if (trajRecords.length === 0) {
       html += '<div style="background:#fff;border:1px solid #e5d8c2;border-radius:8px;padding:14px;font-size:13px;color:#94a3b8">' +
         '暂无已采集的鼠标轨迹数据。可先到「心理测评」完成一次测评（填问卷时轨迹自动采集、无需单独操作），再回到这里点「刷新」查看。</div>';
@@ -1389,6 +2029,7 @@ suppDetailHtml(r) +
           '<span>采样点 <b style="color:#A8905F">' + sel.traj.length + '</b>' +
           '<span style="margin:0 8px;color:#C4B697">·</span>采集模式 ' + (sel.cam === "degraded" ? "摄像头降级" : "正常") +
           '</span></div>' +
+        metricsSummaryHtml(sel) +
         '<canvas id="dbg-traj-canvas" width="560" height="220" style="width:100%;border-radius:8px;background:#F7F2E8"></canvas>' +
         '<div style="background:#F7F2E8;border-radius:8px;overflow:hidden;margin-top:10px">' +
           '<div class="traj-head">坐标序列（x, y, 相对时间 ms）<span>共 ' + sel.traj.length + ' 点</span></div>' +
@@ -1718,8 +2359,7 @@ suppDetailHtml(r) +
     stepNames.forEach(function (name, i) {
       var n = i + 1;
       var cls = n < step ? "done" : (n === step ? "now" : "todo");
-      html += '<div style="display:flex;align-items:center;flex:1">' +
-        '<div class="step-node">' +
+      html += '<div class="step-node">' +
         '<div class="step-circle ' + cls + '">' + (n < step ? icon("i-check", 16) : n) + '</div>' +
         '<span class="step-label ' + cls + '">' + name + '</span></div>';
       if (n < totalSteps) html += '<div class="step-line ' + (n < step ? "done" : "todo") + '"></div>';
@@ -2227,7 +2867,14 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     var psqiRes = scorePsqi(psqiAns);
     var aslecRes = scoreAslec(aslecAns);
     var riskRes = buildRisk(phq9, gad7, cssrsAns, nssiAns);
-    var rec = {
+    var trajFinal = (function (arr) {
+        var first = arr && arr.length ? arr[0] : null;
+        return arr.map(function (p) {
+          return { x: p.x, y: p.y, t: Math.max(0, (p.t || 0) - (first ? first.t : 0)), k: p.k };
+        });
+      })(typeof mouseTraj !== "undefined" ? mouseTraj : []);
+     var mmFinal = computeMouseMetrics(trajFinal);
+     var rec = {
       id: "A" + String(Date.now()).slice(-5),
       sid: formState.sid.trim(),
       age: formState.age,
@@ -2255,12 +2902,9 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       risk: riskRes.label,
       riskFlags: riskRes.flags,
       st: "completed",
-      traj: (function (arr) {
-        var first = arr && arr.length ? arr[0] : null;
-        return arr.map(function (p) {
-          return { x: p.x, y: p.y, t: Math.max(0, (p.t || 0) - (first ? first.t : 0)), k: p.k };
-        });
-      })(typeof mouseTraj !== "undefined" ? mouseTraj : []),
+      traj: trajFinal,
+      mouseMetrics: mmFinal,
+      behaviorSignals: behaviorSignalsOf(mmFinal),
       cam: (typeof camMode !== "undefined" ? camMode : "normal")
     };
     dataRecords.push(rec);

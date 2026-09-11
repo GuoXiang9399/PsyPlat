@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   FileText,
   Database,
+  BarChart3,
   Settings,
   Info,
   Lock,
@@ -15,20 +16,22 @@ import {
 import { DashboardContent } from './dashboard/content'
 import { AssessmentContent } from './assessment/content'
 import { DataContent } from './data/content'
+import { AnalysisContent } from './analysis/content'
 import { SettingsContent } from './settings/content'
 import { AboutContent } from './about/content'
 
-type TabKey = 'dashboard' | 'assessment' | 'data' | 'settings' | 'about'
+type TabKey = 'dashboard' | 'assessment' | 'data' | 'analysis' | 'settings' | 'about'
 
 const tabs = [
   { key: 'dashboard' as TabKey, label: '首页概览', icon: LayoutDashboard },
   { key: 'assessment' as TabKey, label: '心理测评', icon: FileText },
   { key: 'data' as TabKey, label: '数据管理', icon: Database },
+  { key: 'analysis' as TabKey, label: '数据分析', icon: BarChart3 },
   { key: 'settings' as TabKey, label: '系统设置', icon: Settings },
   { key: 'about' as TabKey, label: '关于系统', icon: Info },
 ]
 
-const PROTECTED_TABS: TabKey[] = ['data', 'settings', 'about']
+const PROTECTED_TABS: TabKey[] = ['data', 'analysis', 'settings', 'about']
 const ADMIN_PWD_KEY = 'psyc_admin_pwd'
 const ADMIN_AUTH_KEY = 'psyc_admin_auth'
 
@@ -83,6 +86,7 @@ export default function HomePage() {
       case 'dashboard': return <DashboardContent />
       case 'assessment': return <AssessmentContent />
       case 'data': return <DataContent />
+      case 'analysis': return <AnalysisContent />
       case 'settings': return <SettingsContent />
       case 'about': return <AboutContent />
       default: return <DashboardContent />
