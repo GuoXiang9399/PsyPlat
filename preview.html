@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>心理预警系统 - 本地预览 Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #0f172a; color: #cbd5e1;
+    font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px; -webkit-font-smoothing: antialiased;
+  }
+  svg { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+  .app { display: flex; height: 100vh; }
+
+  /* ===== 侧边栏 ===== */
+  .sidebar { width: 256px; background: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; flex-shrink: 0; }
+  .logo-box { padding: 16px; border-bottom: 1px solid #334155; }
+  .logo-inner { display: flex; align-items: center; gap: 12px; }
+  .logo-brain { color: #60a5fa; }
+  .logo-title { font-size: 14px; font-weight: 700; color: #f1f5f9; line-height: 1.25; }
+  .logo-sub { font-size: 12px; color: #64748b; }
+  .nav { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .nav-btn {
+    width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+    border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer;
+    background: transparent; border: 1px solid transparent; color: #94a3b8; transition: all .15s;
+  }
+  .nav-btn:hover { background: rgba(51,65,85,.5); color: #e2e8f0; }
+  .nav-btn.active { background: rgba(59,130,246,.2); color: #60a5fa; border-color: rgba(59,130,246,.3); }
+  .status-box { padding: 12px; border-top: 1px solid #334155; }
+  .status-inner { background: rgba(15,23,42,.5); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .status-label { font-size: 12px; font-weight: 500; color: #64748b; margin-bottom: 4px; }
+  .status-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .status-key { color: #94a3b8; }
+  .status-val { color: #4ade80; }
+  .status-val.blue { color: #60a5fa; }
+  .status-val.yellow { color: #facc15; }
+
+  /* ===== 主内容 ===== */
+  .main { flex: 1; overflow: auto; padding: 24px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .space-y\:6 > * + * { margin-top: 24px; }
+
+  /* 卡片与通用 */
+  .card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; }
+  .p-4 { padding: 16px; } .p-6 { padding: 24px; }
+  .banner {
+    background: linear-gradient(90deg, #2563eb, #4f46e5); border-radius: 8px; padding: 24px; color: #fff;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .banner h1 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .banner p { color: #dbeafe; }
+  .banner svg { color: rgba(191,219,254,.5); }
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; }
+  .stat-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .stat-label { color: #94a3b8; font-size: 14px; }
+  .stat-num { font-size: 22px; font-weight: 700; color: #f1f5f9; }
+  .stat-num.red { color: #f87171; }
+  .stat-sub { font-size: 12px; color: #64748b; margin-top: 4px; }
+  .stat-icon { width: 20px; height: 20px; }
+  .c-blue { color: #60a5fa; } .c-green { color: #4ade80; } .c-red { color: #f87171; } .c-orange { color: #fb923c; } .c-yellow { color: #facc15; } .c-purple { color: #c084fc; }
+
+  /* 表格 */
+  .table-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; overflow: hidden; }
+  .table-head { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #334155; }
+  .table-head h2 { font-size: 16px; font-weight: 600; color: #f1f5f9; }
+  .link-blue { color: #60a5fa; font-size: 14px; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; font-family: inherit; }
+  .link-blue:hover { color: #93c5fd; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; padding: 12px; color: #94a3b8; font-size: 14px; font-weight: 500; border-bottom: 1px solid #334155; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(51,65,85,.5); }
+  tbody tr:hover { background: rgba(51,65,85,.3); }
+  tbody td { padding: 12px; font-size: 14px; color: #cbd5e1; white-space: nowrap; }
+
+  /* 徽章 */
+  .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+  .b-red { background: rgba(239,68,68,.2); color: #f87171; }
+  .b-orange { background: rgba(249,115,22,.2); color: #fb923c; }
+  .b-yellow { background: rgba(234,179,8,.2); color: #facc15; }
+  .b-green { background: rgba(34,197,94,.2); color: #4ade80; }
+  .b-blue { background: rgba(59,130,246,.2); color: #60a5fa; }
+  .b-purple { background: rgba(168,85,247,.2); color: #c084fc; }
+
+  /* 按钮 */
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; font-family: inherit; transition: all .15s; }
+  .btn-primary { background: #3b82f6; color: #fff; }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-primary:disabled { background: #334155; opacity: .5; cursor: not-allowed; }
+  .btn-ghost { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; }
+  .btn-ghost:hover { background: #334155; color: #e2e8f0; }
+  .btn-ghost:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-row { display: flex; gap: 12px; }
+
+  /* 表单 */
+  input[type="text"], input[type="number"], select {
+    width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+    padding: 8px 12px; color: #cbd5e1; font-size: 14px; font-family: inherit; outline: none;
+  }
+  input:focus, select:focus { border-color: #3b82f6; }
+  select option { background: #1e293b; }
+  label.field-label { display: block; font-size: 14px; color: #94a3b8; margin-bottom: 4px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  input[type="range"] { flex: 1; accent-color: #3b82f6; }
+  input[type="checkbox"] { width: 16px; height: 16px; accent-color: #3b82f6; border-radius: 4px; }
+  .range-row { display: flex; align-items: center; gap: 16px; }
+  .range-num { width: 80px; text-align: center; }
+  .check-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: rgba(15,23,42,.5); border-radius: 8px; }
+  .check-row label { font-size: 14px; color: #e2e8f0; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .check-desc { font-size: 12px; color: #64748b; margin-top: 4px; }
+  .check-simple { display: flex; align-items: center; gap: 12px; }
+
+  /* ===== 测评页 ===== */
+  .steps-bar { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 16px; display: flex; align-items: center; }
+  .step-node { display: flex; flex-direction: column; align-items: center; }
+  .step-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
+  .step-circle.done { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+  .step-circle.now { background: rgba(59,130,246,.2); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+  .step-circle.todo { background: #0f172a; color: #64748b; border: 1px solid #334155; }
+  .step-label { font-size: 12px; margin-top: 4px; }
+  .step-label.now { color: #60a5fa; } .step-label.done { color: #4ade80; } .step-label.todo { color: #64748b; }
+  .step-line { flex: 1; height: 2px; margin: 0 8px; }
+  .step-line.done { background: rgba(34,197,94,.3); }
+  .step-line.todo { background: #334155; }
+
+  .consent-list { list-style: none; display: flex; flex-direction: column; gap: 4px; color: #94a3b8; margin: 8px 0; }
+  .consent-list li { display: flex; align-items: flex-start; gap: 8px; }
+  .consent-list li::before { content: "•"; color: #64748b; }
+  .agree-btn { flex: 1; padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; cursor: pointer; font-family: inherit; transition: all .15s; }
+  .agree-on { background: rgba(34,197,94,.2); color: #4ade80; border: 1px solid rgba(34,197,94,.3); }
+  .agree-off { background: #1e293b; color: #cbd5e1; border: 1px solid #334155; }
+  .agree-off.selected { background: rgba(239,68,68,.2); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+  .agree-off:not(.selected):hover { background: #334155; }
+
+  .question-box { background: rgba(15,23,42,.5); border-radius: 8px; padding: 16px; }
+  .question-text { font-size: 14px; color: #cbd5e1; margin-bottom: 12px; }
+  .option-row { display: flex; gap: 8px; }
+  .opt { flex: 1; padding: 8px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; background: #1e293b; color: #94a3b8; border: 1px solid #334155; font-family: inherit; transition: all .15s; }
+  .opt:hover { background: #334155; }
+  .opt.sel { background: rgba(59,130,246,.2); color: #60a5fa; border-color: rgba(59,130,246,.3); }
+
+  .collect-area { background: #0f172a; border: 1px solid #334155; border-radius: 8px; height: 260px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .collect-idle { text-align: center; color: #64748b; font-size: 14px; }
+  .collect-idle svg { margin: 0 auto 12px; color: #475569; }
+  .collect-run { text-align: center; color: #60a5fa; font-size: 14px; }
+  .collect-run svg { margin: 0 auto 12px; animation: bounce 1s infinite; }
+  .collect-done { text-align: center; color: #4ade80; font-size: 14px; }
+  .collect-done svg { margin: 0 auto 12px; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner { margin: 0 auto 12px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+  .progress-track { width: 100%; background: #0f172a; border-radius: 999px; height: 8px; }
+  .progress-fill { background: #3b82f6; height: 8px; border-radius: 999px; transition: width .1s; }
+
+  .result-block { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 24px; text-align: center; }
+  .result-risk { display: inline-block; padding: 16px 32px; border-radius: 12px; font-size: 24px; font-weight: 700; border: 1px solid; }
+  .sub-panel { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 24px; }
+  .sub-nav { width: 192px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+  .sub-btn { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; background: transparent; border: 1px solid transparent; color: #94a3b8; font-family: inherit; transition: all .15s; }
+  .sub-btn:hover { background: rgba(51,65,85,.5); color: #e2e8f0; }
+  .sub-btn.active { background: rgba(59,130,246,.2); color: #60a5fa; border-color: rgba(59,130,246,.3); }
+  .flex-gap-6 { display: flex; gap: 24px; }
+  .sec-title { font-size: 16px; font-weight: 600; color: #f1f5f9; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .tree-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; color: #cbd5e1; font-size: 14px; }
+  .tree-item:hover { color: #60a5fa; }
+  .tree-item .tt { color: #94a3b8; }
+  .about-icon-box { width: 64px; height: 64px; background: rgba(59,130,246,.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #60a5fa; }
+  .privacy-card { background: rgba(234,179,8,.1); border: 1px solid rgba(234,179,8,.3); border-radius: 8px; padding: 24px; }
+  .privacy-card h3 { color: #facc15; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .privacy-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #cbd5e1; }
+  .privacy-card li { display: flex; align-items: flex-start; gap: 8px; }
+  .step-list { display: flex; flex-direction: column; gap: 12px; }
+  .step-item { display: flex; align-items: flex-start; gap: 12px; }
+  .step-num { width: 28px; height: 28px; background: rgba(59,130,246,.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #60a5fa; flex-shrink: 0; }
+  .step-body { flex: 1; padding-bottom: 12px; border-bottom: 1px solid rgba(51,65,85,.5); }
+  .step-title { font-size: 14px; font-weight: 500; color: #e2e8f0; }
+  .step-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+  .version-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .version-item { display: flex; align-items: center; gap: 12px; }
+  .version-k { font-size: 12px; color: #64748b; }
+  .version-v { font-size: 14px; color: #cbd5e1; font-weight: 500; }
+
+  .page-title { font-size: 20px; font-weight: 700; color: #f1f5f9; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .flex-center { display: flex; align-items: center; gap: 8px; }
+  .text-sm { font-size: 14px; } .text-xs { font-size: 12px; } .text-slate-400 { color: #94a3b8; }
+  .search-box { position: relative; flex: 1; }
+  .search-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b; }
+  .search-box input { padding-left: 36px; }
+  .filter-box { position: relative; }
+  .filter-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #64748b; z-index: 1; }
+  .filter-box select { padding-left: 36px; width: 170px; }
+  .mt-2 { margin-top: 8px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
+  .mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-4 { margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A5 5 0 0 0 5 7c0 1.3.5 2.5 1.3 3.4A4.5 4.5 0 0 0 4 14a4 4 0 0 0 2.7 3.8A4.5 4.5 0 0 0 12 21a4.5 4.5 0 0 0 5.3-3.2A4 4 0 0 0 20 14a4.5 4.5 0 0 0-2.3-3.7A5 5 0 0 0 14.5 2a4.7 4.7 0 0 0-5 0Z"/><path d="M12 2v19"/><path d="M8.5 8.5 9 9"/><path d="M15 8.5 14.5 9"/><path d="M8.5 14 9 13.5"/><path d="M15 14l-.5-.5"/></symbol>
+  <symbol id="i-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
+  <symbol id="i-set" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-chev-r" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-chev-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-mouse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="m13 13 6 6"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+  <symbol id="i-rotate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 3 14 9-14 9V3z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></symbol>
+  <symbol id="i-file-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M2 14h4"/><path d="M10 8h4"/><path d="M18 16h4"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 15h3"/><path d="M1 9h3"/><path d="M1 15h3"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 10 5-10 5L2 7l10-5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></symbol>
+  <symbol id="i-git" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v12"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></symbol>
+</svg>
+
+<div class="app">
+  <!-- ======== 侧边栏 ======== -->
+  <aside class="sidebar">
+    <div class="logo-box">
+      <div class="logo-inner">
+        <svg class="logo-brain" width="32" height="32"><use href="#i-brain"/></svg>
+        <div>
+          <div class="logo-title">心理预警系统</div>
+          <div class="logo-sub">Psych Warning System</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <button class="nav-btn active" data-tab="dashboard"><svg width="20" height="20"><use href="#i-dash"/></svg>首页概览</button>
+      <button class="nav-btn" data-tab="assessment"><svg width="20" height="20"><use href="#i-doc"/></svg>心理测评</button>
+      <button class="nav-btn" data-tab="data"><svg width="20" height="20"><use href="#i-db"/></svg>数据管理</button>
+      <button class="nav-btn" data-tab="settings"><svg width="20" height="20"><use href="#i-set"/></svg>系统设置</button>
+      <button class="nav-btn" data-tab="about"><svg width="20" height="20"><use href="#i-info"/></svg>关于系统</button>
+    </nav>
+    <div class="status-box">
+      <div class="status-inner">
+        <div class="status-label">系统状态</div>
+        <div class="status-item"><svg width="14" height="14" class="c-green"><use href="#i-monitor"/></svg><span class="status-key">摄像头:</span><span class="status-val">正常</span></div>
+        <div class="status-item"><svg width="14" height="14" class="c-green"><use href="#i-wifi"/></svg><span class="status-key">鼠标追踪:</span><span class="status-val">正常</span></div>
+        <div class="status-item"><svg width="14" height="14" class="c-blue"><use href="#i-check-circle"/></svg><span class="status-key">模型状态:</span><span class="status-val blue">已加载</span></div>
+        <div class="status-item"><svg width="14" height="14" id="net-icon" class="c-green"><use href="#i-wifi"/></svg><span class="status-key">网络:</span><span class="status-val" id="net-val">在线</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======== 主内容 ======== -->
+  <main class="main">
+
+    <!-- ==================== 首页概览 ==================== -->
+    <section class="tab-panel active" id="tab-dashboard">
+      <div class="space-y\:6">
+        <div class="banner">
+          <div>
+            <h1>欢迎使用多模态无接触式心理问题早期预警系统</h1>
+            <p>基于行为特征与生理信号的智能心理评估平台</p>
+          </div>
+          <svg width="64" height="64"><use href="#i-brain"/></svg>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">今日测评</span><svg class="stat-icon c-blue"><use href="#i-doc"/></svg></div>
+            <div class="stat-num">12</div>
+            <div class="stat-sub">较昨日 +3</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">本月累计</span><svg class="stat-icon c-green"><use href="#i-users"/></svg></div>
+            <div class="stat-num">156</div>
+            <div class="stat-sub">目标完成 78%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">高风险预警</span><svg class="stat-icon c-red"><use href="#i-alert"/></svg></div>
+            <div class="stat-num red">3</div>
+            <div class="stat-sub">需关注人数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head"><span class="stat-label">准确率</span><svg class="stat-icon c-purple"><use href="#i-target"/></svg></div>
+            <div class="stat-num">94.2%</div>
+            <div class="stat-sub">模型评估</div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-head">
+            <h2>最近活动</h2>
+            <button class="link-blue">查看全部 <svg width="16" height="16"><use href="#i-chev-r"/></svg></button>
+          </div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>ID</th><th>学号</th><th>时间</th><th>PHQ-9</th><th>GAD-7</th><th>风险等级</th><th>状态</th></tr></thead>
+              <tbody id="dash-rows"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary"><svg width="16" height="16"><use href="#i-arrow-r"/></svg>开始新测评</button>
+          <button class="btn btn-ghost"><svg width="16" height="16"><use href="#i-activity"/></svg>查看统计</button>
+          <button class="btn btn-ghost"><svg width="16" height="16"><use href="#i-clock"/></svg>历史记录</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 心理测评 ==================== -->
+    <section class="tab-panel" id="tab-assessment">
+      <div class="space-y\:6">
+        <!-- 步骤条 -->
+        <div class="steps-bar" id="steps-bar"></div>
+        <!-- 步骤内容 -->
+        <div id="step-content"></div>
+        <!-- 底部导航 -->
+        <div class="flex-between" id="step-nav" style="padding-top:16px">
+          <button class="btn btn-ghost" id="btn-prev"><svg width="16" height="16"><use href="#i-chev-l"/></svg>上一步</button>
+          <button class="btn btn-primary" id="btn-next">下一步 <svg width="16" height="16"><use href="#i-chev-r"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 数据管理 ==================== -->
+    <section class="tab-panel" id="tab-data">
+      <div class="space-y\:6">
+        <div class="flex-between">
+          <h1 class="page-title">数据管理</h1>
+          <div class="flex-center text-sm text-slate-400"><svg width="16" height="16"><use href="#i-db"/></svg>共 8 条记录</div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-head"><span class="stat-label">总记录数</span><svg class="stat-icon c-blue"><use href="#i-file-check"/></svg></div><div class="stat-num">8</div></div>
+          <div class="stat-card"><div class="stat-head"><span class="stat-label">高风险</span><svg class="stat-icon c-red"><use href="#i-alert"/></svg></div><div class="stat-num red">2</div></div>
+          <div class="stat-card"><div class="stat-head"><span class="stat-label">待审核</span><svg class="stat-icon c-yellow"><use href="#i-users"/></svg></div><div class="stat-num" style="color:#facc15">2</div></div>
+          <div class="stat-card"><div class="stat-head"><span class="stat-label">已完成</span><svg class="stat-icon c-green"><use href="#i-target"/></svg></div><div class="stat-num c-green">5</div></div>
+        </div>
+
+        <div class="flex" style="display:flex; gap:12px">
+          <div class="search-box">
+            <svg width="16" height="16"><use href="#i-search"/></svg>
+            <input type="text" id="data-search" placeholder="搜索学号或ID...">
+          </div>
+          <div class="filter-box">
+            <svg width="16" height="16"><use href="#i-filter"/></svg>
+            <select id="data-filter">
+              <option value="all">全部风险等级</option>
+              <option value="低风险">低风险</option>
+              <option value="轻度风险">轻度风险</option>
+              <option value="中度风险">中度风险</option>
+              <option value="高风险">高风险</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="btn-export"><svg width="16" height="16"><use href="#i-download"/></svg>导出CSV</button>
+        </div>
+
+        <div class="table-card">
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>ID</th><th>学号</th><th>时间</th><th>PHQ-9</th><th>GAD-7</th><th>风险等级</th><th>状态</th></tr></thead>
+              <tbody id="data-rows"></tbody>
+            </table>
+          </div>
+          <div class="p-6" id="data-empty" style="display:none; text-align:center; color:#64748b; font-size:14px">没有找到匹配的记录</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 系统设置 ==================== -->
+    <section class="tab-panel" id="tab-settings">
+      <div class="space-y\:6">
+        <div class="flex-between">
+          <h1 class="page-title">系统设置</h1>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-save"><svg width="16" height="16"><use href="#i-save"/></svg><span id="save-label">保存设置</span></button>
+            <button class="btn btn-ghost"><svg width="16" height="16"><use href="#i-rotate"/></svg>重置</button>
+          </div>
+        </div>
+
+        <div class="flex-gap-6">
+          <div class="sub-nav" id="sub-nav">
+            <button class="sub-btn active" data-sub="capture"><svg width="16" height="16"><use href="#i-eye"/></svg>采集设置</button>
+            <button class="sub-btn" data-sub="privacy"><svg width="16" height="16"><use href="#i-shield"/></svg>隐私保护</button>
+            <button class="sub-btn" data-sub="warning"><svg width="16" height="16"><use href="#i-bell"/></svg>预警配置</button>
+            <button class="sub-btn" data-sub="system"><svg width="16" height="16"><use href="#i-sliders"/></svg>系统选项</button>
+          </div>
+
+          <div class="flex-1 card p-6" id="sub-content" style="flex:1"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 关于系统 ==================== -->
+    <section class="tab-panel" id="tab-about">
+      <div class="space-y\:6">
+        <h1 class="page-title">关于系统</h1>
+
+        <div class="card p-6">
+          <div style="display:flex; gap:16px; align-items:flex-start">
+            <div class="about-icon-box"><svg width="32" height="32"><use href="#i-brain"/></svg></div>
+            <div>
+              <h2 style="font-size:16px; font-weight:600; color:#f1f5f9; margin-bottom:8px">多模态无接触式心理问题早期预警系统</h2>
+              <p style="font-size:14px; color:#94a3b8; line-height:1.6">
+                本系统通过整合量表评估、鼠标行为分析和面部微表情识别三种模态数据，利用深度学习模型进行心理问题早期预警。
+                系统设计注重隐私保护，所有数据处理均在本地完成，不依赖网络连接，适合在高校等场景部署使用。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy-card">
+          <div style="display:flex; gap:12px; align-items:flex-start">
+            <svg width="24" height="24" class="c-yellow" style="margin-top:2px"><use href="#i-alert"/></svg>
+            <div style="flex:1">
+              <h3>隐私保护声明</h3>
+              <ul>
+                <li><svg width="16" height="16" class="c-yellow" style="margin-top:2px"><use href="#i-lock"/></svg><span>所有测评数据采用 AES-256 加密存储，密钥由用户本地管理</span></li>
+                <li><svg width="16" height="16" class="c-yellow" style="margin-top:2px"><use href="#i-eye"/></svg><span>视频采集仅提取特征向量，不保存任何原始图像数据</span></li>
+                <li><svg width="16" height="16" class="c-yellow" style="margin-top:2px"><use href="#i-shield"/></svg><span>学号等个人信息经过单向哈希处理，无法逆向还原</span></li>
+                <li><svg width="16" height="16" class="c-yellow" style="margin-top:2px"><use href="#i-cpu"/></svg><span>AI 模型推理完全在本地运行，不涉及任何云端传输</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="sec-title"><svg width="20" height="20" class="c-blue"><use href="#i-cpu"/></svg>技术架构</h2>
+          <div id="tech-tree"></div>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="sec-title"><svg width="20" height="20" class="c-blue"><use href="#i-doc"/></svg>使用说明</h2>
+          <div class="step-list">
+            <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">知情同意</div><div class="step-desc">阅读并同意隐私声明和知情同意书</div></div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">填写信息</div><div class="step-desc">输入学号、年龄、性别等基本信息</div></div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">量表测评</div><div class="step-desc">完成 PHQ-9 和 GAD-7 心理量表</div></div></div>
+            <div class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">行为采集</div><div class="step-desc">在指定区域移动鼠标，系统自动追踪轨迹</div></div></div>
+            <div class="step-item"><div class="step-num">5</div><div class="step-body"><div class="step-title">视频采集</div><div class="step-desc">摄像头采集面部微表情数据（不保存视频）</div></div></div>
+            <div class="step-item"><div class="step-num">6</div><div class="step-body"><div class="step-title">查看结果</div><div class="step-desc">查看风险评估结果和建议</div></div></div>
+          </div>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="sec-title"><svg width="20" height="20" class="c-blue"><use href="#i-tag"/></svg>版本信息</h2>
+          <div class="version-grid">
+            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-tag"/></svg><div><div class="version-k">系统版本</div><div class="version-v">v2.1.0</div></div></div>
+            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-cal"/></svg><div><div class="version-k">发布日期</div><div class="version-v">2026-09-01</div></div></div>
+            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-user"/></svg><div><div class="version-k">开发者</div><div class="version-v">心理预警系统开发团队</div></div></div>
+            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-mail"/></svg><div><div class="version-k">联系邮箱</div><div class="version-v">support@psych-warning.dev</div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============ 图标工具 ============ */
+  function icon(id, size) {
+    return '<svg width="' + (size || 16) + '" height="' + (size || 16) + '"><use href="#' + id + '"/></svg>';
+  }
+
+  /* ============ 全局：网络状态模拟 ============ */
+  var netVal = document.getElementById("net-val");
+  var netIcon = document.getElementById("net-icon");
+  setInterval(function () {
+    if (Math.random() > 0.9) {
+      netVal.textContent = "连接中...";
+      netVal.className = "status-val yellow";
+      netIcon.setAttribute("class", "c-yellow");
+    } else {
+      netVal.textContent = "在线";
+      netVal.className = "status-val";
+      netIcon.setAttribute("class", "c-green");
+    }
+  }, 10000);
+
+  /* ============ 全局：主 Tab 切换 ============ */
+  var navBtns = document.querySelectorAll("#nav .nav-btn");
+  navBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var tab = btn.getAttribute("data-tab");
+      navBtns.forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      document.querySelectorAll(".tab-panel").forEach(function (p) { p.classList.remove("active"); });
+      document.getElementById("tab-" + tab).classList.add("active");
+    });
+  });
+
+  /* ============ 最近活动数据 ============ */
+  var dashData = [
+    { id: "A001", sid: "20230801", time: "2026-09-11 09:23", p: 8,  g: 6,  risk: "轻度风险", st: "completed"    },
+    { id: "A002", sid: "20230815", time: "2026-09-11 10:45", p: 15, g: 12, risk: "中度风险", st: "pending_review" },
+    { id: "A003", sid: "20230722", time: "2026-09-11 11:02", p: 4,  g: 3,  risk: "低风险",   st: "completed"    },
+    { id: "A004", sid: "20230905", time: "2026-09-11 13:18", p: 18, g: 16, risk: "高风险",   st: "intervened"   },
+    { id: "A005", sid: "20230833", time: "2026-09-11 14:30", p: 7,  g: 5,  risk: "低风险",   st: "completed"    }
+  ];
+
+  var riskClass = { "高风险": "b-red", "中度风险": "b-orange", "轻度风险": "b-yellow", "低风险": "b-green" };
+  var statusText = { completed: "已完成", pending_review: "待审核", intervened: "已干预" };
+  var statusClass = { completed: "b-blue", pending_review: "b-yellow", intervened: "b-purple" };
+
+  function rowHtml(r) {
+    return '<tr>' +
+      '<td>' + r.id + '</td><td>' + r.sid + '</td><td>' + r.time + '</td><td>' + r.p + '</td><td>' + r.g + '</td>' +
+      '<td><span class="badge ' + riskClass[r.risk] + '">' + r.risk + '</span></td>' +
+      '<td><span class="badge ' + statusClass[r.st] + '">' + statusText[r.st] + '</span></td></tr>';
+  }
+
+  var dashRows = document.getElementById("dash-rows");
+  dashRows.innerHTML = dashData.map(rowHtml).join("");
+
+  /* ============ 数据管理页 ============ */
+  var dataRecords = [
+    { id: "A001", sid: "20230801", time: "2026-09-11 09:23", p: 8,  g: 6,  risk: "轻度风险", st: "completed"    },
+    { id: "A002", sid: "20230815", time: "2026-09-11 10:45", p: 15, g: 12, risk: "中度风险", st: "pending_review" },
+    { id: "A003", sid: "20230722", time: "2026-09-11 11:02", p: 4,  g: 3,  risk: "低风险",   st: "completed"    },
+    { id: "A004", sid: "20230905", time: "2026-09-11 13:18", p: 18, g: 16, risk: "高风险",   st: "intervened"   },
+    { id: "A005", sid: "20230833", time: "2026-09-11 14:30", p: 7,  g: 5,  risk: "低风险",   st: "completed"    },
+    { id: "A006", sid: "20230789", time: "2026-09-11 15:12", p: 12, g: 9,  risk: "中度风险", st: "completed"    },
+    { id: "A007", sid: "20230912", time: "2026-09-11 16:45", p: 3,  g: 2,  risk: "低风险",   st: "completed"    },
+    { id: "A008", sid: "20230877", time: "2026-09-11 17:20", p: 20, g: 18, risk: "高风险",   st: "pending_review" }
+  ];
+
+  var dataTbody = document.getElementById("data-rows");
+  var searchInput = document.getElementById("data-search");
+  var filterSelect = document.getElementById("data-filter");
+  var emptyBox = document.getElementById("data-empty");
+
+  function renderData() {
+    var q = searchInput.value.trim();
+    var f = filterSelect.value;
+    var list = dataRecords.filter(function (r) {
+      var okSearch = !q || r.sid.indexOf(q) >= 0 || r.id.indexOf(q) >= 0;
+      var okRisk = f === "all" || r.risk === f;
+      return okSearch && okRisk;
+    });
+    dataTbody.innerHTML = list.map(rowHtml).join("");
+    emptyBox.style.display = list.length === 0 ? "block" : "none";
+  }
+  searchInput.addEventListener("input", renderData);
+  filterSelect.addEventListener("change", renderData);
+  renderData();
+
+  document.getElementById("btn-export").addEventListener("click", function () {
+    var headers = ["ID", "学号", "时间", "PHQ-9", "GAD-7", "风险等级", "状态"];
+    var rows = dataRecords.map(function (r) {
+      return [r.id, r.sid, r.time, r.p, r.g, r.risk, statusText[r.st]].join(",");
+    });
+    var csv = "\ufeff" + headers.join(",") + "\n" + rows.join("\n");
+    var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "assessment_data_" + new Date().toISOString().split("T")[0] + ".csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  /* ============ 系统设置页 ============ */
+  var subBtns = document.querySelectorAll("#sub-nav .sub-btn");
+  var subContent = document.getElementById("sub-content");
+  var saveBtn = document.getElementById("btn-save");
+  var saveLabel = document.getElementById("save-label");
+
+  var capture = { ms: 50, md: 30, cfps: 30, cres: "640x480", cdur: 60 };
+  var privacy = { local: true, delraw: true, enc: true, ano: true };
+  var warn = { pm: 5, pmo: 10, ps: 15, gm: 5, gmo: 10, gs: 15, mail: true, push: true };
+  var sys = { path: "/data/assessments", theme: "dark", autosave: true, debug: false };
+
+  function range(label, val, min, max, unit, onChange) {
+    return '<div>' +
+      '<label class="field-label">' + label + '</label>' +
+      '<div class="range-row">' +
+      '<input type="range" min="' + min + '" max="' + max + '" value="' + val + '" data-key data-min="' + min + '" data-max="' + max + '">' +
+      '<input type="number" class="range-num" value="' + val + '">' +
+      '</div></div>';
+  }
+
+  function renderSettings() {
+    var key = document.querySelector("#sub-nav .sub-btn.active").getAttribute("data-sub");
+    var html = "";
+    if (key === "capture") {
+      html =
+        '<h2 class="sec-title">' + icon("i-eye", 20) + '数据采集设置</h2>' +
+        range("鼠标采样率 (Hz)", capture.ms, 10, 100, "Hz") +
+        range("鼠标追踪时长 (秒)", capture.md, 10, 120, "s") +
+        range("摄像头帧率 (FPS)", capture.cfps, 15, 60, "fps") +
+        '<div><label class="field-label">摄像头分辨率</label><select id="res-sel">' +
+        '<option>320x240</option><option>640x480</option><option>1280x720</option><option>1920x1080</option></select></div>' +
+        range("视频采集时长 (秒)", capture.cdur, 10, 180, "s");
+    } else if (key === "privacy") {
+      var items = [
+        { k: "local", t: "本地处理", d: "所有数据处理在本地完成，不上传至云端", i: "i-lock" },
+        { k: "delraw", t: "删除原始数据", d: "测评结束后自动删除原始视频和鼠标轨迹数据", i: "i-eye" },
+        { k: "enc", t: "加密存储", d: "使用AES-256加密存储测评结果", i: "i-lock" },
+        { k: "ano", t: "匿名化处理", d: "学号等敏感信息经过哈希处理", i: "i-eye" }
+      ];
+      html = '<h2 class="sec-title">' + icon("i-shield", 20) + '隐私保护设置</h2>';
+      items.forEach(function (it) {
+        html += '<div class="check-row"><input type="checkbox" data-pk="' + it.k + '" ' + (privacy[it.k] ? "checked" : "") + '>' +
+          '<div style="flex:1"><div class="flex-center" style="gap:8px">' + icon(it.i, 16) + '<span class="text-sm" style="color:#e2e8f0;font-weight:500">' + it.t + '</span></div>' +
+          '<p class="check-desc">' + it.d + '</p></div></div>';
+      });
+    } else if (key === "warning") {
+      html =
+        '<h2 class="sec-title">' + icon("i-bell", 20) + '预警阈值配置</h2>' +
+        '<div style="background:rgba(15,23,42,.5);border-radius:8px;padding:16px" class="mb-4">' +
+        '<h3 style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:12px">PHQ-9 阈值</h3>' +
+        '<div class="form-grid">' +
+        '<div><label class="field-label">轻度阈值</label><input type="number" value="' + warn.pm + '" data-wk="pm"></div>' +
+        '<div><label class="field-label">中度阈值</label><input type="number" value="' + warn.pmo + '" data-wk="pmo"></div>' +
+        '<div><label class="field-label">重度阈值</label><input type="number" value="' + warn.ps + '" data-wk="ps"></div>' +
+        '</div></div>' +
+        '<div style="background:rgba(15,23,42,.5);border-radius:8px;padding:16px" class="mb-4">' +
+        '<h3 style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:12px">GAD-7 阈值</h3>' +
+        '<div class="form-grid">' +
+        '<div><label class="field-label">轻度阈值</label><input type="number" value="' + warn.gm + '" data-wk="gm"></div>' +
+        '<div><label class="field-label">中度阈值</label><input type="number" value="' + warn.gmo + '" data-wk="gmo"></div>' +
+        '<div><label class="field-label">重度阈值</label><input type="number" value="' + warn.gs + '" data-wk="gs"></div>' +
+        '</div></div>' +
+        '<div style="background:rgba(15,23,42,.5);border-radius:8px;padding:16px">' +
+        '<h3 style="font-size:14px;font-weight:600;color:#e2e8f0;margin-bottom:12px">通知设置</h3>' +
+        '<div style="display:flex;flex-direction:column;gap:8px">' +
+        '<label class="check-simple"><input type="checkbox" data-wk="mail" ' + (warn.mail ? "checked" : "") + '><span class="text-sm" style="color:#cbd5e1">高风险时发送邮件通知</span></label>' +
+        '<label class="check-simple"><input type="checkbox" data-wk="push" ' + (warn.push ? "checked" : "") + '><span class="text-sm" style="color:#cbd5e1">高风险时发送推送通知</span></label>' +
+        '</div></div>';
+    } else {
+      html =
+        '<h2 class="sec-title">' + icon("i-sliders", 20) + '系统选项</h2>' +
+        '<div class="mb-4"><label class="field-label">数据存储路径</label><div style="display:flex;gap:8px">' +
+        '<input type="text" value="' + sys.path + '" id="data-path">' +
+        '<button class="btn btn-ghost" style="padding:8px 12px">' + icon("i-folder", 16) + '</button></div></div>' +
+        '<div class="mb-4"><label class="field-label">主题</label><select id="theme-sel">' +
+        '<option value="dark" ' + (sys.theme === "dark" ? "selected" : "") + '>深色</option>' +
+        '<option value="light" ' + (sys.theme === "light" ? "selected" : "") + '>浅色</option>' +
+        '<option value="auto" ' + (sys.theme === "auto" ? "selected" : "") + '>自动</option></select></div>' +
+        '<div class="check-row"><input type="checkbox" id="auto-save" ' + (sys.autosave ? "checked" : "") + '>' +
+        '<div><div class="text-sm" style="color:#e2e8f0;font-weight:500">自动保存</div><p class="check-desc">测评完成后自动保存结果</p></div></div>' +
+        '<div class="check-row"><input type="checkbox" id="debug-mode" ' + (sys.debug ? "checked" : "") + '>' +
+        '<div><div class="text-sm" style="color:#e2e8f0;font-weight:500">调试模式</div><p class="check-desc">启用详细的日志输出和调试信息</p></div></div>';
+    }
+    subContent.innerHTML = html;
+    bindSettingsEvents(key);
+  }
+
+  function bindSettingsEvents(key) {
+    subContent.querySelectorAll('input[type="range"]').forEach(function (r) {
+      var num = r.nextElementSibling;
+      r.addEventListener("input", function () {
+        num.value = r.value;
+        if (key === "capture") {
+          var target = r.previousElementSibling ? null : null;
+          syncCapture(r);
+        }
+      });
+      num.addEventListener("input", function () {
+        r.value = num.value;
+        syncCapture(r);
+      });
+      if (key === "capture") syncCapture(r);
+    });
+    var resSel = document.getElementById("res-sel");
+    if (resSel) {
+      resSel.value = capture.cres;
+      resSel.addEventListener("change", function () { capture.cres = resSel.value; });
+    }
+    var theme = document.getElementById("theme-sel");
+    if (theme) theme.addEventListener("change", function () { sys.theme = theme.value; });
+    var dataPath = document.getElementById("data-path");
+    if (dataPath) dataPath.addEventListener("input", function () { sys.path = dataPath.value; });
+    var autoSave = document.getElementById("auto-save");
+    if (autoSave) autoSave.addEventListener("change", function () { sys.autosave = autoSave.checked; });
+    var debug = document.getElementById("debug-mode");
+    if (debug) debug.addEventListener("change", function () { sys.debug = debug.checked; });
+    subContent.querySelectorAll('input[type="checkbox"][data-pk]').forEach(function (c) {
+      c.addEventListener("change", function () { privacy[c.getAttribute("data-pk")] = c.checked; });
+    });
+    subContent.querySelectorAll('input[data-wk]').forEach(function (c) {
+      if (c.type === "checkbox") {
+        c.addEventListener("change", function () { warn[c.getAttribute("data-wk")] = c.checked; });
+      } else {
+        c.addEventListener("input", function () { warn[c.getAttribute("data-wk")] = parseInt(c.value, 10) || 0; });
+      }
+    });
+  }
+
+  function syncCapture(r) {
+    var id = r.getAttribute("data-key");
+    var parent = r.closest("div.range-row").parentNode;
+    var idx = Array.prototype.indexOf.call(parent.parentNode.children, parent);
+    var list = ["ms", "md", "cfps", "cdur"];
+    if (idx >= 0 && idx < list.length) {
+      capture[list[idx]] = parseInt(r.value, 10) || 0;
+    }
+  }
+
+  subBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      subBtns.forEach(function (b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      renderSettings();
+    });
+  });
+
+  saveBtn.addEventListener("click", function () {
+    saveLabel.textContent = "已保存";
+    setTimeout(function () { saveLabel.textContent = "保存设置"; }, 2000);
+  });
+
+  renderSettings();
+
+  /* ============ 关于页：技术架构树 ============ */
+  var techTree = [
+    { label: "前端层", icon: "i-layers", children: [
+      { label: "Tauri 2 (Rust + WebView)", icon: "i-cpu" },
+      { label: "Next.js 14", icon: "i-layers" },
+      { label: "TailwindCSS", icon: "i-layers" },
+      { label: "TypeScript", icon: "i-tag" },
+      { label: "Lucide 图标", icon: "i-eye" }
+    ]},
+    { label: "后端层", icon: "i-cpu", children: [
+      { label: "Rust + Tokio", icon: "i-cpu" },
+      { label: "Tauri IPC", icon: "i-git" },
+      { label: "SQLite 本地存储", icon: "i-db" }
+    ]},
+    { label: "数据采集层", icon: "i-eye", children: [
+      { label: "鼠标轨迹追踪", icon: "i-eye" },
+      { label: "OpenCV 面部检测", icon: "i-eye" },
+      { label: "心率变异性分析", icon: "i-eye" }
+    ]},
+    { label: "AI 模型层", icon: "i-brain", children: [
+      { label: "多模态融合模型", icon: "i-brain" },
+      { label: "PHQ-9 / GAD-7 量表", icon: "i-doc" },
+      { label: "行为特征提取", icon: "i-cpu" }
+    ]}
+  ];
+
+  function treeRows(nodes, depth) {
+    var html = "";
+    nodes.forEach(function (n) {
+      var hasChildren = n.children && n.children.length > 0;
+      html += '<div style="margin-left:' + (depth * 20) + 'px">' +
+        '<div class="tree-item" ' + (hasChildren ? 'data-tree' : '') + '>' +
+        (hasChildren
+          ? '<span class="tt"><svg width="14" height="14"><use href="#i-chev-d"/></svg></span>'
+          : '<span class="tt" style="width:14px"></span>') +
+        '<svg width="16" height="16" class="tt"><use href="#' + n.icon + '"/></svg>' +
+        '<span class="tt-label">' + n.label + '</span></div>' +
+        (hasChildren ? '<div class="tree-children">' + treeRows(n.children, depth + 1) + '</div>' : '') +
+        '</div>';
+    });
+    return html;
+  }
+
+  var treeBox = document.getElementById("tech-tree");
+  treeBox.innerHTML = treeRows(techTree, 0);
+  treeBox.addEventListener("click", function (e) {
+    var item = e.target.closest("[data-tree]");
+    if (!item) return;
+    var chev = item.querySelector("use");
+    var children = item.nextElementSibling;
+    if (children.style.display === "none") {
+      children.style.display = "block";
+      chev.setAttribute("href", "#i-chev-d");
+    } else {
+      children.style.display = "none";
+      chev.setAttribute("href", "#i-chev-r");
+    }
+  });
+
+  /* ============ 测评页：七步流程 ============ */
+  var stepNames = ["知情同意", "基本信息", "PHQ-9", "GAD-7", "鼠标追踪", "视频采集", "结果"];
+  var riskOptions = ["完全不会", "好几天", "一半以上天数", "几乎每天"];
+  var phq9Q = [
+    "对事物几乎没有兴趣或愉悦感",
+    "感到心情低落、沮丧或绝望",
+    "入睡困难、睡不安稳或睡眠过多",
+    "感到疲倦或没有活力",
+    "食欲不振或吃太多",
+    "觉得自己很糟糕、或觉得自己很失败、或让自己或家人失望",
+    "难以集中注意力",
+    "动作或说话速度缓慢到别人已经察觉，或相反地，烦躁不安",
+    "有不如死掉或用某种方式伤害自己的念头"
+  ];
+  var gad7Q = [
+    "感到紧张、焦虑或急切",
+    "无法停止或控制担忧",
+    "对各种事情担忧过多",
+    "很难放松下来",
+    "烦躁不安，坐立不宁",
+    "容易烦恼或急躁",
+    "感到好像有可怕的事要发生"
+  ];
+
+  var step = 1;
+  var agreed = false;
+  var phq9 = new Array(9).fill(-1);
+  var gad7 = new Array(7).fill(-1);
+  var mouseStatus = "idle", mouseProgress = 0;
+  var camStatus = "idle", camProgress = 0;
+  var result = null;
+  var timer = null;
+
+  var stepsBar = document.getElementById("steps-bar");
+  var stepContent = document.getElementById("step-content");
+  var stepNav = document.getElementById("step-nav");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+
+  function riskBadge(risk) {
+    return '<span class="badge ' + riskClass[risk] + '">' + risk + '</span>';
+  }
+
+  function renderSteps() {
+    var html = "";
+    stepNames.forEach(function (name, i) {
+      var n = i + 1;
+      var cls = n < step ? "done" : (n === step ? "now" : "todo");
+      html += '<div style="display:flex;align-items:center;flex:1">' +
+        '<div class="step-node">' +
+        '<div class="step-circle ' + cls + '">' + (n < step ? icon("i-check", 16) : n) + '</div>' +
+        '<span class="step-label ' + cls + '">' + name + '</span></div>';
+      if (n < 7) html += '<div class="step-line ' + (n < step ? "done" : "todo") + '"></div>';
+    });
+    stepsBar.innerHTML = html;
+  }
+
+  function renderStep() {
+    var html = "";
+    if (step === 1) {
+      html =
+      '<div class="card p-6">' +
+        '<h3 class="sec-title">' + icon("i-shield", 20) + '知情同意书</h3>' +
+        '<div style="font-size:14px;line-height:1.7;color:#cbd5e1;display:flex;flex-direction:column;gap:12px">' +
+        '<p>本系统旨在通过多模态数据采集（包括量表评估、鼠标行为追踪和面部微表情分析）进行心理问题早期预警。</p>' +
+        '<p>在参与测评前，请您了解以下事项：</p>' +
+        '<ul class="consent-list">' +
+        '<li>所有数据仅用于心理健康评估目的</li>' +
+        '<li>您的个人信息将被加密存储和匿名化处理</li>' +
+        '<li>您可以随时终止测评过程</li>' +
+        '<li>测评结果仅供参考，不作为临床诊断依据</li>' +
+        '<li>数据采集过程不会记录可识别个人身份的视频图像</li>' +
+        '</ul>' +
+        '<p style="color:#94a3b8">请仔细阅读以上内容，确认理解并同意后继续。</p></div></div>' +
+        '<div style="display:flex;gap:16px" class="mt-4">' +
+        '<button class="agree-btn ' + (agreed ? "agree-on" : "") + '" id="btn-agree">' + icon("i-check", 16) + ' 我同意</button>' +
+        '<button class="agree-btn ' + (!agreed ? "agree-off selected" : "agree-off") + '" id="btn-disagree">' + icon("i-x", 16) + ' 我不同意</button>' +
+        '</div>';
+    } else if (step === 2) {
+      html =
+      '<div class="card p-6">' +
+        '<h3 class="sec-title">' + icon("i-user", 20) + '基本信息</h3>' +
+        '<div class="form-grid">' +
+        '<div><label class="field-label">学号</label><input type="text" id="f-sid" placeholder="请输入学号"></div>' +
+        '<div><label class="field-label">年龄</label><input type="number" id="f-age" placeholder="请输入年龄"></div>' +
+        '<div><label class="field-label">性别</label><select id="f-gender"><option value="male">男</option><option value="female">女</option><option value="other">其他</option></select></div>' +
+        '<div><label class="field-label">年级</label><input type="text" id="f-grade" placeholder="如：大三"></div>' +
+        '</div></div>';
+    } else if (step === 3) {
+      html = '<div class="card p-6"><h3 class="sec-title">' + icon("i-chart", 20) + 'PHQ-9 抑郁症筛查量表</h3>' +
+        '<p class="text-sm text-slate-400 mb-4">在过去两周里，以下问题困扰您的频率如何？</p>' +
+        '<div style="display:flex;flex-direction:column;gap:12px">' +
+        phq9Q.map(function (q, i) {
+          return '<div class="question-box"><div class="question-text">' + (i + 1) + '. ' + q + '</div><div class="option-row">' +
+            riskOptions.map(function (o, oi) {
+              return '<button class="opt ' + (phq9[i] === oi ? "sel" : "") + '" data-q="' + i + '" data-o="' + oi + '">' + o + '</button>';
+            }).join("") + '</div></div>';
+        }).join("") + '</div></div>';
+    } else if (step === 4) {
+      html = '<div class="card p-6"><h3 class="sec-title">' + icon("i-chart", 20) + 'GAD-7 广泛性焦虑量表</h3>' +
+        '<p class="text-sm text-slate-400 mb-4">在过去两周里，以下问题困扰您的频率如何？</p>' +
+        '<div style="display:flex;flex-direction:column;gap:12px">' +
+        gad7Q.map(function (q, i) {
+          return '<div class="question-box"><div class="question-text">' + (i + 1) + '. ' + q + '</div><div class="option-row">' +
+            riskOptions.map(function (o, oi) {
+              return '<button class="opt ' + (gad7[i] === oi ? "sel" : "") + '" data-g="' + i + '" data-o="' + oi + '">' + o + '</button>';
+            }).join("") + '</div></div>';
+        }).join("") + '</div></div>';
+    } else if (step === 5) {
+      html =
+      '<div class="card p-6">' +
+        '<h3 class="sec-title">' + icon("i-mouse", 20) + '鼠标行为追踪</h3>' +
+        '<p class="text-sm text-slate-400 mb-4">请在下方区域内自由移动鼠标，系统将记录您的鼠标轨迹特征。</p>' +
+        '<div class="collect-area">' + collectBody("mouse") + '</div>' +
+        '<div class="mt-4"><div class="progress-label"><span>采集进度</span><span id="mouse-pct">' + mouseProgress + '%</span></div>' +
+        '<div class="progress-track"><div class="progress-fill" id="mouse-bar" style="width:' + mouseProgress + '%"></div></div></div>' +
+        '<div class="btn-row mt-4">' +
+        '<button class="btn btn-primary" id="btn-mouse-start"' + (mouseStatus === "running" ? " disabled" : "") + '>' + icon("i-play", 16) + ' 开始采集</button>' +
+        '<button class="btn btn-ghost" id="btn-mouse-reset"' + (mouseStatus === "running" ? " disabled" : "") + '>' + icon("i-rotate", 16) + ' 重置</button>' +
+        '</div></div>';
+    } else if (step === 6) {
+      html =
+      '<div class="card p-6">' +
+        '<h3 class="sec-title">' + icon("i-cam", 20) + '视频采集</h3>' +
+        '<p class="text-sm text-slate-400 mb-4">系统将采集面部微表情数据用于分析。数据将实时处理，不保存原始视频。</p>' +
+        '<div class="collect-area">' + collectBody("cam") + '</div>' +
+        '<div class="mt-4"><div class="progress-label"><span>采集进度</span><span id="cam-pct">' + camProgress + '%</span></div>' +
+        '<div class="progress-track"><div class="progress-fill" id="cam-bar" style="width:' + camProgress + '%"></div></div></div>' +
+        '<div class="btn-row mt-4">' +
+        '<button class="btn btn-primary" id="btn-cam-start"' + (camStatus === "running" ? " disabled" : "") + '>' + icon("i-play", 16) + ' 开始采集</button>' +
+        '<button class="btn btn-ghost" id="btn-cam-reset"' + (camStatus === "running" ? " disabled" : "") + '>' + icon("i-rotate", 16) + ' 重置</button>' +
+        '</div></div>';
+    } else if (step === 7) {
+      if (result) {
+        var rc = result.risk === "高风险" ? "b-red" : result.risk === "中度风险" ? "b-orange" : result.risk === "轻度风险" ? "b-yellow" : "b-green";
+        html =
+        '<div class="result-block"><h3 class="sec-title" style="justify-content:center">测评结果</h3>' +
+        '<div class="result-risk ' + rc + '">' + result.risk + '</div>' +
+        '<div class="mt-4 text-sm text-slate-400">模型置信度: <span style="color:#60a5fa;font-weight:600">' + result.conf + '%</span></div></div>' +
+        '<div class="stat-grid mt-4">' +
+        '<div class="stat-card"><div class="text-sm text-slate-400 mb-1">PHQ-9 得分</div><div class="stat-num">' + result.p + '</div><div class="stat-sub">满分 27 分</div></div>' +
+        '<div class="stat-card"><div class="text-sm text-slate-400 mb-1">GAD-7 得分</div><div class="stat-num">' + result.g + '</div><div class="stat-sub">满分 21 分</div></div>' +
+        '<div class="stat-card"><div class="text-sm text-slate-400 mb-1">综合得分</div><div class="stat-num">' + (result.p + result.g) + '</div><div class="stat-sub">PHQ-9 + GAD-7</div></div>' +
+        '<div class="stat-card"><div class="text-sm text-slate-400 mb-1">风险等级</div><div class="stat-num" style="font-size:18px">' + result.risk + '</div><div class="stat-sub">' + (result.risk === "高风险" ? "建议尽快联系专业心理咨询师" : result.risk === "中度风险" ? "建议预约学校心理咨询" : result.risk === "轻度风险" ? "建议定期关注心理状态" : "状态良好") + '</div></div>' +
+        '</div>' +
+        '<div class="card p-6 mt-4"><h4 class="sec-title" style="font-size:14px;color:#facc15">' + icon("i-alert", 16) + '建议与指导</h4>' +
+        '<ul style="display:flex;flex-direction:column;gap:8px">' +
+        result.recs.map(function (r) { return '<li style="display:flex;gap:8px;font-size:14px;color:#cbd5e1">' + icon("i-check-circle", 16) + '<span>' + r + '</span></li>'; }).join("") +
+        '</ul></div>' +
+        '<div class="btn-row mt-4">' +
+        '<button class="btn btn-primary" id="btn-restart">' + icon("i-rotate", 16) + ' 重新开始测评</button>' +
+        '<button class="btn btn-ghost">' + icon("i-clock", 16) + ' 保存记录</button></div>';
+      }
+    }
+    stepContent.innerHTML = html;
+    bindStepEvents();
+  }
+
+  function collectBody(which) {
+    var st = which === "mouse" ? mouseStatus : camStatus;
+    var prog = which === "mouse" ? mouseProgress : camProgress;
+    if (st === "idle") {
+      return '<div class="collect-idle">' + icon(which === "mouse" ? "i-mouse" : "i-cam", 48) + '<p>点击开始按钮启动' + (which === "mouse" ? "鼠标追踪" : "视频采集") + '</p></div>';
+    }
+    if (st === "running") {
+      return '<div class="collect-run">' +
+        (which === "mouse" ? icon("i-mouse", 48) : '<svg class="spinner" width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="20" fill="none" stroke="#3b82f6" stroke-width="4" stroke-dasharray="100" stroke-dashoffset="50" transform="rotate(-90 24 24)"><animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="1s" repeatCount="indefinite"/></circle></svg>') +
+        '<p>正在采集' + (which === "mouse" ? "鼠标数据" : "面部数据") + '... ' + prog + '%</p></div>';
+    }
+    return '<div class="collect-done">' + icon("i-check-circle", 48) + '<p>' + (which === "mouse" ? "鼠标数据采集完成" : "面部数据采集完成") + '</p></div>';
+  }
+
+  function bindStepEvents() {
+    var agree = document.getElementById("btn-agree");
+    var disagree = document.getElementById("btn-disagree");
+    if (agree) agree.addEventListener("click", function () { agreed = true; renderStep(); updateNav(); });
+    if (disagree) disagree.addEventListener("click", function () { agreed = false; renderStep(); updateNav(); });
+
+    stepContent.querySelectorAll(".opt").forEach(function (b) {
+      b.addEventListener("click", function () {
+        if (b.hasAttribute("data-q")) {
+          phq9[parseInt(b.getAttribute("data-q"), 10)] = parseInt(b.getAttribute("data-o"), 10);
+        } else {
+          gad7[parseInt(b.getAttribute("data-g"), 10)] = parseInt(b.getAttribute("data-o"), 10);
+        }
+        renderStep(); updateNav();
+      });
+    });
+
+    var mStart = document.getElementById("btn-mouse-start");
+    if (mStart) mStart.addEventListener("click", function () {
+      mouseStatus = "running"; mouseProgress = 0;
+      timer = setInterval(function () {
+        mouseProgress += 2;
+        var bar = document.getElementById("mouse-bar");
+        var pct = document.getElementById("mouse-pct");
+        if (bar) bar.style.width = mouseProgress + "%";
+        if (pct) pct.textContent = mouseProgress + "%";
+        var area = stepContent.querySelector(".collect-area");
+        if (area) area.innerHTML = collectBody("mouse");
+        if (mouseProgress >= 100) {
+          clearInterval(timer); timer = null;
+          mouseStatus = "completed";
+          if (area) area.innerHTML = collectBody("mouse");
+          updateNav();
+        }
+      }, 100);
+    });
+    var mReset = document.getElementById("btn-mouse-reset");
+    if (mReset) mReset.addEventListener("click", function () {
+      if (timer) { clearInterval(timer); timer = null; }
+      mouseStatus = "idle"; mouseProgress = 0;
+      renderStep();
+    });
+    var cStart = document.getElementById("btn-cam-start");
+    if (cStart) cStart.addEventListener("click", function () {
+      camStatus = "running"; camProgress = 0;
+      timer = setInterval(function () {
+        camProgress += 2;
+        var bar = document.getElementById("cam-bar");
+        var pct = document.getElementById("cam-pct");
+        if (bar) bar.style.width = camProgress + "%";
+        if (pct) pct.textContent = camProgress + "%";
+        var area = stepContent.querySelector(".collect-area");
+        if (area) area.innerHTML = collectBody("cam");
+        if (camProgress >= 100) {
+          clearInterval(timer); timer = null;
+          camStatus = "completed";
+          if (area) area.innerHTML = collectBody("cam");
+          updateNav();
+        }
+      }, 100);
+    });
+    var cReset = document.getElementById("btn-cam-reset");
+    if (cReset) cReset.addEventListener("click", function () {
+      if (timer) { clearInterval(timer); timer = null; }
+      camStatus = "idle"; camProgress = 0;
+      renderStep();
+    });
+    var restart = document.getElementById("btn-restart");
+    if (restart) restart.addEventListener("click", function () {
+      step = 1; agreed = false;
+      phq9 = new Array(9).fill(-1); gad7 = new Array(7).fill(-1);
+      mouseStatus = "idle"; mouseProgress = 0;
+      camStatus = "idle"; camProgress = 0;
+      result = null;
+      renderSteps(); renderStep(); updateNav();
+    });
+  }
+
+  function canProceed() {
+    if (step === 1) return agreed;
+    if (step === 2) {
+      var sid = document.getElementById("f-sid");
+      var age = document.getElementById("f-age");
+      var grade = document.getElementById("f-grade");
+      return sid && age && grade && sid.value && age.value && grade.value;
+    }
+    if (step === 3) return phq9.every(function (a) { return a >= 0; });
+    if (step === 4) return gad7.every(function (a) { return a >= 0; });
+    if (step === 5) return mouseStatus === "completed";
+    if (step === 6) return camStatus === "completed";
+    return true;
+  }
+
+  function updateNav() {
+    btnPrev.disabled = step === 1;
+    stepNav.style.display = step < 7 ? "flex" : "none";
+    if (step < 7) {
+      btnNext.innerHTML = (step === 6 ? "查看结果" : "下一步") + ' ' + icon("i-chev-r", 16);
+      btnNext.disabled = step === 7 || !canProceed();
+    }
+  }
+
+  btnPrev.addEventListener("click", function () {
+    if (step > 1) { step--; renderSteps(); renderStep(); updateNav(); }
+  });
+  btnNext.addEventListener("click", function () {
+    if (!canProceed()) return;
+    if (step === 6) {
+      var ps = phq9.reduce(function (a, b) { return a + b; }, 0);
+      var gs = gad7.reduce(function (a, b) { return a + b; }, 0);
+      var total = ps + gs;
+      var level = "低风险";
+      if (total >= 30) level = "高风险";
+      else if (total >= 20) level = "中度风险";
+      else if (total >= 10) level = "轻度风险";
+      var recs = [
+        "建议定期进行心理健康评估",
+        "保持规律的作息和适度运动",
+        "如有需要可预约学校心理咨询",
+        "与信任的亲友多沟通交流"
+      ];
+      if (level === "高风险") recs.unshift("建议尽快联系专业心理咨询师");
+      result = { risk: level, p: ps, g: gs, conf: Math.round(85 + Math.random() * 10), recs: recs };
+    }
+    if (step < 7) { step++; }
+    renderSteps(); renderStep(); updateNav();
+  });
+
+  renderSteps();
+  renderStep();
+  updateNav();
+})();
+</script>
+</body>
+</html>

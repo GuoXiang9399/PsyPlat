@@ -1,0 +1,153 @@
+# ============================================================================
+# PsyPlat - 多模态无接触式心理问题早期预警系统
+# GitHub Actions Workflow：push / PR / 手动触发自动搭建应用，Tag 自动发布 Release
+#
+# 构建链路（与 package.json / src-tauri/tauri.conf.json 保持一致）：
+#   1) 前端：Next.js 14 静态导出（output: 'export'）-> dist/
+#   2) 桌面：Tauri 2（Rust）+ beforeBuildCommand: npm run build
+#   3) 打包：Windows MSI + EXE（NSIS）
+#
+# 注意：
+#   * 仓库暂无 package-lock.json，故使用 `npm install`（勿改为 npm ci）
+#   * 仓库暂无 src-tauri/icons，CI 会自动生成占位图标；正式图标就绪后将自动跳过
+# ============================================================================
+
+name: Build PsyPlat
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # --------------------------------------------------------------------------
+  # Job 1 前端构建（任意平台，快速验证 Next.js 静态导出）
+  # --------------------------------------------------------------------------
+  build-frontend:
+    name: Build Frontend (Next.js static export)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build frontend (next export -> dist/)
+        run: npm run build
+
+      - name: Upload frontend dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist
+          if-no-files-found: error
+
+  # --------------------------------------------------------------------------
+  # Job 2 桌面应用构建（Windows，产出 MSI + EXE 安装包）
+  # --------------------------------------------------------------------------
+  build-desktop:
+    name: Build Desktop App (Tauri Windows MSI/EXE)
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo (registry + target)
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/AppData/Local/npm-cache
+          key: ${{ runner.os }}-node-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install npm dependencies
+        run: npm install --no-audit --no-fund
+
+      # tauri.conf.json 引用了 icons/，若仓库缺少图标则自动生成占位图标，
+      # 保证 CI 可构建；已存在正式图标时本步骤直接跳过。
+      - name: Ensure app icons exist
+        shell: pwsh
+        run: |
+          if (Test-Path 'src-tauri/icons/icon.ico') {
+            Write-Host 'Icons already exist, skip generation.'
+            exit 0
+          }
+          Write-Host 'Icons missing - generating placeholder icons ...'
+          Add-Type -AssemblyName System.Drawing
+          $bmp = New-Object System.Drawing.Bitmap(1024, 1024)
+          $g = [System.Drawing.Graphics]::FromImage($bmp)
+          $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+          $g.Clear([System.Drawing.Color]::FromArgb(15, 23, 42))
+          $outer = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(59, 130, 246))
+          $g.FillEllipse($outer, 162, 162, 700, 700)
+          $inner = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(147, 197, 253))
+          $g.FillEllipse($inner, 322, 322, 380, 380)
+          $font = New-Object System.Drawing.Font('Arial', 96, [System.Drawing.FontStyle]::Bold)
+          $g.DrawString('PSY', $font, [System.Drawing.Brushes]::White, 405, 448)
+          $src = Join-Path $env:RUNNER_TEMP 'source-icon.png'
+          $bmp.Save($src, [System.Drawing.Imaging.ImageFormat]::Png)
+          $g.Dispose()
+          $bmp.Dispose()
+          npm run tauri icon $src -o src-tauri/icons
+
+      - name: Build Tauri bundle (MSI + EXE)
+        run: npm run tauri:build
+
+      - name: Upload Windows installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: psyplat-windows-installers
+          path: |
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: error
+
+      # 推送 v* tag 时自动创建 GitHub Release 并附带安装包
+      - name: Publish GitHub Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            src-tauri/target/release/bundle/msi/*.msi \
+            src-tauri/target/release/bundle/nsis/*.exe \
+            --title "心理预警系统 ${{ github.ref_name }}" \
+            --generate-notes
