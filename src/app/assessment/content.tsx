@@ -84,7 +84,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: TabKey; onTabChange: (
               onClick={() => onTabChange(tab.key)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                  ? 'bg-[#FDEEE8] text-ink font-medium'
                   : 'text-slate-400 hover:bg-warm-200/70 hover:text-slate-700'
               }`}
             >
@@ -515,7 +515,7 @@ return (
 {/* 测评进度汇总 */}
               <div className="bg-white rounded-lg p-4 border border-warm-300 flex items-center justify-between text-sm">
                 <span className="text-slate-500">
-                  量表答题进度：<span className="text-orange-500 font-semibold">{answeredCount}/{totalQuestions}</span>
+                  量表答题进度：<span className="text-ink font-semibold">{answeredCount}/{totalQuestions}</span>
                 </span>
                 <span className="text-slate-500">
                   温馨提示：作答过程中系统将自动同步采集行为与生理数据，无需额外操作。
@@ -551,7 +551,7 @@ return (
                             }}
                             className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
                               phq9Answers[index] === optionIndex
-                                ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
                             }`}
                           >
@@ -593,7 +593,7 @@ return (
                             }}
                             className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
                               gad7Answers[index] === optionIndex
-                                ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
                             }`}
                           >
@@ -635,7 +635,7 @@ return (
                             }}
                             className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
                               cssrsAnswers[index] === optionIndex
-                                ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
                             }`}
                           >
@@ -670,7 +670,7 @@ return (
                           onClick={() => setNssiAnswers([optionIndex, optionIndex === 0 ? 0 : nssiAnswers[1]])}
                           className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
                             nssiAnswers[0] === optionIndex
-                              ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                              ? 'bg-[#FDEEE8] text-ink font-medium'
                               : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
                           }`}
                         >
@@ -689,7 +689,7 @@ return (
                             onClick={() => setNssiAnswers([1, optionIndex])}
                             className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
                               nssiAnswers[1] === optionIndex
-                                ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
                             }`}
                           >
@@ -732,7 +732,7 @@ return (
                             }}
                             className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
                               pss10Answers[index] === optionIndex
-                                ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
                             }`}
                           >
@@ -799,7 +799,7 @@ return (
                             }}
                             className={`flex-1 py-1.5 px-2 rounded text-xs transition-colors ${
                               psqiAnswers.d[i] === optionIndex
-                                ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
                             }`}
                           >
@@ -873,7 +873,7 @@ return (
                             }}
                             className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
                               sias6Answers[index] === optionIndex
-                                ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
                             }`}
                           >
@@ -911,7 +911,7 @@ return (
                             }}
                             className={`py-1.5 px-3 rounded text-xs transition-colors ${
                               aslecAnswers[index] === optionIndex
-                                ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
                             }`}
                           >
@@ -969,7 +969,7 @@ return (
         </button>
       </div>
       {isFullscreen && (
-        <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg px-4 py-2 text-xs text-orange-600">
+        <div className="bg-[#FDEEE8] border border-orange-200 rounded-lg px-4 py-2 text-xs text-ink-soft">
           已进入全屏模式，测评过程中不会触碰到屏幕其他区域；可按 Esc 键或点击上方按钮退出。
         </div>
       )}
@@ -986,13 +986,13 @@ return (
                     step < currentStep
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                       : step === currentStep
-                      ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                      ? 'bg-[#FDEEE8] text-ink font-medium'
                       : 'bg-warm-100 text-slate-500 border border-warm-300'
                   }`}>
                     {step < currentStep ? <Check className="w-4 h-4" /> : step}
                   </div>
                   <span className={`text-xs mt-1 whitespace-nowrap ${
-                    step === currentStep ? 'text-orange-500' : step < currentStep ? 'text-green-400' : 'text-slate-500'
+                    step === currentStep ? 'text-ink' : step < currentStep ? 'text-emerald-500' : 'text-ink-muted'
                   }`}>
                     {stepLabels[step - 1]}
                   </span>

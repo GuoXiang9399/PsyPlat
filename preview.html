@@ -8,7 +8,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; }
   body {
-    background: #EAE3D5; color: #64748b;
+    background: #F7F6F4; color: #6B665F;
     font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
     font-size: 14px; -webkit-font-smoothing: antialiased;
   }
@@ -16,29 +16,41 @@
   .app { display: flex; height: 100vh; }
 
   /* ===== 侧边栏 ===== */
-  .sidebar { width: 256px; background: #ffffff; border-right: 1px solid #e5d8c2; display: flex; flex-direction: column; flex-shrink: 0; transition: width .2s ease; }
-  .sidebar.collapsed { width: 64px; }
-  .logo-box { padding: 12px; border-bottom: 1px solid #e5d8c2; }
-  .logo-inner { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .sidebar { width: 252px; background: #F7F6F4; border-right: 1px solid #E6E3DE; display: flex; flex-direction: column; flex-shrink: 0; transition: width .2s ease; }
+  .sidebar.collapsed { width: 68px; }
+  .logo-box { height: 56px; padding: 0 12px; border-bottom: 1px solid #E6E3DE; display: flex; align-items: center; }
+  .logo-inner { display: flex; align-items: center; gap: 10px; width: 100%; }
   .sidebar.collapsed .logo-inner { justify-content: center; }
-  .logo-title { font-size: 14px; font-weight: 700; color: #334155; line-height: 1.3; white-space: nowrap; overflow: hidden; flex: 1; }
-  .sidebar.collapsed .logo-title { display: none; }
-  .collapse-btn {
-    flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
-    border: none; background: transparent; border-radius: 8px; color: #94a3b8; cursor: pointer; transition: all .15s;
-  }
-  .collapse-btn:hover { background: #f2e9da; color: #A8905F; }
-  .nav { flex: 1; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+  .logo-mark { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-text { min-width: 0; flex: 1; }
+  .sidebar.collapsed .logo-text { display: none; }
+  .logo-title { font-size: 13px; font-weight: 600; color: #1F1D1A; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .logo-sub { font-size: 11px; color: #86817A; line-height: 1.3; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+  .nav-group { padding: 0 12px 8px; font-size: 11px; font-weight: 500; color: #86817A; }
+  .sidebar.collapsed .nav-group { display: none; }
   .nav-btn {
-    width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px;
-    border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer;
-    background: transparent; border: 1px solid transparent; color: #94a3b8; transition: all .15s;
+    width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+    border-radius: 8px; font-size: 13px; font-family: inherit; cursor: pointer;
+    background: transparent; border: 1px solid transparent; color: #524E48; transition: all .15s;
   }
-  .sidebar.collapsed .nav-btn { justify-content: center; padding: 10px 0; }
+  .nav-btn svg { width: 18px; height: 18px; color: #86817A; flex-shrink: 0; }
+  .sidebar.collapsed .nav-btn { justify-content: center; padding: 8px 0; }
   .nav-label { white-space: nowrap; }
   .sidebar.collapsed .nav-label { display: none; }
-  .nav-btn:hover { background: #f2e9da; color: #475569; }
-  .nav-btn.active { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.3); }
+  .nav-btn:hover { background: #F1EFEC; color: #1F1D1A; }
+  .nav-btn.active { background: #FDEEE8; color: #1F1D1A; font-weight: 500; border-color: transparent; }
+  .nav-btn.active svg { color: #E05A3C; }
+  .sidebar-foot { padding: 8px; border-top: 1px solid #E6E3DE; }
+  .collapse-btn {
+    width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+    border: none; background: transparent; border-radius: 8px; color: #524E48; font-size: 13px;
+    font-family: inherit; cursor: pointer; transition: all .15s;
+  }
+  .sidebar.collapsed .collapse-btn { justify-content: center; padding: 8px 0; }
+  .collapse-btn svg { width: 18px; height: 18px; color: #86817A; flex-shrink: 0; }
+  .collapse-btn:hover { background: #F1EFEC; color: #1F1D1A; }
+
 
   /* ===== 主内容 ===== */
   .main { flex: 1; overflow: auto; padding: 24px; }
@@ -47,196 +59,196 @@
   .space-y\:6 > * + * { margin-top: 24px; }
 
   /* 卡片与通用 */
-  .card { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; }
+  .card { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; }
   .p-4 { padding: 16px; } .p-6 { padding: 24px; }
   .banner {
-    background: linear-gradient(90deg, #A8905F, #8F7A4E); border-radius: 8px; padding: 24px; color: #fff;
+    background: linear-gradient(90deg, #A83C24, #E87A5D); border-radius: 8px; padding: 24px; color: #fff;
     display: flex; align-items: center; justify-content: space-between;
   }
   .banner h1 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-  .banner p { color: #F7F2E8; }
+  .banner p { color: #FDEEE8; }
   .banner svg { color: rgba(255,255,255,.35); }
   .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .stat-card { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 16px; }
+  .stat-card { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; padding: 16px; }
   .stat-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .stat-label { color: #94a3b8; font-size: 14px; }
-  .stat-num { font-size: 22px; font-weight: 700; color: #334155; }
-  .stat-num.red { color: #ef4444; }
-  .stat-sub { font-size: 12px; color: #a9946f; margin-top: 4px; }
+  .stat-label { color: #86817A; font-size: 14px; }
+  .stat-num { font-size: 22px; font-weight: 700; color: #3A362F; }
+  .stat-num.red { color: #d54941; }
+  .stat-sub { font-size: 12px; color: #86817A; margin-top: 4px; }
   .stat-icon { width: 20px; height: 20px; }
-  .c-blue { color: #A8905F; } .c-green { color: #22c55e; } .c-red { color: #ef4444; } .c-orange { color: #C9B895; } .c-yellow { color: #eab308; } .c-purple { color: #a855f7; }
+  .c-blue { color: #E05A3C; } .c-green { color: #2ba344; } .c-red { color: #d54941; } .c-orange { color: #D48806; } .c-yellow { color: #eab308; } .c-purple { color: #a855f7; }
 
   /* 表格 */
-  .table-card { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; overflow: hidden; }
-  .table-head { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #e5d8c2; }
-  .table-head h2 { font-size: 16px; font-weight: 600; color: #334155; }
-  .link-blue { color: #A8905F; font-size: 14px; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; font-family: inherit; }
-  .link-blue:hover { color: #8F7A4E; }
+  .table-card { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; overflow: hidden; }
+  .table-head { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid #E6E3DE; }
+  .table-head h2 { font-size: 16px; font-weight: 600; color: #3A362F; }
+  .link-blue { color: #524E48; font-size: 14px; background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 2px; font-family: inherit; }
+  .link-blue:hover { color: #E05A3C; }
   table { width: 100%; border-collapse: collapse; }
-  thead th { text-align: left; padding: 12px; color: #94a3b8; font-size: 14px; font-weight: 500; border-bottom: 1px solid #e5d8c2; white-space: nowrap; }
-  tbody tr { border-bottom: 1px solid rgba(229,216,194,.5); }
-  tbody tr:hover { background: rgba(168,144,95,.05); }
-  tbody td { padding: 12px; font-size: 14px; color: #475569; white-space: nowrap; }
+  thead th { text-align: left; padding: 12px; color: #86817A; font-size: 14px; font-weight: 500; border-bottom: 1px solid #E6E3DE; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid rgba(230,227,222,.6); }
+  tbody tr:hover { background: rgba(224,90,60,.04); }
+  tbody td { padding: 12px; font-size: 14px; color: #55504A; white-space: nowrap; }
 
   /* 徽章 */
   .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
-  .b-red { background: rgba(239,68,68,.12); color: #dc2626; }
-  .b-orange { background: rgba(168,144,95,.12); color: #8F7A4E; }
+  .b-red { background: rgba(213,73,65,.12); color: #d54941; }
+  .b-orange { background: rgba(224,90,60,.08); color: #524E48; }
   .b-yellow { background: rgba(234,179,8,.15); color: #ca8a04; }
-  .b-green { background: rgba(34,197,94,.12); color: #16a34a; }
-  .b-blue { background: rgba(168,144,95,.12); color: #A8905F; }
+  .b-green { background: rgba(43,163,68,.12); color: #2ba344; }
+  .b-blue { background: rgba(224,90,60,.08); color: #524E48; }
   .b-purple { background: rgba(168,85,247,.12); color: #9333ea; }
 
   /* 按钮 */
   .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; border: none; font-family: inherit; transition: all .15s; }
-  .btn-primary { background: #A8905F; color: #fff; }
-  .btn-primary:hover { background: #8F7A4E; }
-  .btn-primary:disabled { background: #e5d8c2; opacity: .6; cursor: not-allowed; }
-  .btn-ghost { background: #ffffff; color: #64748b; border: 1px solid #e5d8c2; }
-  .btn-ghost:hover { background: #f2e9da; color: #475569; }
+  .btn-primary { background: #E05A3C; color: #fff; }
+  .btn-primary:hover { background: #C74A2F; }
+  .btn-primary:disabled { background: #E6E3DE; opacity: .6; cursor: not-allowed; }
+  .btn-ghost { background: #ffffff; color: #6B665F; border: 1px solid #E6E3DE; }
+  .btn-ghost:hover { background: #F1EFEC; color: #55504A; }
   .btn-ghost:disabled { opacity: .5; cursor: not-allowed; }
   .btn-row { display: flex; gap: 12px; }
 
   /* 表单 */
   input[type="text"], input[type="number"], input[type="password"], select {
-    width: 100%; background: #F7F2E8; border: 1px solid #e5d8c2; border-radius: 8px;
-    padding: 8px 12px; color: #475569; font-size: 14px; font-family: inherit; outline: none;
+    width: 100%; background: #FBFAF9; border: 1px solid #E6E3DE; border-radius: 8px;
+    padding: 8px 12px; color: #55504A; font-size: 14px; font-family: inherit; outline: none;
   }
-  input:focus, select:focus { border-color: #A8905F; }
+  input:focus, select:focus { border-color: #E05A3C; }
   select option { background: #ffffff; }
-  label.field-label { display: block; font-size: 14px; color: #94a3b8; margin-bottom: 4px; }
+  label.field-label { display: block; font-size: 14px; color: #86817A; margin-bottom: 4px; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  input[type="range"] { flex: 1; accent-color: #A8905F; }
-  input[type="checkbox"] { width: 16px; height: 16px; accent-color: #A8905F; border-radius: 4px; }
+  input[type="range"] { flex: 1; accent-color: #E05A3C; }
+  input[type="checkbox"] { width: 16px; height: 16px; accent-color: #E05A3C; border-radius: 4px; }
   .range-row { display: flex; align-items: center; gap: 16px; }
   .range-num { width: 80px; text-align: center; }
-  .check-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #F7F2E8; border-radius: 8px; }
-  .check-row label { font-size: 14px; color: #334155; font-weight: 500; display: flex; align-items: center; gap: 8px; }
-  .check-desc { font-size: 12px; color: #a9946f; margin-top: 4px; }
+  .check-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px; background: #FBFAF9; border-radius: 8px; }
+  .check-row label { font-size: 14px; color: #3A362F; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .check-desc { font-size: 12px; color: #86817A; margin-top: 4px; }
   .check-simple { display: flex; align-items: center; gap: 12px; }
 
   /* ===== 测评页 ===== */
-  .steps-bar { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 16px; display: flex; align-items: center; }
+  .steps-bar { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; padding: 16px; display: flex; align-items: center; }
   .step-node { display: flex; flex-direction: column; align-items: center; flex: 0 0 80px; }
   .step-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
-  .step-circle.done { background: rgba(34,197,94,.12); color: #16a34a; border: 1px solid rgba(34,197,94,.3); }
-  .step-circle.now { background: rgba(168,144,95,.15); color: #A8905F; border: 1px solid rgba(168,144,95,.35); }
-  .step-circle.todo { background: #F7F2E8; color: #94a3b8; border: 1px solid #e5d8c2; }
+  .step-circle.done { background: rgba(43,163,68,.12); color: #2ba344; border: 1px solid rgba(43,163,68,.3); }
+  .step-circle.now { background: rgba(224,90,60,.1); color: #1F1D1A; border: 1px solid rgba(224,90,60,.35); }
+  .step-circle.todo { background: #FBFAF9; color: #86817A; border: 1px solid #E6E3DE; }
   .step-label { font-size: 12px; margin-top: 4px; }
-  .step-label.now { color: #A8905F; } .step-label.done { color: #16a34a; } .step-label.todo { color: #94a3b8; }
+  .step-label.now { color: #1F1D1A; } .step-label.done { color: #2ba344; } .step-label.todo { color: #86817A; }
   .step-line { flex: 1; height: 2px; margin: 0 8px; }
-  .step-line.done { background: rgba(34,197,94,.3); }
-  .step-line.todo { background: #e5d8c2; }
+  .step-line.done { background: rgba(43,163,68,.3); }
+  .step-line.todo { background: #E6E3DE; }
 
   /* 全屏工具栏 */
-  .fs-bar { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .fs-hint { font-size: 14px; color: #64748b; display: flex; align-items: center; gap: 8px; }
-  .fs-hint svg { color: #A8905F; }
-  .fs-note { background: rgba(168,144,95,.08); border: 1px solid rgba(168,144,95,.3); border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #8F7A4E; }
-  .s3-overview { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: #64748b; }
-  .s3-overview b { color: #A8905F; }
+  .fs-bar { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .fs-hint { font-size: 14px; color: #6B665F; display: flex; align-items: center; gap: 8px; }
+  .fs-hint svg { color: #E05A3C; }
+  .fs-note { background: rgba(224,90,60,.06); border: 1px solid rgba(224,90,60,.3); border-radius: 8px; padding: 8px 12px; font-size: 12px; color:#524E48; }
+  .s3-overview { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: #6B665F; }
+  .s3-overview b { color: #1F1D1A; }
   .ov-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-  .ov-dot.on { background: #22c55e; } .ov-dot.off { background: #e5d8c2; }
+  .ov-dot.on { background: #2ba344; } .ov-dot.off { background: #E6E3DE; }
 
-  .consent-list { list-style: none; display: flex; flex-direction: column; gap: 4px; color: #94a3b8; margin: 8px 0; }
+  .consent-list { list-style: none; display: flex; flex-direction: column; gap: 4px; color: #86817A; margin: 8px 0; }
   .consent-list li { display: flex; align-items: flex-start; gap: 8px; }
-  .consent-list li::before { content: "•"; color: #a9946f; }
+  .consent-list li::before { content: "•"; color: #86817A; }
   .agree-btn { flex: 1; padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; cursor: pointer; font-family: inherit; transition: all .15s; }
-  .agree-on { background: rgba(34,197,94,.12); color: #16a34a; border: 1px solid rgba(34,197,94,.3); }
-  .agree-off { background: #ffffff; color: #64748b; border: 1px solid #e5d8c2; }
-  .agree-off.selected { background: rgba(239,68,68,.1); color: #dc2626; border: 1px solid rgba(239,68,68,.3); }
-  .agree-off:not(.selected):hover { background: #f2e9da; }
+  .agree-on { background: rgba(43,163,68,.12); color: #2ba344; border: 1px solid rgba(43,163,68,.3); }
+  .agree-off { background: #ffffff; color: #6B665F; border: 1px solid #E6E3DE; }
+  .agree-off.selected { background: rgba(213,73,65,.1); color: #d54941; border: 1px solid rgba(213,73,65,.3); }
+  .agree-off:not(.selected):hover { background: #F1EFEC; }
 
-  .question-box { background: #F7F2E8; border-radius: 8px; padding: 16px; }
-  .question-text { font-size: 14px; color: #475569; margin-bottom: 12px; }
+  .question-box { background: #FBFAF9; border-radius: 8px; padding: 16px; }
+  .question-text { font-size: 14px; color: #55504A; margin-bottom: 12px; }
   .option-row { display: flex; gap: 8px; }
-  .opt { flex: 1; padding: 8px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; background: #ffffff; color: #94a3b8; border: 1px solid #e5d8c2; font-family: inherit; transition: all .15s; }
-  .opt:hover { background: #f2e9da; }
-  .opt.sel { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.35); }
+  .opt { flex: 1; padding: 8px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; background: #ffffff; color: #86817A; border: 1px solid #E6E3DE; font-family: inherit; transition: all .15s; }
+  .opt:hover { background: #F1EFEC; }
+  .opt.sel { background: rgba(224,90,60,.1); color: #1F1D1A; border-color: rgba(224,90,60,.35); }
   .a-row { display: flex; flex-wrap: wrap; gap: 4px; }
-  .a-opt { flex: 0 0 auto; min-width: 52px; padding: 6px 6px; border-radius: 4px; font-size: 11px; cursor: pointer; background: #ffffff; color: #94a3b8; border: 1px solid #e5d8c2; font-family: inherit; transition: all .15s; }
-  .a-opt:hover { background: #f2e9da; }
-  .a-opt.sel { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.35); }
+  .a-opt { flex: 0 0 auto; min-width: 52px; padding: 6px 6px; border-radius: 4px; font-size: 11px; cursor: pointer; background: #ffffff; color: #86817A; border: 1px solid #E6E3DE; font-family: inherit; transition: all .15s; }
+  .a-opt:hover { background: #F1EFEC; }
+  .a-opt.sel { background: rgba(224,90,60,.1); color: #1F1D1A; border-color: rgba(224,90,60,.35); }
 
   @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner { margin: 0 auto 12px; }
-  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #a9946f; margin-bottom: 4px; }
-  .progress-track { width: 100%; background: #f2e9da; border-radius: 999px; height: 8px; }
-  .progress-fill { background: #A8905F; height: 8px; border-radius: 999px; transition: width .1s; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #86817A; margin-bottom: 4px; }
+  .progress-track { width: 100%; background: #F1EFEC; border-radius: 999px; height: 8px; }
+  .progress-fill { background: #E05A3C; height: 8px; border-radius: 999px; transition: width .1s; }
 
-  .result-block { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 24px; text-align: center; }
+  .result-block { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; padding: 24px; text-align: center; }
   .result-risk { display: inline-block; padding: 16px 32px; border-radius: 12px; font-size: 24px; font-weight: 700; border: 1px solid; }
-  .sub-panel { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; padding: 24px; }
+  .sub-panel { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; padding: 24px; }
   .sub-nav { width: 192px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-  .sub-btn { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; background: transparent; border: 1px solid transparent; color: #94a3b8; font-family: inherit; transition: all .15s; }
-  .sub-btn:hover { background: #f2e9da; color: #475569; }
-  .sub-btn.active { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.3); }
+  .sub-btn { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 8px; font-size: 14px; cursor: pointer; background: transparent; border: 1px solid transparent; color: #86817A; font-family: inherit; transition: all .15s; }
+  .sub-btn:hover { background: #F1EFEC; color: #55504A; }
+  .sub-btn.active { background: rgba(224,90,60,.1); color: #1F1D1A; border-color: rgba(224,90,60,.3); }
   .flex-gap-6 { display: flex; gap: 24px; }
-  .sec-title { font-size: 16px; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
-  .sec-title svg { color: #A8905F; }
-  .tree-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; color: #475569; font-size: 14px; }
-  .tree-item:hover { color: #A8905F; }
-  .tree-item .tt { color: #a9946f; }
-  .about-icon-box { width: 64px; height: 64px; background: rgba(168,144,95,.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #A8905F; }
+  .sec-title { font-size: 16px; font-weight: 600; color: #3A362F; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .sec-title svg { color: #E05A3C; }
+  .tree-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; color: #55504A; font-size: 14px; }
+  .tree-item:hover { color: #E05A3C; }
+  .tree-item .tt { color: #86817A; }
+  .about-icon-box { width: 64px; height: 64px; background: rgba(224,90,60,.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color:#1F1D1A; }
   .privacy-card { background: rgba(234,179,8,.1); border: 1px solid rgba(234,179,8,.35); border-radius: 8px; padding: 24px; }
   .privacy-card h3 { color: #b45309; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-  .privacy-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #475569; }
+  .privacy-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #55504A; }
   .privacy-card li { display: flex; align-items: flex-start; gap: 8px; }
   .step-list { display: flex; flex-direction: column; gap: 12px; }
   .step-item { display: flex; align-items: flex-start; gap: 12px; }
-  .step-num { width: 28px; height: 28px; background: rgba(168,144,95,.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #A8905F; flex-shrink: 0; }
-  .step-body { flex: 1; padding-bottom: 12px; border-bottom: 1px solid rgba(229,216,194,.6); }
-  .step-title { font-size: 14px; font-weight: 500; color: #334155; }
-  .step-desc { font-size: 12px; color: #a9946f; margin-top: 2px; }
+  .step-num { width: 28px; height: 28px; background: rgba(224,90,60,.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color:#1F1D1A; flex-shrink: 0; }
+  .step-body { flex: 1; padding-bottom: 12px; border-bottom: 1px solid rgba(230,227,222,.7); }
+  .step-title { font-size: 14px; font-weight: 500; color: #3A362F; }
+  .step-desc { font-size: 12px; color: #86817A; margin-top: 2px; }
   .version-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .version-item { display: flex; align-items: center; gap: 12px; }
-  .version-k { font-size: 12px; color: #a9946f; }
-  .version-v { font-size: 14px; color: #334155; font-weight: 500; }
+  .version-k { font-size: 12px; color: #86817A; }
+  .version-v { font-size: 14px; color: #3A362F; font-weight: 500; }
 
-  .page-title { font-size: 20px; font-weight: 700; color: #334155; }
+  .page-title { font-size: 20px; font-weight: 700; color: #3A362F; }
   .flex-between { display: flex; align-items: center; justify-content: space-between; }
   .flex-center { display: flex; align-items: center; gap: 8px; }
-  .text-sm { font-size: 14px; } .text-xs { font-size: 12px; } .text-slate-400 { color: #94a3b8; }
+  .text-sm { font-size: 14px; } .text-xs { font-size: 12px; } .text-slate-400 { color: #86817A; }
   .search-box { position: relative; flex: 1; }
-  .search-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #a9946f; }
+  .search-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #86817A; }
   .search-box input { padding-left: 36px; }
   .filter-box { position: relative; }
-  .filter-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #a9946f; z-index: 1; }
+  .filter-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #86817A; z-index: 1; }
   .filter-box select { padding-left: 36px; width: 170px; }
   .mt-2 { margin-top: 8px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
   .mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-4 { margin-bottom: 16px; }
 
   /* ===== 管理密码弹窗 ===== */
   .modal-mask { position: fixed; inset: 0; background: rgba(30,41,59,.45); display: flex; align-items: center; justify-content: center; z-index: 50; }
-  .modal { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 12px; padding: 24px; width: 384px; box-shadow: 0 20px 50px rgba(0,0,0,.18); }
+  .modal { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 12px; padding: 24px; width: 384px; box-shadow: 0 20px 50px rgba(0,0,0,.18); }
   .d-modal { width: 680px; max-width: 92vw; max-height: 86vh; overflow-y: auto; }
-  .detail-btn { background: rgba(168,144,95,.1); color: #A8905F; border: 1px solid rgba(168,144,95,.3); border-radius: 6px; padding: 4px 10px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; font-family: inherit; transition: background .15s; white-space: nowrap; }
-  .detail-btn:hover { background: rgba(168,144,95,.2); }
-  .d-basic { background: #F7F2E8; border: 1px solid #e5d8c2; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #64748b; line-height: 1.9; margin-bottom: 12px; }
-  .d-card { background: #ffffff; border: 1px solid #e5d8c2; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
-  .d-card-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #F7F2E8; border-bottom: 1px solid #e5d8c2; font-size: 14px; color: #334155; }
-  .d-score { font-size: 13px; color: #64748b; font-weight: 400; }
-  .d-num { color: #A8905F; font-size: 15px; font-weight: 700; }
+  .detail-btn { background: rgba(224,90,60,.07); color: #524E48; border: 1px solid rgba(224,90,60,.3); border-radius: 6px; padding: 4px 10px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; font-family: inherit; transition: background .15s; white-space: nowrap; }
+  .detail-btn:hover { background: rgba(224,90,60,.14); }
+  .d-basic { background: #FBFAF9; border: 1px solid #E6E3DE; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #6B665F; line-height: 1.9; margin-bottom: 12px; }
+  .d-card { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  .d-card-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #FBFAF9; border-bottom: 1px solid #E6E3DE; font-size: 14px; color: #3A362F; }
+  .d-score { font-size: 13px; color: #6B665F; font-weight: 400; }
+  .d-num { color: #1F1D1A; font-size: 15px; font-weight: 700; }
   .d-qs { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-  .d-q { background: #F7F2E8; border-radius: 8px; padding: 10px 12px; }
-  .d-q-text { font-size: 13px; color: #475569; margin-bottom: 8px; line-height: 1.6; }
+  .d-q { background: #FBFAF9; border-radius: 8px; padding: 10px 12px; }
+  .d-q-text { font-size: 13px; color: #55504A; margin-bottom: 8px; line-height: 1.6; }
   .d-opts { display: flex; flex-wrap: wrap; gap: 8px; }
-  .d-opt { font-size: 12px; padding: 4px 10px; border-radius: 4px; background: #ffffff; color: #94a3b8; border: 1px solid #e5d8c2; }
-  .d-opt.on { background: rgba(168,144,95,.15); color: #A8905F; border-color: rgba(168,144,95,.35); font-weight: 500; }
-  .traj-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; font-size: 12px; color: #94a3b8; border-bottom: 1px solid #e5d8c2; }
-  .traj-list { padding: 10px 12px; font-size: 12px; color: #64748b; line-height: 1.9; max-height: 160px; overflow-y: auto; word-break: break-all; }
-  .traj-note { font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.6; }
-  .scale-score { font-weight: 600; color: #475569; }
+  .d-opt { font-size: 12px; padding: 4px 10px; border-radius: 4px; background: #ffffff; color: #86817A; border: 1px solid #E6E3DE; }
+  .d-opt.on { background: rgba(224,90,60,.1); color: #1F1D1A; border-color: rgba(224,90,60,.35); font-weight: 500; }
+  .traj-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; font-size: 12px; color: #86817A; border-bottom: 1px solid #E6E3DE; }
+  .traj-list { padding: 10px 12px; font-size: 12px; color: #6B665F; line-height: 1.9; max-height: 160px; overflow-y: auto; word-break: break-all; }
+  .traj-note { font-size: 12px; color: #86817A; margin-top: 8px; line-height: 1.6; }
+  .scale-score { font-weight: 600; color: #55504A; }
   .table-card th { cursor: pointer; user-select: none; }
-  .table-card th .sort-arrow { font-size: 10px; color: #A8905F; }
+  .table-card th .sort-arrow { font-size: 10px; color: #E05A3C; }
   th#th-risk, th#th-status { cursor: pointer; }
-  .modal-title { font-size: 18px; font-weight: 700; color: #334155; display: flex; align-items: center; gap: 8px; }
-  .modal-title svg { color: #A8905F; }
-  .modal-desc { font-size: 14px; color: #64748b; margin-bottom: 12px; }
-  .icon-btn { background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px; }
-  .icon-btn:hover { color: #475569; }
-  .pwd-err { font-size: 12px; color: #ef4444; margin-top: 8px; }
+  .modal-title { font-size: 18px; font-weight: 700; color: #3A362F; display: flex; align-items: center; gap: 8px; }
+  .modal-title svg { color: #E05A3C; }
+  .modal-desc { font-size: 14px; color: #6B665F; margin-bottom: 12px; }
+  .icon-btn { background: none; border: none; cursor: pointer; color: #86817A; padding: 4px; }
+  .icon-btn:hover { color: #55504A; }
+  .pwd-err { font-size: 12px; color: #d54941; margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -289,6 +301,7 @@
   <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
   <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+<symbol id="i-logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#FDEEE8"/><path d="M16 25C16 25 8 19.5 8 15.5C8 13 10 11.5 12 11.5C14 11.5 16 13.5 16 13.5C16 13.5 18 11.5 20 11.5C22 11.5 24 13 24 15.5C24 19.5 16 25 16 25Z" fill="#E05A3C"/><path d="M16 14L16 7.5" stroke="#8CAF50" stroke-width="1.6" stroke-linecap="round"/><path d="M16 11.5C13 11.5 11.5 9.5 11.5 7.5C14 7 16 9 16 11.5Z" fill="#A8C46A"/><path d="M16 10.5C19 10.5 20.5 8.5 20.5 6.5C18 6 16 8 16 10.5Z" fill="#8CAF50"/></symbol>
 </svg>
 
 <div class="app">
@@ -296,13 +309,15 @@
   <aside class="sidebar" id="sidebar">
     <div class="logo-box">
       <div class="logo-inner">
-        <div class="logo-title">河南大学基础医学院心理站</div>
-        <button class="collapse-btn" id="collapseBtn" title="折叠侧边栏" aria-label="折叠侧边栏">
-          <svg width="18" height="18"><use href="#i-panel-l"/></svg>
-        </button>
+        <div class="logo-mark"><svg width="32" height="32"><use href="#i-logo"/></svg></div>
+        <div class="logo-text">
+          <div class="logo-title">心理预警系统</div>
+          <div class="logo-sub">河南大学基础医学院</div>
+        </div>
       </div>
     </div>
     <nav class="nav" id="nav">
+      <div class="nav-group">功能导航</div>
       <button class="nav-btn active" data-tab="dashboard"><svg width="20" height="20"><use href="#i-dash"/></svg><span class="nav-label">首页概览</span></button>
       <button class="nav-btn" data-tab="assessment"><svg width="20" height="20"><use href="#i-doc"/></svg><span class="nav-label">心理测评</span></button>
       <button class="nav-btn" data-tab="data"><svg width="20" height="20"><use href="#i-db"/></svg><span class="nav-label">数据管理</span></button>
@@ -310,6 +325,11 @@
       <button class="nav-btn" data-tab="settings"><svg width="20" height="20"><use href="#i-set"/></svg><span class="nav-label">系统设置</span></button>
       <button class="nav-btn" data-tab="about"><svg width="20" height="20"><use href="#i-info"/></svg><span class="nav-label">关于系统</span></button>
     </nav>
+    <div class="sidebar-foot">
+      <button class="collapse-btn" id="collapseBtn" title="收起侧边栏" aria-label="收起侧边栏">
+        <svg width="18" height="18"><use href="#i-panel-l"/></svg><span class="nav-label">收起侧边栏</span>
+      </button>
+    </div>
   </aside>
 
   <!-- ======== 主内容 ======== -->
@@ -423,9 +443,9 @@
         </div>
 
         <div class="flex" id="scale-filter-row" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px">
-          <span style="font-size:12px; color:#a9946f; font-weight:500; white-space:nowrap">量表风险筛选：</span>
+          <span style="font-size:12px; color:#86817A; font-weight:500; white-space:nowrap">量表风险筛选：</span>
           <span id="scale-filters" style="display:inline-flex; gap:8px; flex-wrap:wrap"></span>
-          <button id="scale-filter-clear" style="font-size:12px; color:#a9946f; text-decoration:underline; background:none; border:none; cursor:pointer; padding:2px">清除量表筛选</button>
+          <button id="scale-filter-clear" style="font-size:12px; color:#86817A; text-decoration:underline; background:none; border:none; cursor:pointer; padding:2px">清除量表筛选</button>
         </div>
 
         <div class="table-card">
@@ -450,7 +470,7 @@
               <tbody id="data-rows"></tbody>
             </table>
           </div>
-          <div class="p-6" id="data-empty" style="display:none; text-align:center; color:#a9946f; font-size:14px">没有找到匹配的记录</div>
+          <div class="p-6" id="data-empty" style="display:none; text-align:center; color:#86817A; font-size:14px">没有找到匹配的记录</div>
         </div>
       </div>
     </section>
@@ -460,7 +480,7 @@
       <div class="space-y\:6" id="analysis-body">
         <div class="flex-between">
           <h1 class="page-title">数据分析（探索性分析）</h1>
-          <button class="btn" id="btn-analysis-refresh" style="background:#fff;border:1px solid #e5d8c2;color:#8F7A4E"><svg width="16" height="16"><use href="#i-refresh"/></svg>刷新数据</button>
+          <button class="btn" id="btn-analysis-refresh" style="background:#fff;border:1px solid #E6E3DE;color:#524E48"><svg width="16" height="16"><use href="#i-refresh"/></svg>刷新数据</button>
         </div>
         <div class="anal-note" id="anal-note" style="display:none"></div>
         <div id="anal-content"></div>
@@ -500,8 +520,8 @@
           <div style="display:flex; gap:16px; align-items:flex-start">
             <div class="about-icon-box"><svg width="32" height="32"><use href="#i-brain"/></svg></div>
             <div>
-              <h2 style="font-size:16px; font-weight:600; color:#334155; margin-bottom:8px">多模态无接触式心理问题早期预警系统</h2>
-              <p style="font-size:14px; color:#a9946f; line-height:1.6">
+              <h2 style="font-size:16px; font-weight:600; color:#3A362F; margin-bottom:8px">多模态无接触式心理问题早期预警系统</h2>
+              <p style="font-size:14px; color:#86817A; line-height:1.6">
                 本系统通过整合量表评估、鼠标行为分析和面部微表情识别三种模态数据，利用深度学习模型进行心理问题早期预警。
                 系统设计注重隐私保护，所有数据处理均在本地完成，不依赖网络连接，适合在高校等场景部署使用。
               </p>
@@ -743,14 +763,14 @@
     h += '<div class="d-card" style="border:1px solid rgba(248,113,113,.45)">' +
       '<div class="d-card-head" style="background:rgba(248,113,113,.08)"><b>第一层 · 核心预警</b>' +
       '<span class="d-score">' +
-      flagBadge(flags, 'suicide', '自杀风险', '#ef4444', 'rgba(239,68,68,.15)') +
-      flagBadge(flags, 'nssi', '自伤风险', '#f97316', 'rgba(249,115,22,.15)') +
+      flagBadge(flags, 'suicide', '自杀风险', '#d54941', 'rgba(213,73,65,.15)') +
+      flagBadge(flags, 'nssi', '自伤风险', '#D48806', 'rgba(212,136,6,.15)') +
       '</span></div><div class="d-qs">';
     /* C-SSRS */
     h += '<div class="d-q"><div class="d-q-text"><b>C-SSRS 自杀严重度评定量表</b>' +
-      '<span class="d-score" style="float:right">阳性条目：<b style="color:#ef4444">' + (r.cssrsPositive || 0) + '</b> / 4</span></div>';
+      '<span class="d-score" style="float:right">阳性条目：<b style="color:#d54941">' + (r.cssrsPositive || 0) + '</b> / 4</span></div>';
     if (cssrs.length === 0) {
-      h += '<div style="font-size:13px;color:#94a3b8;padding:6px 0">该记录未采集 C-SSRS 数据（旧版本记录）。</div>';
+      h += '<div style="font-size:13px;color:#86817A;padding:6px 0">该记录未采集 C-SSRS 数据（旧版本记录）。</div>';
     } else {
       cssrs.forEach(function (ans, i) {
         var positive = ans === 1;
@@ -758,22 +778,22 @@
           '<div class="d-q-text">' + (i + 1) + '. ' + cssrsQ[i] + '</div><div class="d-opts">' +
           cssrsOpts.map(function (opt, oi) {
             var on = ans === oi;
-            return optChip(opt, on, on && positive ? 'background:rgba(248,113,113,.2);color:#ef4444;border-color:rgba(248,113,113,.5);font-weight:500' : '');
+            return optChip(opt, on, on && positive ? 'background:rgba(248,113,113,.2);color:#d54941;border-color:rgba(248,113,113,.5);font-weight:500' : '');
           }).join('') + '</div></div>';
       });
     }
     h += '</div>';
     /* NSSI */
     h += '<div class="d-q"><div class="d-q-text"><b>NSSI 非自杀性自伤筛查</b>' +
-      '<span class="d-score" style="float:right">' + (nssi[0] === 1 ? '<b style="color:#f97316">自伤行为阳性</b>' : '<span style="color:#94a3b8">无自伤行为</span>') + '</span></div>';
+      '<span class="d-score" style="float:right">' + (nssi[0] === 1 ? '<b style="color:#D48806">自伤行为阳性</b>' : '<span style="color:#86817A">无自伤行为</span>') + '</span></div>';
     if (nssi.length === 0) {
-      h += '<div style="font-size:13px;color:#94a3b8;padding:6px 0">该记录未采集 NSSI 数据（旧版本记录）。</div>';
+      h += '<div style="font-size:13px;color:#86817A;padding:6px 0">该记录未采集 NSSI 数据（旧版本记录）。</div>';
     } else {
       [0, 1].forEach(function (qi) {
         h += '<div class="d-q" style="padding:4px 0"><div class="d-q-text" style="margin-bottom:6px">' + (qi + 1) + '. ' + nssiQ[qi] + '</div><div class="d-opts">' +
           (qi === 0 ? nssiHasOpts : nssiFreqOpts).map(function (opt, oi) {
             var on = nssi[qi] === oi;
-            return optChip(opt, on, on && qi === 0 && oi === 1 ? 'background:rgba(249,115,22,.2);color:#f97316;border-color:rgba(249,115,22,.45);font-weight:500' : '');
+            return optChip(opt, on, on && qi === 0 && oi === 1 ? 'background:rgba(212,136,6,.2);color:#D48806;border-color:rgba(212,136,6,.45);font-weight:500' : '');
           }).join('') + '</div></div>';
       });
     }
@@ -782,49 +802,49 @@
     /* ---- 第二层 · 扩充画像 ---- */
     h += '<div class="d-card" style="border:1px solid rgba(251,146,60,.45)">' +
       '<div class="d-card-head" style="background:rgba(251,146,60,.08)"><b>第二层 · 扩充画像</b>' +
-      '<span class="d-score" style="color:#94a3b8">辅助评估与干预参考</span></div><div class="d-qs">';
+      '<span class="d-score" style="color:#86817A">辅助评估与干预参考</span></div><div class="d-qs">';
     /* PSS-10 */
     h += '<div class="d-q"><div class="d-q-text"><b>PSS-10 感知压力量表</b>' +
-      '<span class="d-score" style="float:right">总分：<b style="color:#f97316">' + (r.pss10Score ?? 0) + '</b> / 40 <span style="color:#94a3b8">' + pss10LevelOf(r.pss10Score ?? 0) + '</span></span></div>';
+      '<span class="d-score" style="float:right">总分：<b style="color:#D48806">' + (r.pss10Score ?? 0) + '</b> / 40 <span style="color:#86817A">' + pss10LevelOf(r.pss10Score ?? 0) + '</span></span></div>';
     if (pss10.length === 0) {
-      h += '<div style="font-size:13px;color:#94a3b8;padding:6px 0">该记录未采集 PSS-10 数据（旧版本记录）。</div>';
+      h += '<div style="font-size:13px;color:#86817A;padding:6px 0">该记录未采集 PSS-10 数据（旧版本记录）。</div>';
     } else {
       pss10.forEach(function (ans, i) {
         h += '<div class="d-q" style="padding:4px 0"><div class="d-q-text" style="margin-bottom:6px">' + (i + 1) + '. ' + pss10Q[i] +
-          (PSS10_REV.indexOf(i) >= 0 ? '<span class="badge" style="background:#fff;color:#94a3b8;border:1px solid #e5d8c2;margin-left:6px;font-weight:400">反向计分</span>' : '') +
+          (PSS10_REV.indexOf(i) >= 0 ? '<span class="badge" style="background:#fff;color:#86817A;border:1px solid #E6E3DE;margin-left:6px;font-weight:400">反向计分</span>' : '') +
           '</div><div class="d-opts">' + pss10Opts.map(function (opt, oi) { return optChip(opt, ans === oi, ''); }).join('') + '</div></div>';
       });
     }
     h += '</div>';
     /* PSQI */
     h += '<div class="d-q"><div class="d-q-text"><b>PSQI 匹兹堡睡眠质量指数</b>' +
-      '<span class="d-score" style="float:right">总分：<b style="color:#f97316">' + (r.psqiScore ?? 0) + '</b> / 21 <span style="color:#94a3b8">' + psqiLevelOf(r.psqiScore ?? 0) + '</span></span></div>';
+      '<span class="d-score" style="float:right">总分：<b style="color:#D48806">' + (r.psqiScore ?? 0) + '</b> / 21 <span style="color:#86817A">' + psqiLevelOf(r.psqiScore ?? 0) + '</span></span></div>';
     if (!psqi) {
-      h += '<div style="font-size:13px;color:#94a3b8;padding:6px 0">该记录未采集 PSQI 数据（旧版本记录）。</div>';
+      h += '<div style="font-size:13px;color:#86817A;padding:6px 0">该记录未采集 PSQI 数据（旧版本记录）。</div>';
     } else {
       var comps = r.psqiComps || [];
-      h += '<div class="d-q" style="padding:4px 0"><div style="font-size:12px;color:#94a3b8;margin-bottom:6px">7 项成分得分（0-3）：</div>' +
+      h += '<div class="d-q" style="padding:4px 0"><div style="font-size:12px;color:#86817A;margin-bottom:6px">7 项成分得分（0-3）：</div>' +
         '<div class="d-opts">' + comps.map(function (c, i) {
-          return '<span class="d-opt" style="color:#475569;background:#fff">' + psiqCompNames[i] + '：<b style="color:#f97316">' + c + '</b></span>';
+          return '<span class="d-opt" style="color:#55504A;background:#fff">' + psiqCompNames[i] + '：<b style="color:#D48806">' + c + '</b></span>';
         }).join('') + '</div></div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">' +
-        '<div class="d-opt" style="color:#475569;background:#F7F2E8;border:none">就寝 / 起床：<b>' + psqi.bed + ':00 — ' + psqi.wake + ':00</b></div>' +
-        '<div class="d-opt" style="color:#475569;background:#F7F2E8;border:none">入睡耗时 / 睡眠时长：<b>' + psqi.latency + ' 分钟 / ' + psqi.hours + ' 小时</b></div>' +
-        '<div class="d-opt" style="color:#475569;background:#F7F2E8;border:none">总体睡眠质量：<b>' + (psqiQualityOpts[psqi.quality] ?? '-') + '</b></div>' +
-        '<div class="d-opt" style="color:#475569;background:#F7F2E8;border:none">催眠药物 / 困倦 / 精力：<b>' + (psqiFreqOpts[psqi.meds] ?? '-') + ' / ' + (psqiFreqOpts[psqi.day] ?? '-') + ' / ' + (psqiFreqOpts[psqi.energy] ?? '-') + '</b></div>' +
+        '<div class="d-opt" style="color:#55504A;background:#FBFAF9;border:none">就寝 / 起床：<b>' + psqi.bed + ':00 — ' + psqi.wake + ':00</b></div>' +
+        '<div class="d-opt" style="color:#55504A;background:#FBFAF9;border:none">入睡耗时 / 睡眠时长：<b>' + psqi.latency + ' 分钟 / ' + psqi.hours + ' 小时</b></div>' +
+        '<div class="d-opt" style="color:#55504A;background:#FBFAF9;border:none">总体睡眠质量：<b>' + (psqiQualityOpts[psqi.quality] ?? '-') + '</b></div>' +
+        '<div class="d-opt" style="color:#55504A;background:#FBFAF9;border:none">催眠药物 / 困倦 / 精力：<b>' + (psqiFreqOpts[psqi.meds] ?? '-') + ' / ' + (psqiFreqOpts[psqi.day] ?? '-') + ' / ' + (psqiFreqOpts[psqi.energy] ?? '-') + '</b></div>' +
         '</div>' +
-        '<div style="font-size:12px;color:#94a3b8;margin-bottom:4px">睡眠障碍频率（10 项）：</div>' +
+        '<div style="font-size:12px;color:#86817A;margin-bottom:4px">睡眠障碍频率（10 项）：</div>' +
         psqiDisturbanceItems.map(function (item, i) {
-          return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#475569;padding:2px 0"><span>' + (i + 1) + '. ' + item +
-          '</span><span class="badge" style="background:#F7F2E8;color:#64748b;border:1px solid #e5d8c2;font-weight:400">' + (psqiFreqOpts[psqi.d[i]] ?? '-') + '</span></div>';
+          return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#55504A;padding:2px 0"><span>' + (i + 1) + '. ' + item +
+          '</span><span class="badge" style="background:#FBFAF9;color:#6B665F;border:1px solid #E6E3DE;font-weight:400">' + (psqiFreqOpts[psqi.d[i]] ?? '-') + '</span></div>';
         }).join('');
     }
     h += '</div>';
     /* SIAS-6 */
     h += '<div class="d-q"><div class="d-q-text"><b>SIAS-6 社交焦虑筛查</b>' +
-      '<span class="d-score" style="float:right">总分：<b style="color:#f97316">' + (r.sias6Score ?? 0) + '</b> / 24</span></div>';
+      '<span class="d-score" style="float:right">总分：<b style="color:#D48806">' + (r.sias6Score ?? 0) + '</b> / 24</span></div>';
     if (sias6.length === 0) {
-      h += '<div style="font-size:13px;color:#94a3b8;padding:6px 0">该记录未采集 SIAS-6 数据（旧版本记录）。</div>';
+      h += '<div style="font-size:13px;color:#86817A;padding:6px 0">该记录未采集 SIAS-6 数据（旧版本记录）。</div>';
     } else {
       sias6.forEach(function (ans, i) {
         h += '<div class="d-q" style="padding:4px 0"><div class="d-q-text" style="margin-bottom:6px">' + (i + 1) + '. ' + sias6Q[i] + '</div><div class="d-opts">' +
@@ -834,19 +854,19 @@
     h += '</div>';
     /* ASLEC */
     h += '<div class="d-q"><div class="d-q-text"><b>ASLEC 青少年生活事件</b>' +
-      '<span class="d-score" style="float:right">发生事件：<b style="color:#f97316">' + (r.aslecCount ?? 0) + '</b> 件<span style="margin-left:6px">影响总分：<b style="color:#f97316">' + (r.aslecScore ?? 0) + '</b></span></span></div>';
+      '<span class="d-score" style="float:right">发生事件：<b style="color:#D48806">' + (r.aslecCount ?? 0) + '</b> 件<span style="margin-left:6px">影响总分：<b style="color:#D48806">' + (r.aslecScore ?? 0) + '</b></span></span></div>';
     if (aslec.length === 0) {
-      h += '<div style="font-size:13px;color:#94a3b8;padding:6px 0">该记录未采集 ASLEC 数据（旧版本记录）。</div>';
+      h += '<div style="font-size:13px;color:#86817A;padding:6px 0">该记录未采集 ASLEC 数据（旧版本记录）。</div>';
     } else {
       h += '<div style="max-height:300px;overflow-y:auto;padding-right:4px">' +
         aslec.map(function (ans, i) {
           var occurred = ans > 0;
-          var cls = !occurred ? 'color:#cbd5e1'
-            : ans >= 5 ? 'background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);font-weight:500'
-            : ans === 4 ? 'background:rgba(249,115,22,.15);color:#f97316;border:1px solid rgba(249,115,22,.3)'
-            : ans === 3 ? 'background:rgba(234,179,8,.15);color:#d97706;border:1px solid rgba(234,179,8,.3)'
-            : 'background:#F7F2E8;color:#64748b';
-          return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:3px 0"><span style="' + (occurred ? 'color:#475569' : 'color:#94a3b8') + '">' + (i + 1) + '. ' + aslecItems[i] +
+          var cls = !occurred ? 'color:#C5C0B8'
+            : ans >= 5 ? 'background:rgba(213,73,65,.15);color:#d54941;border:1px solid rgba(213,73,65,.3);font-weight:500'
+            : ans === 4 ? 'background:rgba(212,136,6,.15);color:#D48806;border:1px solid rgba(212,136,6,.3)'
+            : ans === 3 ? 'background:rgba(234,179,8,.15);color:#D48806;border:1px solid rgba(234,179,8,.3)'
+            : 'background:#FBFAF9;color:#6B665F';
+          return '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:3px 0"><span style="' + (occurred ? 'color:#55504A' : 'color:#86817A') + '">' + (i + 1) + '. ' + aslecItems[i] +
           '</span><span class="badge" style="' + cls + ';font-weight:400">' + (aslecImpactOpts[ans] ?? '未发生') + '</span></div>';
         }).join('') + '</div>';
     }
@@ -856,15 +876,15 @@
 
   function scaleSummaryHtml(r) {
     return '<div class="d-card"><div class="d-card-head"><b>各量表分值 · 风险等级</b>' +
-      '<span class="d-score" style="color:#94a3b8">点击查看下方逐题明细</span></div>' +
+      '<span class="d-score" style="color:#86817A">点击查看下方逐题明细</span></div>' +
       '<div class="d-qs" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px">' +
       scaleMeta.map(function (m) {
         var hasData = (m.key === 'nssi' || m.key === 'cssrs') ? (((r[m.key] || []).length || 0) > 0) : true;
         var score = hasData ? (m.score(r) ?? 0) : '—';
         var risk = m.risk(r);
-        return '<div class="d-opt" style="display:flex;justify-content:space-between;align-items:center;color:#475569;background:#F7F2E8;border:none;padding:7px 10px">' +
-          '<span style="font-size:12px;color:#64748b;font-weight:500">' + m.label + '</span>' +
-          '<span style="white-space:nowrap"><b style="color:#334155">' + score + '</b> <span class="badge ' + riskClass[risk] + '" style="margin-left:4px;font-size:10px;padding:1px 5px">' + risk + '</span></span></div>';
+        return '<div class="d-opt" style="display:flex;justify-content:space-between;align-items:center;color:#55504A;background:#FBFAF9;border:none;padding:7px 10px">' +
+          '<span style="font-size:12px;color:#6B665F;font-weight:500">' + m.label + '</span>' +
+          '<span style="white-space:nowrap"><b style="color:#3A362F">' + score + '</b> <span class="badge ' + riskClass[risk] + '" style="margin-left:4px;font-size:10px;padding:1px 5px">' + risk + '</span></span></div>';
       }).join('') + '</div></div>';
   }
 
@@ -875,7 +895,7 @@
     if (!ctx) return;
     var W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = "#F7F2E8";
+    ctx.fillStyle = "#FBFAF9";
     ctx.fillRect(0, 0, W, H);
     var xs = traj.map(function (p) { return p.x; });
     var ys = traj.map(function (p) { return p.y; });
@@ -885,7 +905,7 @@
     var pad = 18;
     var px = function (x) { return pad + ((x - minX) / spanX) * (W - pad * 2); };
     var py = function (y) { return pad + ((y - minY) / spanY) * (H - pad * 2); };
-    ctx.strokeStyle = "#A8905F";
+    ctx.strokeStyle = "#E05A3C";
     ctx.lineWidth = 1.6;
     ctx.lineJoin = "round";
     ctx.beginPath();
@@ -897,7 +917,7 @@
     traj.forEach(function (p, i) {
       var isClick = p.k === "c";
       var isEdge = i === 0 || i === traj.length - 1;
-      ctx.fillStyle = isClick ? "#dc2626" : (isEdge ? "#8F7A4E" : "#A8905F");
+      ctx.fillStyle = isClick ? "#d54941" : (isEdge ? "#C74A2F" : "#E05A3C");
       ctx.beginPath();
       if (isClick) {
         var r = 3;
@@ -908,7 +928,7 @@
       }
     });
     var first = traj[0], last = traj[traj.length - 1];
-    ctx.fillStyle = "#8F7A4E";
+    ctx.fillStyle = "#C74A2F";
     ctx.font = "10px sans-serif";
     ctx.fillText("起点", px(first.x) - 14, py(first.y) - 6);
     ctx.fillText("终点 " + last.t + "ms", px(last.x) - 18, py(last.y) + 14);
@@ -1011,20 +1031,20 @@
     ];
     var rowHtml = rows.map(function (row) {
       return '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">' +
-        '<span style="color:#8F7A4E">' + row[0] + '</span>' +
-        '<b style="color:' + (row[2] ? "#d97706" : "#5C4A32") + '">' + row[1] + '</b></div>';
+        '<span style="color:#524E48">' + row[0] + '</span>' +
+        '<b style="color:' + (row[2] ? "#D48806" : "#A83C24") + '">' + row[1] + '</b></div>';
     }).join("");
     var sigHtml = signals.length === 0
-      ? '<div style="font-size:12px;color:#5C4A32">未见明显异常信号。</div>'
+      ? '<div style="font-size:12px;color:#1F1D1A">未见明显异常信号。</div>'
       : '<div style="display:flex;flex-wrap:wrap;gap:6px">' + signals.map(function (s) {
-          return '<span style="display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(217,119,6,.35);background:rgba(252,211,77,.25);color:#b45309;font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px">' +
+          return '<span style="display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(212,136,6,.35);background:rgba(252,211,77,.25);color:#b45309;font-size:12px;font-weight:500;padding:2px 8px;border-radius:999px">' +
             '<span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;display:inline-block"></span>' + BEHAVIOR_SIGNAL_LABELS[s] + '</span>';
         }).join("") + '</div>';
-    return '<div class="d-card" style="background:#F7F2E8;border-color:#E3D9C6">' +
-      '<div class="d-card-head"><b>行为动力学特征</b><span class="d-score" style="color:#8F7A4E">启发式规则 · 非诊断</span></div>' +
+    return '<div class="d-card" style="background:#FBFAF9;border-color:#E6E3DE">' +
+      '<div class="d-card-head"><b>行为动力学特征</b><span class="d-score" style="color:#524E48">启发式规则 · 非诊断</span></div>' +
       '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 14px;font-size:12px;padding:10px 12px">' + rowHtml + '</div>' +
-      '<div style="padding:10px 12px;border-top:1px solid #E3D9C6">' +
-        '<div style="font-size:12px;font-weight:500;color:#8F7A4E;margin-bottom:6px">行为信号</div>' + sigHtml +
+      '<div style="padding:10px 12px;border-top:1px solid #E6E3DE">' +
+        '<div style="font-size:12px;font-weight:500;color:#524E48;margin-bottom:6px">行为信号</div>' + sigHtml +
         '<p class="traj-note" style="margin-top:8px">依据鼠标运动学研究（轨迹弯曲、速度剖面、方向反转、停顿）的启发式解读，仅供筛查参考，不代表临床诊断；请结合量表结果综合评估。</p>' +
       '</div></div>';
   }
@@ -1046,18 +1066,18 @@
     ];
     var itemHtml = items.map(function (it) {
       return '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">' +
-        '<span style="color:#94a3b8">' + it[0] + '</span><b style="color:#334155">' + it[1] + '</b></div>';
+        '<span style="color:#86817A">' + it[0] + '</span><b style="color:#3A362F">' + it[1] + '</b></div>';
     }).join("");
     var sigHtml = signals.length > 0
       ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' + signals.map(function (s) {
-          return '<span style="display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(217,119,6,.35);background:rgba(252,211,77,.25);color:#b45309;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px">' + BEHAVIOR_SIGNAL_LABELS[s] + '</span>';
+          return '<span style="display:inline-flex;align-items:center;gap:4px;border:1px solid rgba(212,136,6,.35);background:rgba(252,211,77,.25);color:#b45309;font-size:11px;font-weight:500;padding:2px 8px;border-radius:999px">' + BEHAVIOR_SIGNAL_LABELS[s] + '</span>';
         }).join("") + '</div>'
       : "";
-    return '<div style="background:#F7F2E8;border-radius:8px;padding:12px;margin-bottom:10px">' +
+    return '<div style="background:#FBFAF9;border-radius:8px;padding:12px;margin-bottom:10px">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">' +
-        '<span style="font-size:12px;font-weight:500;color:#64748b">行为指标摘要</span>' +
-        '<span style="font-size:11px;color:#94a3b8">启发式计算 · 非诊断</span></div>' +
-      '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px 14px;font-size:11px;color:#64748b">' + itemHtml + '</div>' +
+        '<span style="font-size:12px;font-weight:500;color:#6B665F">行为指标摘要</span>' +
+        '<span style="font-size:11px;color:#86817A">启发式计算 · 非诊断</span></div>' +
+      '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px 14px;font-size:11px;color:#6B665F">' + itemHtml + '</div>' +
       sigHtml + '</div>';
   }
 
@@ -1071,12 +1091,12 @@
     var trajHtml = '<div class="d-card">' +
       '<div class="d-card-head"><b>鼠标轨迹（行为数据）</b>' +
       '<span class="d-score">采样点：<span class="d-num">' + traj.length + '</span>' +
-      '<span style="margin-left:8px;color:#94a3b8">· 采集模式：' + camTxt + '</span></span></div>' +
+      '<span style="margin-left:8px;color:#86817A">· 采集模式：' + camTxt + '</span></span></div>' +
       '<div class="d-qs">';
     if (traj.length > 0) {
       trajHtml +=
-        '<canvas id="traj-canvas" width="560" height="220" style="width:100%;border-radius:8px;background:#F7F2E8"></canvas>' +
-        '<div style="background:#F7F2E8;border-radius:8px;overflow:hidden;margin-top:10px">' +
+        '<canvas id="traj-canvas" width="560" height="220" style="width:100%;border-radius:8px;background:#FBFAF9"></canvas>' +
+        '<div style="background:#FBFAF9;border-radius:8px;overflow:hidden;margin-top:10px">' +
           '<div class="traj-head">坐标序列（x, y, 相对时间 ms）<span>共 ' + traj.length + ' 点</span></div>' +
           '<div class="traj-list">' + traj.map(function (p) { return "(" + p.x + ", " + p.y + ", " + p.t + "ms" + (p.k === "c" ? "[点击]" : "") + ")"; }).join("  ") + '</div>' +
         '</div>' +
@@ -1259,7 +1279,7 @@ suppDetailHtml(r) +
       var opts = ["all", "低风险", "轻度风险", "中度风险", "高风险"].map(function (v) {
         return '<option value="' + v + '">' + (v === "all" ? m.label + "：全部" : v) + '</option>';
       }).join("");
-      return '<select data-key="' + m.key + '" class="scale-filter-sel" style="background:#fff;border:1px solid #e5d8c2;border-radius:8px;padding:5px 8px;font-size:12px;color:#64748b;outline:none">' + opts + '</select>';
+      return '<select data-key="' + m.key + '" class="scale-filter-sel" style="background:#fff;border:1px solid #E6E3DE;border-radius:8px;padding:5px 8px;font-size:12px;color:#6B665F;outline:none">' + opts + '</select>';
     }).join("");
   }
   function sortValueOf(r, key) {
@@ -1485,8 +1505,8 @@ suppDetailHtml(r) +
     });
   }
   /* ---- 分析图 SVG 生成（与正式版同口径，无外部依赖） ---- */
-  var ANL_RISK_COLORS = { "低风险": "#16a34a", "轻度风险": "#ca8a04", "中度风险": "#ea580c", "高风险": "#dc2626" };
-  var ANL_CAM_COLORS = { normal: "#16a34a", degraded: "#ea580c", unknown: "#94a3b8" };
+  var ANL_RISK_COLORS = { "低风险": "#2ba344", "轻度风险": "#ca8a04", "中度风险": "#D48806", "高风险": "#d54941" };
+  var ANL_CAM_COLORS = { normal: "#2ba344", degraded: "#D48806", unknown: "#86817A" };
   function anlEsc(s) { return String(s === null || s === undefined ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   function anlDonut(items, size, thickness, centerValue, centerLabel) {
     var r = (size - thickness) / 2;
@@ -1502,16 +1522,16 @@ suppDetailHtml(r) +
       acc += frac;
     });
     return '<svg width="100%" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '" role="img">' +
-      '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="#f1f5f9" stroke-width="' + thickness + '"/>' +
+      '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke="#F1EFEC" stroke-width="' + thickness + '"/>' +
       seg +
-      '<text x="50%" y="48%" text-anchor="middle" font-size="24" font-weight="700" fill="#334155">' + centerValue + '</text>' +
-      '<text x="50%" y="63%" text-anchor="middle" font-size="11" fill="#94a3b8">' + anlEsc(centerLabel) + '</text></svg>';
+      '<text x="50%" y="48%" text-anchor="middle" font-size="24" font-weight="700" fill="#3A362F">' + centerValue + '</text>' +
+      '<text x="50%" y="63%" text-anchor="middle" font-size="11" fill="#86817A">' + anlEsc(centerLabel) + '</text></svg>';
   }
   function anlLegend(items) {
-    return '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:#64748b">' +
+    return '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:#6B665F">' +
       items.map(function (it) {
         return '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:' + it.color + ';display:inline-block"></span>' + anlEsc(it.label) +
-          (it.value !== undefined ? ' <b style="color:#334155">' + it.value + '</b>' : '') + '</span>';
+          (it.value !== undefined ? ' <b style="color:#3A362F">' + it.value + '</b>' : '') + '</span>';
       }).join("") + '</div>';
   }
   function anlHeatmap(rows, cols, cells) {
@@ -1519,17 +1539,17 @@ suppDetailHtml(r) +
     var W = padL + cols.length * cellW + 12;
     var H = padT + rows.length * cellH + 10;
     function rhoColor(rho) {
-      if (rho === null) return "#f1f5f9";
+      if (rho === null) return "#F1EFEC";
       var t = Math.min(Math.abs(rho), 1);
       return rho >= 0 ? "rgba(217,119,6," + (0.12 + t * 0.72).toFixed(2) + ")" : "rgba(37,99,235," + (0.12 + t * 0.72).toFixed(2) + ")";
     }
-    function txtColor(rho) { return rho !== null && Math.abs(rho) >= 0.55 ? "#ffffff" : "#475569"; }
+    function txtColor(rho) { return rho !== null && Math.abs(rho) >= 0.55 ? "#ffffff" : "#55504A"; }
     var rowLabels = rows.map(function (rk, ri) {
-      return '<text x="' + (padL - 8) + '" y="' + (padT + ri * cellH + cellH / 2 + 4) + '" text-anchor="end" font-size="11" fill="#475569">' + anlEsc(ANL_METRIC_LABELS[rk]) + '</text>';
+      return '<text x="' + (padL - 8) + '" y="' + (padT + ri * cellH + cellH / 2 + 4) + '" text-anchor="end" font-size="11" fill="#55504A">' + anlEsc(ANL_METRIC_LABELS[rk]) + '</text>';
     }).join("");
     var colLabels = cols.map(function (c, ci) {
       var label = c.label.length > 6 ? c.label.slice(0, 6) + "…" : c.label;
-      return '<text x="' + (padL + ci * cellW + cellW / 2) + '" y="' + (padT - 10) + '" text-anchor="middle" font-size="10.5" fill="#64748b">' + anlEsc(label) + '</text>';
+      return '<text x="' + (padL + ci * cellW + cellW / 2) + '" y="' + (padT - 10) + '" text-anchor="middle" font-size="10.5" fill="#6B665F">' + anlEsc(label) + '</text>';
     }).join("");
     var cellSvg = "";
     rows.forEach(function (rk, ri) {
@@ -1552,8 +1572,8 @@ suppDetailHtml(r) +
     var ticks = [0, niceMax / 2, niceMax];
     var tickSvg = ticks.map(function (t) {
       var y = padT + chartH - (t / niceMax) * chartH;
-      return '<line x1="' + padL + '" y1="' + y + '" x2="' + (padL + chartW) + '" y2="' + y + '" stroke="#eef0f4" stroke-dasharray="3 3"/>' +
-        '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" text-anchor="end" font-size="10" fill="#94a3b8">' + t + '</text>';
+      return '<line x1="' + padL + '" y1="' + y + '" x2="' + (padL + chartW) + '" y2="' + y + '" stroke="#F1EFEC" stroke-dasharray="3 3"/>' +
+        '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" text-anchor="end" font-size="10" fill="#86817A">' + t + '</text>';
     }).join("");
     var barSvg = rows.map(function (row, ri) {
       var x = padL + ri * (bw + 18), yOff = 0, seg = "";
@@ -1563,13 +1583,13 @@ suppDetailHtml(r) +
         seg += '<rect x="' + x + '" y="' + (padT + chartH - yOff - h) + '" width="' + bw + '" height="' + h + '" fill="' + parts[pi].color + '" opacity="0.88"/>';
         yOff += h;
       });
-      if (row.total > 0) seg += '<text x="' + (x + bw / 2) + '" y="' + (padT + chartH - yOff - 5) + '" text-anchor="middle" font-size="10.5" font-weight="600" fill="#475569">' + row.total + '</text>';
-      seg += '<text x="' + (x + bw / 2) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="10.5" fill="#64748b">' + anlEsc(row.label) + '</text>';
+      if (row.total > 0) seg += '<text x="' + (x + bw / 2) + '" y="' + (padT + chartH - yOff - 5) + '" text-anchor="middle" font-size="10.5" font-weight="600" fill="#55504A">' + row.total + '</text>';
+      seg += '<text x="' + (x + bw / 2) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="10.5" fill="#6B665F">' + anlEsc(row.label) + '</text>';
       return seg;
     }).join("");
     return '<svg width="100%" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img">' + tickSvg + barSvg +
-      '<line x1="' + padL + '" y1="' + (padT + chartH) + '" x2="' + (padL + chartW) + '" y2="' + (padT + chartH) + '" stroke="#cbd5e1"/>' +
-      '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + chartH) + '" stroke="#cbd5e1"/></svg>';
+      '<line x1="' + padL + '" y1="' + (padT + chartH) + '" x2="' + (padL + chartW) + '" y2="' + (padT + chartH) + '" stroke="#C5C0B8"/>' +
+      '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + chartH) + '" stroke="#C5C0B8"/></svg>';
   }
   function anlGroupBars(groups, series) {
     var W = 500, H = 230, padL = 46, padB = 34, padT = 16, right = 12;
@@ -1578,8 +1598,8 @@ suppDetailHtml(r) +
     var bw = Math.min(46, (gw - 16) / series.length);
     var gridSvg = [0, 0.25, 0.5, 0.75, 1].map(function (f) {
       var y = padT + chartH * (1 - f);
-      return '<line x1="' + padL + '" y1="' + y + '" x2="' + (padL + chartW) + '" y2="' + y + '" stroke="#eef0f4" stroke-dasharray="3 3"/>' +
-        '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" text-anchor="end" font-size="10" fill="#94a3b8">' + Math.round(f * 100) + '%</text>';
+      return '<line x1="' + padL + '" y1="' + y + '" x2="' + (padL + chartW) + '" y2="' + y + '" stroke="#F1EFEC" stroke-dasharray="3 3"/>' +
+        '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" text-anchor="end" font-size="10" fill="#86817A">' + Math.round(f * 100) + '%</text>';
     }).join("");
     var barSvg = groups.map(function (g, gi) {
       var seg = "";
@@ -1589,14 +1609,14 @@ suppDetailHtml(r) +
         var h = Math.max((v / s.max) * chartH, 1.5);
         var x = padL + gi * gw + 8 + si * bw;
         seg += '<rect x="' + x + '" y="' + (padT + chartH - h) + '" width="' + bw + '" height="' + h + '" fill="' + s.color + '" opacity="0.85" rx="2"/>' +
-          '<text x="' + (x + bw / 2) + '" y="' + (padT + chartH - h - 4) + '" text-anchor="middle" font-size="10.5" font-weight="600" fill="#475569">' + v + '</text>';
+          '<text x="' + (x + bw / 2) + '" y="' + (padT + chartH - h - 4) + '" text-anchor="middle" font-size="10.5" font-weight="600" fill="#55504A">' + v + '</text>';
       });
-      seg += '<text x="' + (padL + gi * gw + gw / 2) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="10.5" fill="#64748b">' + anlEsc(g.label) + '</text>';
+      seg += '<text x="' + (padL + gi * gw + gw / 2) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="10.5" fill="#6B665F">' + anlEsc(g.label) + '</text>';
       return seg;
     }).join("");
     return '<svg width="100%" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img">' + gridSvg + barSvg +
-      '<line x1="' + padL + '" y1="' + (padT + chartH) + '" x2="' + (padL + chartW) + '" y2="' + (padT + chartH) + '" stroke="#cbd5e1"/>' +
-      '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + chartH) + '" stroke="#cbd5e1"/></svg>';
+      '<line x1="' + padL + '" y1="' + (padT + chartH) + '" x2="' + (padL + chartW) + '" y2="' + (padT + chartH) + '" stroke="#C5C0B8"/>' +
+      '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + chartH) + '" stroke="#C5C0B8"/></svg>';
   }
   function anlRangeBars(rows) {
     var W = 560, H = 34 * rows.length + 20, padL = 148, padR = 16, top = 6;
@@ -1605,11 +1625,11 @@ suppDetailHtml(r) +
     var rowSvg = rows.map(function (r, ri) {
       var y = top + ri * 34 + 12;
       var x0 = xOf(r.min, r.min, r.max), x1 = xOf(r.max, r.min, r.max);
-      return '<text x="' + (padL - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-size="10.5" fill="#475569">' + anlEsc(r.label) + '</text>' +
-        '<line x1="' + x0 + '" y1="' + y + '" x2="' + x1 + '" y2="' + y + '" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>' +
-        '<circle cx="' + xOf(r.mean, r.min, r.max) + '" cy="' + y + '" r="3.5" fill="#A8905F"/>' +
-        '<circle cx="' + xOf(r.median, r.min, r.max) + '" cy="' + y + '" r="3.5" fill="#dc2626"/>' +
-        '<text x="' + Math.min(x1 + 6, W - 4) + '" y="' + (y + 4) + '" font-size="9.5" fill="#94a3b8">' + r.min.toFixed(0) + "–" + r.max.toFixed(0) + '</text>';
+      return '<text x="' + (padL - 8) + '" y="' + (y + 4) + '" text-anchor="end" font-size="10.5" fill="#55504A">' + anlEsc(r.label) + '</text>' +
+        '<line x1="' + x0 + '" y1="' + y + '" x2="' + x1 + '" y2="' + y + '" stroke="#C5C0B8" stroke-width="4" stroke-linecap="round"/>' +
+        '<circle cx="' + xOf(r.mean, r.min, r.max) + '" cy="' + y + '" r="3.5" fill="#E05A3C"/>' +
+        '<circle cx="' + xOf(r.median, r.min, r.max) + '" cy="' + y + '" r="3.5" fill="#d54941"/>' +
+        '<text x="' + Math.min(x1 + 6, W - 4) + '" y="' + (y + 4) + '" font-size="9.5" fill="#86817A">' + r.min.toFixed(0) + "–" + r.max.toFixed(0) + '</text>';
     }).join("");
     return '<svg width="100%" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img">' + rowSvg + '</svg>';
   }
@@ -1620,7 +1640,7 @@ suppDetailHtml(r) +
     if (!body) return;
     if (records.length === 0) {
       note.style.display = "block";
-      note.innerHTML = '<div style="background:#F7F2E8;border:1px solid #E3D9C6;border-radius:10px;padding:40px 20px;text-align:center;color:#8F7A4E">暂无测评记录。完成至少一份心理测评后，即可在此查看探索性分析。</div>';
+      note.innerHTML = '<div style="background:#FBFAF9;border:1px solid #E6E3DE;border-radius:10px;padding:40px 20px;text-align:center;color:#524E48">暂无测评记录。完成至少一份心理测评后，即可在此查看探索性分析。</div>';
       body.innerHTML = "";
       return;
     }
@@ -1644,12 +1664,12 @@ suppDetailHtml(r) +
     });
     var riskBadge = function (level, num) {
       var cls = { "高风险": "b-red", "中度风险": "b-orange", "轻度风险": "b-yellow", "低风险": "b-green" }[level] || "b-green";
-      return '<span class="badge ' + cls + '">' + level + '</span> <span style="color:#5C4A32">' + num + '</span>';
+      return '<span class="badge ' + cls + '">' + level + '</span> <span style="color:#1F1D1A">' + num + '</span>';
     };
     var corrCell = function (cell) {
       if (cell.rho === null) return '<span style="color:#b8b8b8">–</span>';
       var a = Math.abs(cell.rho);
-      var color = a < 0.1 ? "#8F7A4E" : a < 0.3 ? "#5C4A32" : a < 0.5 ? "#b45309" : "#dc2626";
+      var color = a < 0.1 ? "#C74A2F" : a < 0.3 ? "#A83C24" : a < 0.5 ? "#b45309" : "#d54941";
       return '<div style="color:' + color + ';font-size:14px">' + (cell.rho >= 0 ? "+" : "") + cell.rho.toFixed(2) +
         '<div style="font-size:10px;color:#a5a5a5;font-weight:400">' + cell.effect + '·n=' + cell.n + '</div></div>';
     };
@@ -1657,8 +1677,8 @@ suppDetailHtml(r) +
     // 样本概况
     html += '<div class="stat-grid">' +
       '<div class="stat-card"><div class="stat-head"><span class="stat-label">测评记录总数</span></div><div class="stat-num">' + total + '</div></div>' +
-      '<div class="stat-card"><div class="stat-head"><span class="stat-label">含鼠标轨迹</span></div><div class="stat-num">' + withTraj + '</div><div style="font-size:12px;color:#8F7A4E">' + pct(withTraj) + '</div></div>' +
-      '<div class="stat-card"><div class="stat-head"><span class="stat-label">含行为指标</span></div><div class="stat-num">' + withM + '</div><div style="font-size:12px;color:#8F7A4E">' + pct(withM) + '</div></div>' +
+      '<div class="stat-card"><div class="stat-head"><span class="stat-label">含鼠标轨迹</span></div><div class="stat-num">' + withTraj + '</div><div style="font-size:12px;color:#524E48">' + pct(withTraj) + '</div></div>' +
+      '<div class="stat-card"><div class="stat-head"><span class="stat-label">含行为指标</span></div><div class="stat-num">' + withM + '</div><div style="font-size:12px;color:#524E48">' + pct(withM) + '</div></div>' +
       '<div class="stat-card"><div class="stat-head"><span class="stat-label">摄像头可用(normal)</span></div><div class="stat-num">' + camNormal + '</div></div>' +
       '<div class="stat-card"><div class="stat-head"><span class="stat-label">摄像头降级(degraded)</span></div><div class="stat-num">' + camDegraded + '</div></div>' +
       '<div class="stat-card"><div class="stat-head"><span class="stat-label">高风险记录</span></div><div class="stat-num red">' + highN + '</div></div>' +
@@ -1668,10 +1688,10 @@ suppDetailHtml(r) +
       .map(function (r) { return { label: r, value: records.filter(function (x) { return x.risk === r; }).length, color: ANL_RISK_COLORS[r] }; });
     var camDistMap = {};
     records.forEach(function (r) { var m = r.cam || r.cameraMode || "unknown"; camDistMap[m] = (camDistMap[m] || 0) + 1; });
-    var camDistItems = Object.keys(camDistMap).map(function (m) { return { label: ANL_CAMERA_LABELS[m] || m, value: camDistMap[m], color: ANL_CAM_COLORS[m] || "#94a3b8" }; });
+    var camDistItems = Object.keys(camDistMap).map(function (m) { return { label: ANL_CAMERA_LABELS[m] || m, value: camDistMap[m], color: ANL_CAM_COLORS[m] || "#86817A" }; });
     html += '<div class="table-card" style="margin-top:16px">' +
-      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6"><h3 class="sec-title" style="margin:0">样本构成（分析图）</h3>' +
-      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">风险等级与摄像头采集状态在全部记录中的占比分布。</p></div>' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE"><h3 class="sec-title" style="margin:0">样本构成（分析图）</h3>' +
+      '<p style="font-size:12px;color:#524E48;margin-top:4px">风险等级与摄像头采集状态在全部记录中的占比分布。</p></div>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;padding:18px">' +
       '<div style="display:flex;flex-direction:column;align-items:center;gap:10px">' +
       anlDonut(riskDistItems, 170, 24, total, "记录总数") +
@@ -1682,97 +1702,97 @@ suppDetailHtml(r) +
       '</div></div>';
     // 量表 x 轨迹相关矩阵
     html += '<div class="table-card" style="margin-top:16px">' +
-      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE">' +
       '<h3 class="sec-title" style="margin:0">量表分数 × 鼠标轨迹指标（Spearman 相关）</h3>' +
-      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">探索性相关，样本 n 显示在各格；方向为正号表示指标随分数同向变化。相关≠因果，不作显著性检验。' +
+      '<p style="font-size:12px;color:#524E48;margin-top:4px">探索性相关，样本 n 显示在各格；方向为正号表示指标随分数同向变化。相关≠因果，不作显著性检验。' +
       (corr.maxN < 5 ? '<span style="color:#b45309">样本不足 5 条时相关不稳定，仅供直观参考。</span>' : '') + '</p></div>' +
-      '<div style="padding:16px 18px;border-bottom:1px solid #F0E8DA">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:12px;font-weight:500;color:#64748b">分析图 · Spearman 相关热力图</span></div>' +
+      '<div style="padding:16px 18px;border-bottom:1px solid #F1EFEC">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:12px;font-weight:500;color:#6B665F">分析图 · Spearman 相关热力图</span></div>' +
       anlHeatmap(ANL_METRIC_KEYS, ANL_SCALE_COLS, corr.cells) +
-      '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;font-size:11px;color:#94a3b8">' +
-      '<span>负相关</span><svg width="90" height="10"><defs><linearGradient id="corr-grad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(37,99,235,.85)"/><stop offset="50%" stop-color="#f1f5f9"/><stop offset="100%" stop-color="rgba(217,119,6,.85)"/></linearGradient></defs><rect width="90" height="10" fill="url(#corr-grad)" rx="3"/></svg><span>正相关</span>' +
+      '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;font-size:11px;color:#86817A">' +
+      '<span>负相关</span><svg width="90" height="10"><defs><linearGradient id="corr-grad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(37,99,235,.85)"/><stop offset="50%" stop-color="#F1EFEC"/><stop offset="100%" stop-color="rgba(212,136,6,.85)"/></linearGradient></defs><rect width="90" height="10" fill="url(#corr-grad)" rx="3"/></svg><span>正相关</span>' +
       '<span style="margin-left:auto">灰 = 样本不足或无相关，– = 无法计算</span></div></div>' +
-      '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E3D9C6">' +
-      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px;white-space:nowrap">轨迹指标</th>' +
-      ANL_SCALE_COLS.map(function (c) { return '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px;white-space:nowrap">' + c.label + '</th>'; }).join("") +
+      '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E6E3DE">' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px;white-space:nowrap">轨迹指标</th>' +
+      ANL_SCALE_COLS.map(function (c) { return '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px;white-space:nowrap">' + c.label + '</th>'; }).join("") +
       '</tr></thead><tbody>' +
       ANL_METRIC_KEYS.map(function (rk, ri) {
-        return '<tr style="border-bottom:1px solid #F0E8DA">' +
-          '<td style="padding:10px 14px;color:#5C4A32;font-size:13px;white-space:nowrap;font-weight:500">' + ANL_METRIC_LABELS[rk] + '</td>' +
+        return '<tr style="border-bottom:1px solid #F1EFEC">' +
+          '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px;white-space:nowrap;font-weight:500">' + ANL_METRIC_LABELS[rk] + '</td>' +
           ANL_SCALE_COLS.map(function (c, ci) { return '<td style="padding:10px 14px">' + corrCell(corr.cells[ri][ci]) + '</td>'; }).join("") +
           '</tr>';
       }).join("") + '</tbody></table></div></div>';
     // 行为信号 x 风险等级
     var sigChart = signals.length === 0 ? "" :
-      '<div style="padding:16px 18px;border-bottom:1px solid #F0E8DA">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px"><span style="font-size:12px;font-weight:500;color:#64748b">分析图 · 各信号记录的风险等级堆叠分布</span>' +
+      '<div style="padding:16px 18px;border-bottom:1px solid #F1EFEC">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px"><span style="font-size:12px;font-weight:500;color:#6B665F">分析图 · 各信号记录的风险等级堆叠分布</span>' +
       anlLegend(ANL_RISK_ORDER.map(function (r) { return { label: r, color: ANL_RISK_COLORS[r] }; })) + '</div>' +
       anlStackedBars(signals.map(function (s) {
         return { label: ANL_SIGNAL_LABELS[s.signal] || s.signal, parts: [s.low, s.mild, s.moderate, s.high], total: s.count };
       }), ANL_RISK_ORDER.map(function (r) { return { label: r, color: ANL_RISK_COLORS[r] }; })) + '</div>';
     var sigRows = signals.length === 0
-      ? '<p style="padding:16px 18px;color:#8F7A4E;font-size:13px">暂无命中行为信号的记录。</p>'
-      : '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E3D9C6">' +
-        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">行为信号</th>' +
-        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">记录数</th>' +
-        ANL_RISK_ORDER.map(function (r) { return '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">' + r + '</th>'; }).join("") +
-        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">高风险占比</th>' +
+      ? '<p style="padding:16px 18px;color:#524E48;font-size:13px">暂无命中行为信号的记录。</p>'
+      : '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E6E3DE">' +
+        '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">行为信号</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">记录数</th>' +
+        ANL_RISK_ORDER.map(function (r) { return '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">' + r + '</th>'; }).join("") +
+        '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">高风险占比</th>' +
         '</tr></thead><tbody>' +
         signals.map(function (s) {
-          return '<tr style="border-bottom:1px solid #F0E8DA">' +
-            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px;white-space:nowrap">' + (ANL_SIGNAL_LABELS[s.signal] || s.signal) + '</td>' +
-            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + s.count + '</td>' +
+          return '<tr style="border-bottom:1px solid #F1EFEC">' +
+            '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px;white-space:nowrap">' + (ANL_SIGNAL_LABELS[s.signal] || s.signal) + '</td>' +
+            '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + s.count + '</td>' +
             '<td style="padding:10px 14px">' + riskBadge("低风险", s.low) + '</td>' +
             '<td style="padding:10px 14px">' + riskBadge("轻度风险", s.mild) + '</td>' +
             '<td style="padding:10px 14px">' + riskBadge("中度风险", s.moderate) + '</td>' +
             '<td style="padding:10px 14px">' + riskBadge("高风险", s.high) + '</td>' +
-            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + s.highPct + '%</td></tr>';
+            '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + s.highPct + '%</td></tr>';
         }).join("") + '</tbody></table></div>';
     html += '<div class="table-card" style="margin-top:16px">' +
-      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE">' +
       '<h3 class="sec-title" style="margin:0">行为信号 × 风险等级交叉</h3>' +
-      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">命中各行为信号（鼠标轨迹启发式规则）的记录在四档风险中的分布；同一记录可命中多个信号。</p></div>' + sigChart + sigRows + '</div>';
+      '<p style="font-size:12px;color:#524E48;margin-top:4px">命中各行为信号（鼠标轨迹启发式规则）的记录在四档风险中的分布；同一记录可命中多个信号。</p></div>' + sigChart + sigRows + '</div>';
     // 视频采集状态 x 量表/风险
     var camChart = camera.length === 0 ? "" :
-      '<div style="padding:16px 18px;border-bottom:1px solid #F0E8DA">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px"><span style="font-size:12px;font-weight:500;color:#64748b">分析图 · 各采集状态下平均量表分数（柱高按量表满分归一）</span>' +
+      '<div style="padding:16px 18px;border-bottom:1px solid #F1EFEC">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px"><span style="font-size:12px;font-weight:500;color:#6B665F">分析图 · 各采集状态下平均量表分数（柱高按量表满分归一）</span>' +
       anlLegend([
-        { label: "平均 PHQ-9（满分 27）", color: "#A8905F" },
-        { label: "平均 PSS-10（满分 50）", color: "#ea580c" }
+        { label: "平均 PHQ-9（满分 27）", color: "#E05A3C" },
+        { label: "平均 PSS-10（满分 50）", color: "#D48806" }
       ]) + '</div>' +
       anlGroupBars(camera.map(function (row) {
         return { label: (ANL_CAMERA_LABELS[row.mode] || row.mode).replace(/\s*\(.*\)/, ""), values: [row.avgPhq9, row.avgPss10] };
       }), [
-        { label: "平均 PHQ-9", color: "#A8905F", max: 27 },
-        { label: "平均 PSS-10", color: "#ea580c", max: 50 }
+        { label: "平均 PHQ-9", color: "#E05A3C", max: 27 },
+        { label: "平均 PSS-10", color: "#D48806", max: 50 }
       ]) +
-      '<p style="font-size:11px;color:#94a3b8;margin-top:6px">纵轴为占量表满分的百分比（便于在同一图上比较）；柱顶标注为实际平均分。</p></div>';
+      '<p style="font-size:11px;color:#86817A;margin-top:6px">纵轴为占量表满分的百分比（便于在同一图上比较）；柱顶标注为实际平均分。</p></div>';
     var camRows = camera.length === 0
-      ? '<p style="padding:16px 18px;color:#8F7A4E;font-size:13px">暂无记录。</p>'
-      : '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E3D9C6">' +
-        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">采集状态</th>' +
-        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">记录数</th>' +
-        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">高风险数</th>' +
-        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">高风险占比</th>' +
-        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">平均 PHQ-9</th>' +
-        '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">平均 PSS-10</th>' +
+      ? '<p style="padding:16px 18px;color:#524E48;font-size:13px">暂无记录。</p>'
+      : '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E6E3DE">' +
+        '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">采集状态</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">记录数</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">高风险数</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">高风险占比</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">平均 PHQ-9</th>' +
+        '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">平均 PSS-10</th>' +
         '</tr></thead><tbody>' +
         camera.map(function (row) {
-          return '<tr style="border-bottom:1px solid #F0E8DA">' +
-            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px;white-space:nowrap">' + (ANL_CAMERA_LABELS[row.mode] || row.mode) + '</td>' +
-            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + row.count + '</td>' +
-            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + row.high + '</td>' +
-            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + row.highPct + '%</td>' +
-            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (row.avgPhq9 === null ? "–" : row.avgPhq9) + '</td>' +
-            '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (row.avgPss10 === null ? "–" : row.avgPss10) + '</td></tr>';
+          return '<tr style="border-bottom:1px solid #F1EFEC">' +
+            '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px;white-space:nowrap">' + (ANL_CAMERA_LABELS[row.mode] || row.mode) + '</td>' +
+            '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + row.count + '</td>' +
+            '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + row.high + '</td>' +
+            '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + row.highPct + '%</td>' +
+            '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (row.avgPhq9 === null ? "–" : row.avgPhq9) + '</td>' +
+            '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (row.avgPss10 === null ? "–" : row.avgPss10) + '</td></tr>';
         }).join("") + '</tbody></table></div>';
     html += '<div class="table-card" style="margin-top:16px">' +
-      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE">' +
       '<h3 class="sec-title" style="margin:0">视频采集状态 × 量表分数</h3>' +
-      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">当前平台摄像头仅做可用性检测（normal / degraded），未存储视频帧；该交叉表展示不同采集状态下量表分数的概况，用于排查采集环境（如降级样本是否系统性地伴随特定作答模式）。</p></div>' +
+      '<p style="font-size:12px;color:#524E48;margin-top:4px">当前平台摄像头仅做可用性检测（normal / degraded），未存储视频帧；该交叉表展示不同采集状态下量表分数的概况，用于排查采集环境（如降级样本是否系统性地伴随特定作答模式）。</p></div>' +
       camChart +
       camRows +
-      '<div style="padding:12px 18px;border-top:1px solid #F0E8DA;background:#FBF7EF;font-size:12px;color:#8F7A4E">' +
+      '<div style="padding:12px 18px;border-top:1px solid #F1EFEC;background:#FBFAF9;font-size:12px;color:#524E48">' +
       '视频行为信号（面部动作单元、表情贫乏度、注视等）的采集建议与心理学依据详见《调研-摄像头信息心理学研究.md》，当前版本尚未落库帧级指标，待阶段化增强后此卡将扩展为帧级特征关联分析。</div></div>';
     // 轨迹指标分布
     var distRowsHave = distRows.filter(function (m) { return m.sum; });
@@ -1780,41 +1800,41 @@ suppDetailHtml(r) +
       return { label: m.label, min: m.sum.min, max: m.sum.max, median: m.sum.median, mean: m.sum.mean, n: m.sum.n };
     });
     var distChart = (distRowsHave.length === 0 || !rangeRows.some(function (r) { return r.max > r.min; }))
-      ? '<p style="padding:12px 18px;color:#8F7A4E;font-size:13px">当前样本各指标取值全相同（或暂无可分析的记录），暂时无法绘制范围图。</p>'
-      : '<div style="padding:16px 18px;border-bottom:1px solid #F0E8DA">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px"><span style="font-size:12px;font-weight:500;color:#64748b">分析图 · 各指标数值范围与均值/中位数（各指标独立标尺）</span>' +
-        '<div style="display:flex;align-items:center;gap:12px;font-size:11px;color:#64748b">' +
-        '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#A8905F;display:inline-block"></span>均值</span>' +
-        '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#dc2626;display:inline-block"></span>中位数</span>' +
-        '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:14px;height:4px;border-radius:2px;background:#cbd5e1;display:inline-block"></span>最小–最大</span>' +
+      ? '<p style="padding:12px 18px;color:#524E48;font-size:13px">当前样本各指标取值全相同（或暂无可分析的记录），暂时无法绘制范围图。</p>'
+      : '<div style="padding:16px 18px;border-bottom:1px solid #F1EFEC">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px"><span style="font-size:12px;font-weight:500;color:#6B665F">分析图 · 各指标数值范围与均值/中位数（各指标独立标尺）</span>' +
+        '<div style="display:flex;align-items:center;gap:12px;font-size:11px;color:#6B665F">' +
+        '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#E05A3C;display:inline-block"></span>均值</span>' +
+        '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:#d54941;display:inline-block"></span>中位数</span>' +
+        '<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:14px;height:4px;border-radius:2px;background:#C5C0B8;display:inline-block"></span>最小–最大</span>' +
         '</div></div>' + anlRangeBars(rangeRows) + '</div>';
     var distRowsHtml = distRows.map(function (m) {
       var s = m.sum;
-      return '<tr style="border-bottom:1px solid #F0E8DA">' +
-        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px;white-space:nowrap;font-weight:500">' + m.label + '</td>' +
-        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.n : 0) + '</td>' +
-        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.mean.toFixed(2) : "–") + '</td>' +
-        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.median.toFixed(2) : "–") + '</td>' +
-        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.sd.toFixed(2) : "–") + '</td>' +
-        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.min.toFixed(0) : "–") + '</td>' +
-        '<td style="padding:10px 14px;color:#5C4A32;font-size:13px">' + (s ? s.max.toFixed(0) : "–") + '</td></tr>';
+      return '<tr style="border-bottom:1px solid #F1EFEC">' +
+        '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px;white-space:nowrap;font-weight:500">' + m.label + '</td>' +
+        '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s ? s.n : 0) + '</td>' +
+        '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s ? s.mean.toFixed(2) : "–") + '</td>' +
+        '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s ? s.median.toFixed(2) : "–") + '</td>' +
+        '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s ? s.sd.toFixed(2) : "–") + '</td>' +
+        '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s ? s.min.toFixed(0) : "–") + '</td>' +
+        '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s ? s.max.toFixed(0) : "–") + '</td></tr>';
     }).join("");
     html += '<div class="table-card" style="margin-top:16px">' +
-      '<div style="padding:14px 18px;border-bottom:1px solid #E3D9C6">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE">' +
       '<h3 class="sec-title" style="margin:0">鼠标轨迹指标分布（描述统计）</h3>' +
-      '<p style="font-size:12px;color:#8F7A4E;margin-top:4px">基于全部含行为指标记录；均值/中位数/标准差/最小/最大，用于观察批次分布与异常作答。</p></div>' +
+      '<p style="font-size:12px;color:#524E48;margin-top:4px">基于全部含行为指标记录；均值/中位数/标准差/最小/最大，用于观察批次分布与异常作答。</p></div>' +
       distChart +
-      '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E3D9C6">' +
-      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">指标</th>' +
-      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">n</th>' +
-      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">均值</th>' +
-      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">中位数</th>' +
-      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">标准差</th>' +
-      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">最小</th>' +
-      '<th style="text-align:left;padding:10px 14px;color:#8F7A4E;font-size:13px">最大</th>' +
+      '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E6E3DE">' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">指标</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">n</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">均值</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">中位数</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">标准差</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">最小</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">最大</th>' +
       '</tr></thead><tbody>' + distRowsHtml + '</tbody></table></div></div>';
     // 免责声明
-    html += '<div style="margin-top:16px;border:1px solid #e7c98a;background:#fdf6e3;border-radius:10px;padding:14px 18px;font-size:13px;color:#9a6700">' +
+    html += '<div style="margin-top:16px;border:1px solid #fde68a;background:#fffbeb;border-radius:10px;padding:14px 18px;font-size:13px;color:#b45309">' +
       '<b>本页面所有统计与相关均为探索性分析</b>，样本量小、存在个体差异与情境噪声，不构成心理健康评估结论；相关关系不代表因果关系。' +
       '请结合原始测评记录与量表结果综合判断，重要结论需专业人员复核。</div>';
     body.innerHTML = html;
@@ -1870,36 +1890,36 @@ suppDetailHtml(r) +
       html = '<h2 class="sec-title">' + icon("i-shield", 20) + '隐私保护设置</h2>';
       items.forEach(function (it) {
         html += '<div class="check-row"><input type="checkbox" data-pk="' + it.k + '" ' + (privacy[it.k] ? "checked" : "") + '>' +
-          '<div style="flex:1"><div class="flex-center" style="gap:8px">' + icon(it.i, 16) + '<span class="text-sm" style="color:#334155;font-weight:500">' + it.t + '</span></div>' +
+          '<div style="flex:1"><div class="flex-center" style="gap:8px">' + icon(it.i, 16) + '<span class="text-sm" style="color:#3A362F;font-weight:500">' + it.t + '</span></div>' +
           '<p class="check-desc">' + it.d + '</p></div></div>';
       });
     } else if (key === "warning") {
       html =
         '<h2 class="sec-title">' + icon("i-bell", 20) + '预警阈值配置</h2>' +
-        '<div style="background:#F7F2E8;border-radius:8px;padding:16px" class="mb-4">' +
-        '<h3 style="font-size:14px;font-weight:600;color:#334155;margin-bottom:12px">PHQ-9 阈值</h3>' +
+        '<div style="background:#FBFAF9;border-radius:8px;padding:16px" class="mb-4">' +
+        '<h3 style="font-size:14px;font-weight:600;color:#3A362F;margin-bottom:12px">PHQ-9 阈值</h3>' +
         '<div class="form-grid">' +
         '<div><label class="field-label">轻度阈值</label><input type="number" value="' + warn.pm + '" data-wk="pm"></div>' +
         '<div><label class="field-label">中度阈值</label><input type="number" value="' + warn.pmo + '" data-wk="pmo"></div>' +
         '<div><label class="field-label">重度阈值</label><input type="number" value="' + warn.ps + '" data-wk="ps"></div>' +
         '</div></div>' +
-        '<div style="background:#F7F2E8;border-radius:8px;padding:16px" class="mb-4">' +
-        '<h3 style="font-size:14px;font-weight:600;color:#334155;margin-bottom:12px">GAD-7 阈值</h3>' +
+        '<div style="background:#FBFAF9;border-radius:8px;padding:16px" class="mb-4">' +
+        '<h3 style="font-size:14px;font-weight:600;color:#3A362F;margin-bottom:12px">GAD-7 阈值</h3>' +
         '<div class="form-grid">' +
         '<div><label class="field-label">轻度阈值</label><input type="number" value="' + warn.gm + '" data-wk="gm"></div>' +
         '<div><label class="field-label">中度阈值</label><input type="number" value="' + warn.gmo + '" data-wk="gmo"></div>' +
         '<div><label class="field-label">重度阈值</label><input type="number" value="' + warn.gs + '" data-wk="gs"></div>' +
         '</div></div>' +
-        '<div style="background:#F7F2E8;border-radius:8px;padding:16px">' +
-        '<h3 style="font-size:14px;font-weight:600;color:#334155;margin-bottom:12px">通知设置</h3>' +
+        '<div style="background:#FBFAF9;border-radius:8px;padding:16px">' +
+        '<h3 style="font-size:14px;font-weight:600;color:#3A362F;margin-bottom:12px">通知设置</h3>' +
         '<div style="display:flex;flex-direction:column;gap:8px">' +
-        '<label class="check-simple"><input type="checkbox" data-wk="mail" ' + (warn.mail ? "checked" : "") + '><span class="text-sm" style="color:#475569">高风险时发送邮件通知</span></label>' +
-        '<label class="check-simple"><input type="checkbox" data-wk="push" ' + (warn.push ? "checked" : "") + '><span class="text-sm" style="color:#475569">高风险时发送推送通知</span></label>' +
+        '<label class="check-simple"><input type="checkbox" data-wk="mail" ' + (warn.mail ? "checked" : "") + '><span class="text-sm" style="color:#55504A">高风险时发送邮件通知</span></label>' +
+        '<label class="check-simple"><input type="checkbox" data-wk="push" ' + (warn.push ? "checked" : "") + '><span class="text-sm" style="color:#55504A">高风险时发送推送通知</span></label>' +
         '</div></div>';
     } else {
       var pwdHtml = '';
       if (pwdMsg) {
-        pwdHtml = '<p style="font-size:12px;margin-top:8px;color:' + (pwdMsg.ok ? '#16a34a' : '#ef4444') + '">' + pwdMsg.text + '</p>';
+        pwdHtml = '<p style="font-size:12px;margin-top:8px;color:' + (pwdMsg.ok ? '#2ba344' : '#d54941') + '">' + pwdMsg.text + '</p>';
       }
       html =
         '<h2 class="sec-title">' + icon("i-sliders", 20) + '系统选项</h2>' +
@@ -1911,11 +1931,11 @@ suppDetailHtml(r) +
         '<option value="dark" ' + (sys.theme === "dark" ? "selected" : "") + '>深色</option>' +
         '<option value="auto" ' + (sys.theme === "auto" ? "selected" : "") + '>自动</option></select></div>' +
         '<div class="check-row"><input type="checkbox" id="auto-save" ' + (sys.autosave ? "checked" : "") + '>' +
-        '<div><div class="text-sm" style="color:#334155;font-weight:500">自动保存</div><p class="check-desc">测评完成后自动保存结果</p></div></div>' +
+        '<div><div class="text-sm" style="color:#3A362F;font-weight:500">自动保存</div><p class="check-desc">测评完成后自动保存结果</p></div></div>' +
         '<div class="check-row"><input type="checkbox" id="debug-mode" ' + (sys.debug ? "checked" : "") + '>' +
-        '<div><div class="text-sm" style="color:#334155;font-weight:500">调试模式</div><p class="check-desc">启用详细的日志输出和调试信息</p></div></div>' +
-        '<div style="background:#F7F2E8;border:1px solid #e5d8c2;border-radius:8px;padding:16px" class="mt-4">' +
-        '<h3 style="font-size:14px;font-weight:600;color:#334155;margin-bottom:4px">' + icon("i-lock", 16) + ' 管理密码</h3>' +
+        '<div><div class="text-sm" style="color:#3A362F;font-weight:500">调试模式</div><p class="check-desc">启用详细的日志输出和调试信息</p></div></div>' +
+        '<div style="background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:16px" class="mt-4">' +
+        '<h3 style="font-size:14px;font-weight:600;color:#3A362F;margin-bottom:4px">' + icon("i-lock", 16) + ' 管理密码</h3>' +
         '<p class="check-desc mb-2">数据管理、系统设置、关于系统页面的访问密码（至少 6 位）</p>' +
         '<div class="form-grid">' +
         '<div><label class="field-label">原密码</label><input type="password" id="pwd-old" placeholder="原密码"></div>' +
@@ -1994,9 +2014,9 @@ suppDetailHtml(r) +
     var html = "";
 
     // —— 鼠标轨迹调试 ——
-    html += '<div style="background:#F7F2E8;border:1px solid #e5d8c2;border-radius:8px;padding:16px" class="mt-4">' +
+    html += '<div style="background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:16px" class="mt-4">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
-        '<h3 style="font-size:14px;font-weight:600;color:#334155;display:flex;align-items:center;gap:8px">' + icon("i-mouse", 16) + '鼠标轨迹调试</h3>' +
+        '<h3 style="font-size:14px;font-weight:600;color:#3A362F;display:flex;align-items:center;gap:8px">' + icon("i-mouse", 16) + '鼠标轨迹调试</h3>' +
         '<div style="display:flex;gap:8px">' +
           '<button class="btn btn-ghost" id="btn-traj-refresh" style="font-size:12px;padding:6px 10px">' + icon("i-refresh", 14) + ' 刷新</button>' +
           '<button class="btn btn-ghost" id="btn-traj-clear" style="font-size:12px;padding:6px 10px">' + icon("i-trash", 14) + ' 清空轨迹</button>' +
@@ -2004,18 +2024,18 @@ suppDetailHtml(r) +
       '</div>' +
       '<p class="check-desc mb-2">选择任意一条已采集的测评记录，可查看其鼠标轨迹行为指标摘要、采样点、坐标序列与相对时间，确认行为数据采集是否正常（测评第 3 步答题时全量采集每一次鼠标挪动与点击动作，用于行为特征分析）。</p>';
     if (trajRecords.length === 0) {
-      html += '<div style="background:#fff;border:1px solid #e5d8c2;border-radius:8px;padding:14px;font-size:13px;color:#94a3b8">' +
+      html += '<div style="background:#fff;border:1px solid #E6E3DE;border-radius:8px;padding:14px;font-size:13px;color:#86817A">' +
         '暂无已采集的鼠标轨迹数据。可先到「心理测评」完成一次测评（填问卷时轨迹自动采集、无需单独操作），再回到这里点「刷新」查看。</div>';
     } else {
       var shown = trajRecords.slice().reverse().slice(0, 6);
       var list = shown.map(function (r) {
         var on = (r.id === trajSelId);
         var camTxt = (r.cam === "degraded") ? "摄像头降级" : "采集正常";
-        return '<button data-traj-sel="' + r.id + '" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:8px;border:1px solid ' + (on ? "rgba(168,144,95,.5)" : "#e5d8c2") + ';background:' + (on ? "rgba(168,144,95,.14)" : "#fff") + ';color:' + (on ? "#8F7A4E" : "#64748b") + ';font-size:13px;text-align:left;cursor:pointer;transition:background .15s">' +
+        return '<button data-traj-sel="' + r.id + '" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:8px;border:1px solid ' + (on ? "rgba(224,90,60,.5)" : "#E6E3DE") + ';background:' + (on ? "rgba(224,90,60,.1)" : "#fff") + ';color:' + (on ? "#C74A2F" : "#6B665F") + ';font-size:13px;text-align:left;cursor:pointer;transition:background .15s">' +
           '<b>' + r.id + '</b>' +
-          '<span style="color:#94a3b8;font-size:12px">' + r.sid + '</span>' +
-          '<span style="margin-left:auto;color:#94a3b8;font-size:12px">' + r.time + '</span>' +
-          '<span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#F7F2E8;color:#64748b;white-space:nowrap">' + (r.traj ? r.traj.length : 0) + ' 点 · ' + camTxt + '</span>' +
+          '<span style="color:#86817A;font-size:12px">' + r.sid + '</span>' +
+          '<span style="margin-left:auto;color:#86817A;font-size:12px">' + r.time + '</span>' +
+          '<span style="font-size:11px;padding:2px 8px;border-radius:999px;background:#FBFAF9;color:#6B665F;white-space:nowrap">' + (r.traj ? r.traj.length : 0) + ' 点 · ' + camTxt + '</span>' +
         '</button>';
       }).join("");
       html += '<div style="display:grid;gap:8px;margin-bottom:12px">' + list + '</div>';
@@ -2023,15 +2043,15 @@ suppDetailHtml(r) +
     var sel = null;
     for (var i = 0; i < dataRecords.length; i++) if (dataRecords[i].id === trajSelId) { sel = dataRecords[i]; break; }
     if (sel && sel.traj && sel.traj.length > 0) {
-      html += '<div style="background:#fff;border:1px solid #e5d8c2;border-radius:8px;padding:12px">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#94a3b8;margin-bottom:10px">' +
+      html += '<div style="background:#fff;border:1px solid #E6E3DE;border-radius:8px;padding:12px">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#86817A;margin-bottom:10px">' +
           '<span>记录 ' + sel.id + ' · 学号 ' + sel.sid + '</span>' +
-          '<span>采样点 <b style="color:#A8905F">' + sel.traj.length + '</b>' +
-          '<span style="margin:0 8px;color:#C4B697">·</span>采集模式 ' + (sel.cam === "degraded" ? "摄像头降级" : "正常") +
+          '<span>采样点 <b style="color:#1F1D1A">' + sel.traj.length + '</b>' +
+          '<span style="margin:0 8px;color:#a9aeb8">·</span>采集模式 ' + (sel.cam === "degraded" ? "摄像头降级" : "正常") +
           '</span></div>' +
         metricsSummaryHtml(sel) +
-        '<canvas id="dbg-traj-canvas" width="560" height="220" style="width:100%;border-radius:8px;background:#F7F2E8"></canvas>' +
-        '<div style="background:#F7F2E8;border-radius:8px;overflow:hidden;margin-top:10px">' +
+        '<canvas id="dbg-traj-canvas" width="560" height="220" style="width:100%;border-radius:8px;background:#FBFAF9"></canvas>' +
+        '<div style="background:#FBFAF9;border-radius:8px;overflow:hidden;margin-top:10px">' +
           '<div class="traj-head">坐标序列（x, y, 相对时间 ms）<span>共 ' + sel.traj.length + ' 点</span></div>' +
           '<div class="traj-list">' + sel.traj.map(function (p) { return "(" + p.x + ", " + p.y + ", " + p.t + "ms)"; }).join("  ") + '</div>' +
         '</div>' +
@@ -2040,20 +2060,20 @@ suppDetailHtml(r) +
     }
 
     // —— 摄像头调试 ——
-    var camMsgCls = "color:#94a3b8;background:#fff;border:1px solid #e5d8c2";
+    var camMsgCls = "color:#86817A;background:#fff;border:1px solid #E6E3DE";
     var camMsgTxt = "尚未检测。将验证摄像头权限、视频流与降级逻辑是否正常";
     if (camStatus === "testing") {
-      camMsgCls = "color:#8F7A4E;background:rgba(168,144,95,.1);border:1px solid rgba(168,144,95,.3)";
+      camMsgCls = "color:#524E48;background:rgba(224,90,60,.07);border:1px solid rgba(224,90,60,.3)";
       camMsgTxt = "正在请求摄像头权限（8 秒内未响应将自动降级）…";
     } else if (camStatus === "normal") {
-      camMsgCls = "color:#16a34a;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.25)";
+      camMsgCls = "color:#2ba344;background:rgba(43,163,68,.08);border:1px solid rgba(43,163,68,.25)";
       camMsgTxt = "摄像头调用成功：权限与视频流正常（320×240）。预览展示 2.5 秒后自动关闭，与测评第 3 步采集窗口一致。";
     } else if (camStatus === "degraded") {
       camMsgCls = "color:#b45309;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3)";
       camMsgTxt = "摄像头不可用（无摄像头 / 权限被拒绝 / 等待超时），已降级：正式测评时将自动使用受限模式，答题流程不受影响。";
     }
-    html += '<div style="background:#F7F2E8;border:1px solid #e5d8c2;border-radius:8px;padding:16px" class="mt-4">' +
-      '<h3 style="font-size:14px;font-weight:600;color:#334155;margin-bottom:6px;display:flex;align-items:center;gap:8px">' + icon("i-cam", 16) + '摄像头调试</h3>' +
+    html += '<div style="background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:16px" class="mt-4">' +
+      '<h3 style="font-size:14px;font-weight:600;color:#3A362F;margin-bottom:6px;display:flex;align-items:center;gap:8px">' + icon("i-cam", 16) + '摄像头调试</h3>' +
       '<p class="check-desc mb-2">点击「开始检测」会请求摄像头权限并启动实时预览，模拟测评第 3 步的面部数据采集（320×240，采集窗口 2.5 秒）。本机无摄像头、权限被拒绝或 8 秒等待超时，将提示降级信息——与正式测评的降级逻辑一致。</p>' +
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">' +
         '<button class="btn btn-primary" id="btn-cam-test" style="display:inline-flex;align-items:center;gap:6px">' +
@@ -2063,7 +2083,7 @@ suppDetailHtml(r) +
         (camStatus === "normal" || camStatus === "degraded" ? '<button class="btn btn-ghost" id="btn-cam-end">结束调试</button>' : '') +
       '</div>' +
       '<div style="border-radius:8px;padding:12px 16px;font-size:13px;line-height:1.7;' + camMsgCls + '">' + camMsgTxt + '</div>' +
-      (camStatus === "normal" ? '<video id="dbg-cam-video" autoplay muted playsinline style="width:100%;max-width:384px;border-radius:8px;border:1px solid #e5d8c2;background:#EAE3D5;margin-top:12px"></video>' : '') +
+      (camStatus === "normal" ? '<video id="dbg-cam-video" autoplay muted playsinline style="width:100%;max-width:384px;border-radius:8px;border:1px solid #E6E3DE;background:#F7F6F4;margin-top:12px"></video>' : '') +
     '</div>';
     return html;
   }
@@ -2379,7 +2399,7 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       '<div style="display:flex;flex-direction:column;gap:12px">' +
       qList.map(function (q, i) {
         return '<div class="question-box"><div class="question-text">' + (i + 1) + '. ' + q +
-          (revList.indexOf(i) >= 0 ? ' <span class="badge" style="background:#fff;color:#94a3b8;border:1px solid #e5d8c2;margin-left:4px;font-weight:400">反向计分</span>' : '') +
+          (revList.indexOf(i) >= 0 ? ' <span class="badge" style="background:#fff;color:#86817A;border:1px solid #E6E3DE;margin-left:4px;font-weight:400">反向计分</span>' : '') +
           '</div><div class="option-row">' +
           optList.map(function (o, oi) {
             return '<button class="opt ' + (answers[i] === oi ? "sel" : "") + '" ' + mark + '="' + i + '" data-o="' + oi + '">' + o + '</button>';
@@ -2438,12 +2458,12 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     return html;
   }
   function numField(id, labelTxt, val, min, max) {
-    return '<div><label class="text-sm" style="color:#64748b;display:block;margin-bottom:4px">' + labelTxt + '</label>' +
-      '<input type="number" id="' + id + '" min="' + min + '" max="' + max + '" value="' + val + '" class="psqi-num" style="width:100%;background:#F7F2E8;border:1px solid #e5d8c2;border-radius:8px;padding:8px 10px;font-size:14px;color:#475569" /></div>';
+    return '<div><label class="text-sm" style="color:#6B665F;display:block;margin-bottom:4px">' + labelTxt + '</label>' +
+      '<input type="number" id="' + id + '" min="' + min + '" max="' + max + '" value="' + val + '" class="psqi-num" style="width:100%;background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:8px 10px;font-size:14px;color:#55504A" /></div>';
   }
   function selField(id, labelTxt, opts, val) {
-    return '<div><label class="text-sm" style="color:#64748b;display:block;margin-bottom:4px">' + labelTxt + '</label>' +
-      '<select id="' + id + '" class="psqi-sel" style="width:100%;background:#F7F2E8;border:1px solid #e5d8c2;border-radius:8px;padding:8px 10px;font-size:14px;color:#475569">' +
+    return '<div><label class="text-sm" style="color:#6B665F;display:block;margin-bottom:4px">' + labelTxt + '</label>' +
+      '<select id="' + id + '" class="psqi-sel" style="width:100%;background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:8px 10px;font-size:14px;color:#55504A">' +
       opts.map(function (o, oi) {
         return '<option value="' + oi + '"' + (val === oi ? " selected" : "") + '>' + o + '</option>';
       }).join("") +
@@ -2485,9 +2505,9 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       html =
       '<div class="card p-6">' +
         '<h3 class="sec-title">' + icon("i-user", 20) + '基本信息</h3>' +
-        '<p class="text-sm text-slate-400 mb-4">请填写以下基本信息（标注 <span style="color:#ef4444">*</span> 的为必填项），信息仅用于测评结果归档。</p>' +
+        '<p class="text-sm text-slate-400 mb-4">请填写以下基本信息（标注 <span style="color:#d54941">*</span> 的为必填项），信息仅用于测评结果归档。</p>' +
         '<div class="form-grid">' +
-        '<div><label class="field-label">学号 <span style="color:#ef4444">*</span></label><input type="text" id="f-sid" placeholder="请输入学号"></div>' +
+        '<div><label class="field-label">学号 <span style="color:#d54941">*</span></label><input type="text" id="f-sid" placeholder="请输入学号"></div>' +
         '<div><label class="field-label">年龄</label><input type="number" id="f-age" placeholder="请输入年龄"></div>' +
         '<div><label class="field-label">性别</label><select id="f-gender"><option value="male">男</option><option value="female">女</option><option value="other">其他</option></select></div>' +
         '<div><label class="field-label">学习层次</label><select id="f-edu"><option value="本科">本科</option><option value="硕士研究生">硕士研究生</option><option value="博士研究生">博士研究生</option></select></div>' +
@@ -2498,7 +2518,7 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       html =
       '<div class="card p-6">' +
         '<h3 class="sec-title">' + icon("i-shield", 20) + '知情同意书</h3>' +
-        '<div style="font-size:14px;line-height:1.7;color:#475569;display:flex;flex-direction:column;gap:12px">' +
+        '<div style="font-size:14px;line-height:1.7;color:#55504A;display:flex;flex-direction:column;gap:12px">' +
         '<p>本系统旨在通过多模态数据采集（包括量表评估、鼠标行为追踪和面部微表情分析）进行心理问题早期预警。</p>' +
         '<p>在参与测评前，请您了解以下事项：</p>' +
         '<ul class="consent-list">' +
@@ -2508,7 +2528,7 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
         '<li>测评结果仅供参考，不作为临床诊断依据</li>' +
         '<li>数据采集过程不会记录可识别个人身份的视频图像</li>' +
         '</ul>' +
-        '<p style="color:#a9946f">请仔细阅读以上内容，确认理解并同意后继续。</p></div></div>' +
+        '<p style="color:#86817A">请仔细阅读以上内容，确认理解并同意后继续。</p></div></div>' +
         '<div style="display:flex;gap:16px" class="mt-4">' +
         '<button class="agree-btn ' + (agreed ? "agree-on" : "") + '" id="btn-agree">' + icon("i-check", 16) + ' 我同意</button>' +
         '<button class="agree-btn ' + (!agreed ? "agree-off selected" : "agree-off") + '" id="btn-disagree">' + icon("i-x", 16) + ' 我不同意</button>' +
@@ -2538,8 +2558,8 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       html =
       '<div class="card p-6" style="padding:48px 24px;text-align:center">' +
         '<svg width="64" height="64" class="c-green" style="margin:0 auto 16px"><use href="#i-check-circle"/></svg>' +
-        '<h3 style="font-size:20px;font-weight:700;color:#334155;margin-bottom:8px">本次心理测评已完成</h3>' +
-        '<p style="font-size:14px;color:#a9946f;line-height:1.7;max-width:440px;margin:0 auto 24px">感谢您的配合！您的测评数据已安全提交，将由心理站工作人员统一查看与跟进，请您耐心等待后续反馈。</p>' +
+        '<h3 style="font-size:20px;font-weight:700;color:#3A362F;margin-bottom:8px">本次心理测评已完成</h3>' +
+        '<p style="font-size:14px;color:#86817A;line-height:1.7;max-width:440px;margin:0 auto 24px">感谢您的配合！您的测评数据已安全提交，将由心理站工作人员统一查看与跟进，请您耐心等待后续反馈。</p>' +
         '<button class="btn btn-primary" id="btn-restart">' + icon("i-rotate", 16) + ' 重新开始测评</button>' +
         '</div>';
     }
