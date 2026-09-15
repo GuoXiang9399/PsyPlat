@@ -129,7 +129,7 @@ impl FusionModel {
         &self,
         q_score: f64,
         f_score: f64,
-        m_score: f64,
+        _m_score: f64,
         phq9: i32,
         gad7: i32,
         facial: Option<&FacialFeatures>,

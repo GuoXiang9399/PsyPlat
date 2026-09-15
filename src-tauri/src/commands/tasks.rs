@@ -34,7 +34,7 @@ pub async fn cancel_task(
         let _ = db.lock().await.log_access(
             "cancel_task",
             Some(&format!("id={}", id))
-        ).await;
+        );
 
         Ok(true)
     } else {

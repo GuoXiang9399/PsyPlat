@@ -24,7 +24,7 @@ pub async fn start_camera(
     app_state.set_camera_active(true).await;
 
     let db = app_state.get_db();
-    let _ = db.lock().await.log_access("start_camera", Some(&format!("duration={}s, fps={}", duration_val, fps_val))).await;
+    let _ = db.lock().await.log_access("start_camera", Some(&format!("duration={}s, fps={}", duration_val, fps_val)));
 
     Ok(format!("摄像头采集已启动，持续 {} 秒，帧率 {} fps", duration_val, fps_val))
 }
@@ -44,7 +44,7 @@ pub async fn stop_camera(
     app_state.set_camera_active(false).await;
 
     let db = app_state.get_db();
-    let _ = db.lock().await.log_access("stop_camera", None).await;
+    let _ = db.lock().await.log_access("stop_camera", None);
 
     Ok("摄像头采集已停止".to_string())
 }

@@ -18,12 +18,13 @@ pub async fn get_assessments(
     let app_state = state.lock().await;
     let db = app_state.get_db();
 
-    match db.lock().await.get_assessments(&filters).await {
+    let queried = db.lock().await.get_assessments(&filters);
+    match queried {
         Ok(records) => {
             let _ = db.lock().await.log_access(
                 "get_assessments",
                 Some(&format!("count={}", records.len()))
-            ).await;
+            );
             Ok(records)
         }
         Err(e) => Err(format!("查询评估记录失败: {}", e)),
@@ -38,12 +39,13 @@ pub async fn delete_assessment(
     let app_state = state.lock().await;
     let db = app_state.get_db();
 
-    match db.lock().await.delete_assessment(&id).await {
+    let deleted = db.lock().await.delete_assessment(&id);
+    match deleted {
         Ok(deleted) => {
             let _ = db.lock().await.log_access(
                 "delete_assessment",
                 Some(&format!("id={}, deleted={}", id, deleted))
-            ).await;
+            );
             Ok(deleted)
         }
         Err(e) => Err(format!("删除评估记录失败: {}", e)),
@@ -60,8 +62,8 @@ pub async fn export_data(
     let db = app_state.get_db();
 
     let result = match format.as_str() {
-        "csv" => db.lock().await.export_to_csv(&filepath).await,
-        "json" => db.lock().await.export_to_json(&filepath).await,
+        "csv" => db.lock().await.export_to_csv(&filepath),
+        "json" => db.lock().await.export_to_json(&filepath),
         _ => Err(anyhow::anyhow!("不支持的导出格式: {}", format)),
     };
 
@@ -70,7 +72,7 @@ pub async fn export_data(
             let _ = db.lock().await.log_access(
                 "export_data",
                 Some(&format!("format={}, path={}", format, filepath))
-            ).await;
+            );
             Ok(format!("数据已导出至: {}", filepath))
         }
         Err(e) => Err(format!("导出数据失败: {}", e)),
@@ -84,9 +86,10 @@ pub async fn get_statistics(
     let app_state = state.lock().await;
     let db = app_state.get_db();
 
-    match db.lock().await.get_statistics().await {
+    let stats = db.lock().await.get_statistics();
+    match stats {
         Ok(stats) => {
-            let _ = db.lock().await.log_access("get_statistics", None).await;
+            let _ = db.lock().await.log_access("get_statistics", None);
             Ok(stats)
         }
         Err(e) => Err(format!("获取统计信息失败: {}", e)),

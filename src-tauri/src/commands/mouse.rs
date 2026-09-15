@@ -24,7 +24,7 @@ pub async fn start_mouse_tracking(
     app_state.set_mouse_tracking_active(true).await;
 
     let db = app_state.get_db();
-    let _ = db.lock().await.log_access("start_mouse_tracking", Some(&format!("duration={}s, rate={}Hz", duration_val, rate_val))).await;
+    let _ = db.lock().await.log_access("start_mouse_tracking", Some(&format!("duration={}s, rate={}Hz", duration_val, rate_val)));
 
     Ok(format!("鼠标追踪已启动，持续 {} 秒，采样率 {} Hz", duration_val, rate_val))
 }
@@ -44,7 +44,7 @@ pub async fn stop_mouse_tracking(
     app_state.set_mouse_tracking_active(false).await;
 
     let db = app_state.get_db();
-    let _ = db.lock().await.log_access("stop_mouse_tracking", None).await;
+    let _ = db.lock().await.log_access("stop_mouse_tracking", None);
 
     Ok("鼠标追踪已停止".to_string())
 }

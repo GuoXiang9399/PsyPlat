@@ -10,15 +10,15 @@ pub struct DatabaseService {
 }
 
 impl DatabaseService {
-    pub async fn new(db_path: &str) -> Result<Self> {
+    pub fn new(db_path: &str) -> Result<Self> {
         let conn = Connection::open(db_path)
             .context("Failed to open database")?;
         let mut service = Self { conn };
-        service.init().await?;
+        service.init()?;
         Ok(service)
     }
 
-    pub async fn init(&mut self) -> Result<()> {
+    pub fn init(&mut self) -> Result<()> {
         self.conn.execute_batch(
             "CREATE TABLE IF NOT EXISTS assessments (
                 id TEXT PRIMARY KEY,
@@ -54,7 +54,7 @@ impl DatabaseService {
         Ok(())
     }
 
-    pub async fn save_assessment(&self, record: &AssessmentRecord) -> Result<String> {
+    pub fn save_assessment(&self, record: &AssessmentRecord) -> Result<String> {
         let id = record.id.clone();
         let mouse_json = record.mouse_features.as_ref()
             .map(|f| serde_json::to_string(f).unwrap_or_default());
@@ -81,7 +81,7 @@ impl DatabaseService {
         Ok(id)
     }
 
-    pub async fn get_assessments(&self, filters: &AssessmentFilters) -> Result<Vec<AssessmentRecord>> {
+    pub fn get_assessments(&self, filters: &AssessmentFilters) -> Result<Vec<AssessmentRecord>> {
         let mut query = String::from("SELECT * FROM assessments WHERE 1=1");
         let mut params_vec: Vec<Box<dyn rusqlite::ToSql>> = Vec::new();
 
@@ -158,7 +158,7 @@ impl DatabaseService {
         Ok(result)
     }
 
-    pub async fn delete_assessment(&self, id: &str) -> Result<bool> {
+    pub fn delete_assessment(&self, id: &str) -> Result<bool> {
         let affected = self.conn.execute(
             "DELETE FROM assessments WHERE id = ?1",
             params![id]
@@ -166,7 +166,7 @@ impl DatabaseService {
         Ok(affected > 0)
     }
 
-    pub async fn get_statistics(&self) -> Result<Statistics> {
+    pub fn get_statistics(&self) -> Result<Statistics> {
         let total: i64 = self.conn.query_row(
             "SELECT COUNT(*) FROM assessments", [], |row| row.get(0)
         ).unwrap_or(0);
@@ -231,11 +231,11 @@ impl DatabaseService {
         })
     }
 
-    pub async fn export_to_csv(&self, filepath: &str) -> Result<()> {
+    pub fn export_to_csv(&self, filepath: &str) -> Result<()> {
         let records = self.get_assessments(&AssessmentFilters {
             start_date: None, end_date: None, risk_level: None,
             min_score: None, max_score: None, limit: None, offset: None,
-        }).await?;
+        })?;
 
         let mut writer = csv::Writer::from_path(filepath)
             .context("Failed to create CSV file")?;
@@ -264,11 +264,11 @@ impl DatabaseService {
         Ok(())
     }
 
-    pub async fn export_to_json(&self, filepath: &str) -> Result<()> {
+    pub fn export_to_json(&self, filepath: &str) -> Result<()> {
         let records = self.get_assessments(&AssessmentFilters {
             start_date: None, end_date: None, risk_level: None,
             min_score: None, max_score: None, limit: None, offset: None,
-        }).await?;
+        })?;
 
         let json = serde_json::to_string_pretty(&records)
             .context("Failed to serialize assessments")?;
@@ -279,7 +279,7 @@ impl DatabaseService {
         Ok(())
     }
 
-    pub async fn load_settings(&self) -> Result<AppSettings> {
+    pub fn load_settings(&self) -> Result<AppSettings> {
         let mut settings = AppSettings::default();
 
         let mut stmt = self.conn.prepare("SELECT key, value FROM settings")?;
@@ -310,7 +310,7 @@ impl DatabaseService {
         Ok(settings)
     }
 
-    pub async fn save_settings(&self, settings: &AppSettings) -> Result<()> {
+    pub fn save_settings(&self, settings: &AppSettings) -> Result<()> {
         let settings_map = vec![
             ("auto_start", settings.auto_start.to_string()),
             ("tracking_enabled", settings.tracking_enabled.to_string()),
@@ -338,7 +338,7 @@ impl DatabaseService {
         Ok(())
     }
 
-    pub async fn log_access(&self, action: &str, details: Option<&str>) -> Result<()> {
+    pub fn log_access(&self, action: &str, details: Option<&str>) -> Result<()> {
         let timestamp = chrono::Local::now().to_rfc3339();
         self.conn.execute(
             "INSERT INTO access_logs (timestamp, action, details) VALUES (?1, ?2, ?3)",

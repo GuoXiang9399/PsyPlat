@@ -33,7 +33,7 @@ pub async fn get_system_status(
     let queue_size = queue.lock().await.len();
 
     let db = app_state.get_db();
-    let db_connected = db.lock().await.log_access("ping", None).await.is_ok();
+    let db_connected = db.lock().await.log_access("ping", None).is_ok();
 
     let status = SystemStatus {
         mouse_tracking_active: mouse_active,
