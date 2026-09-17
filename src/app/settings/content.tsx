@@ -88,7 +88,7 @@ function MouseMetricsSummary({
   )
 }
 
-// 鼠标轨迹调试画布：与数据管理页同款奶油色绘制（起点/终点标注 + 采样节点）
+// 鼠标轨迹调试画布：与数据管理页同款品牌蓝绘制（起点/终点标注 + 采样节点）
 function DebugTrajCanvas({ traj }: { traj: { x: number; y: number; t: number }[] }) {
   const ref = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
@@ -99,7 +99,7 @@ function DebugTrajCanvas({ traj }: { traj: { x: number; y: number; t: number }[]
     const W = canvas.width
     const H = canvas.height
     ctx.clearRect(0, 0, W, H)
-    ctx.fillStyle = '#F7F2E8'
+    ctx.fillStyle = '#F7F6F4'
     ctx.fillRect(0, 0, W, H)
     const xs = traj.map(p => p.x)
     const ys = traj.map(p => p.y)
@@ -112,7 +112,7 @@ function DebugTrajCanvas({ traj }: { traj: { x: number; y: number; t: number }[]
     const pad = 18
     const px = (x: number) => pad + ((x - minX) / spanX) * (W - pad * 2)
     const py = (y: number) => pad + ((y - minY) / spanY) * (H - pad * 2)
-    ctx.strokeStyle = '#A8905F'
+    ctx.strokeStyle = '#E05A3C'
     ctx.lineWidth = 1.6
     ctx.lineJoin = 'round'
     ctx.beginPath()
@@ -122,14 +122,14 @@ function DebugTrajCanvas({ traj }: { traj: { x: number; y: number; t: number }[]
     })
     ctx.stroke()
     traj.forEach((p, i) => {
-      ctx.fillStyle = i === 0 || i === traj.length - 1 ? '#8F7A4E' : '#A8905F'
+      ctx.fillStyle = i === 0 || i === traj.length - 1 ? '#A83C24' : '#E05A3C'
       ctx.beginPath()
       ctx.arc(px(p.x), py(p.y), i === 0 || i === traj.length - 1 ? 3.2 : 1.6, 0, Math.PI * 2)
       ctx.fill()
     })
     const first = traj[0]
     const last = traj[traj.length - 1]
-    ctx.fillStyle = '#8F7A4E'
+    ctx.fillStyle = '#A83C24'
     ctx.font = '10px sans-serif'
     ctx.fillText('起点', px(first.x) - 14, py(first.y) - 6)
     ctx.fillText('终点 ' + last.t + 'ms', px(last.x) - 18, py(last.y) + 14)
@@ -140,7 +140,7 @@ function DebugTrajCanvas({ traj }: { traj: { x: number; y: number; t: number }[]
       width={560}
       height={220}
       className="w-full rounded-lg"
-      style={{ background: '#F7F2E8', maxHeight: 220 }}
+      style={{ background: '#F7F6F4', maxHeight: 220 }}
       aria-label="鼠标轨迹调试图"
     />
   )
@@ -172,7 +172,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: TabKey; onTabChange: (
               onClick={() => onTabChange(tab.key)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                  ? 'bg-[#FDEEE8] text-ink font-medium'
                   : 'text-slate-400 hover:bg-warm-200/70 hover:text-slate-700'
               }`}
             >
@@ -363,7 +363,7 @@ const [pwdForm, setPwdForm] = useState({ oldPwd: '', newPwd: '', confirmPwd: '' 
                 onClick={() => setActiveTab(tab.key)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   activeTab === tab.key
-                    ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                    ? 'bg-[#FDEEE8] text-ink font-medium'
                     : 'text-slate-400 hover:bg-warm-200/70 hover:text-slate-700'
                 }`}
               >
@@ -518,7 +518,7 @@ const [pwdForm, setPwdForm] = useState({ oldPwd: '', newPwd: '', confirmPwd: '' 
                           onClick={() => setSelectedTrajId(r.id)}
                           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border text-sm transition-colors text-left ${
                             selectedTrajId === r.id
-                              ? 'bg-orange-500/15 border-orange-500/30 text-orange-500'
+                              ? 'bg-[#FDEEE8] text-ink font-medium'
                               : 'bg-white border-warm-300 text-slate-500 hover:bg-warm-200/70'
                           }`}
                         >
@@ -536,7 +536,7 @@ const [pwdForm, setPwdForm] = useState({ oldPwd: '', newPwd: '', confirmPwd: '' 
                         <div className="flex items-center justify-between text-xs text-slate-400">
                           <span>记录 {selectedTraj.id} · 学号 {selectedTraj.studentId}</span>
                           <span>
-                            采样点 <b className="text-orange-500">{selectedTraj.mouseTrajectory?.length ?? 0}</b>
+                            采样点 <b className="text-ink">{selectedTraj.mouseTrajectory?.length ?? 0}</b>
                             <span className="mx-2 text-warm-400">·</span>
                             采集模式 {selectedTraj.cameraMode === 'degraded' ? '摄像头降级' : '正常'}
                           </span>
@@ -595,7 +595,7 @@ const [pwdForm, setPwdForm] = useState({ oldPwd: '', newPwd: '', confirmPwd: '' 
                       : camStatus === 'degraded'
                         ? 'bg-yellow-500/10 text-yellow-600 border-yellow-500/30'
                         : camStatus === 'testing'
-                          ? 'bg-orange-500/10 text-orange-500 border-orange-500/30'
+                          ? 'bg-[#FDEEE8] text-ink font-medium'
                           : 'bg-white text-slate-400 border-warm-300'
                   }`}
                 >
@@ -607,7 +607,7 @@ const [pwdForm, setPwdForm] = useState({ oldPwd: '', newPwd: '', confirmPwd: '' 
                     muted
                     playsInline
                     className="w-full max-w-sm rounded-lg border border-warm-300 mt-3"
-                    style={{ background: '#EAE3D5' }}
+                    style={{ background: '#F1EFEC' }}
                   />
                 )}
               </div>

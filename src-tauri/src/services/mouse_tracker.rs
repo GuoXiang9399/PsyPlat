@@ -90,7 +90,7 @@ impl MouseTrackerService {
         let mut total_distance = 0.0;
         let mut direction_changes = 0;
         let mut pause_count = 0;
-        let mut pause_durations = Vec::new();
+        let mut pause_durations: Vec<f64> = Vec::new();
 
         for i in 1..samples.len() {
             let prev = &samples[i - 1];

@@ -14,8 +14,8 @@ pub struct AppState {
 
 impl AppState {
     pub async fn new(db_path: &str) -> anyhow::Result<Self> {
-        let db = crate::services::database::DatabaseService::new(db_path).await?;
-        let settings = db.load_settings().await.unwrap_or_default();
+        let db = crate::services::database::DatabaseService::new(db_path)?;
+        let settings = db.load_settings().unwrap_or_default();
         
         Ok(Self {
             db: Arc::new(Mutex::new(db)),

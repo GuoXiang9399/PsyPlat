@@ -24,6 +24,7 @@ import {
   Mail,
   AlertTriangle
 } from 'lucide-react'
+import { BrandLogo } from '@/components/BrandLogo'
 
 type TabKey = 'dashboard' | 'assessment' | 'data' | 'settings' | 'about'
 
@@ -53,7 +54,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: TabKey; onTabChange: (
               onClick={() => onTabChange(tab.key)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                  ? 'bg-[#FDEEE8] text-ink font-medium'
                   : 'text-slate-400 hover:bg-warm-200/70 hover:text-slate-700'
               }`}
             >
@@ -161,17 +162,15 @@ export function AboutContent() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-800">关于系统</h1>
+      <h1 className="text-2xl font-bold text-ink">关于系统</h1>
 
       {/* 系统概述 */}
       <div className="bg-white rounded-lg p-6 border border-warm-300">
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 bg-orange-500/15 rounded-xl flex items-center justify-center shrink-0">
-            <Brain className="w-8 h-8 text-orange-500" />
-          </div>
+          <BrandLogo className="w-16 h-16 shrink-0" />
           <div>
-            <h2 className="text-lg font-semibold text-slate-800 mb-2">多模态无接触式心理问题早期预警系统</h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h2 className="text-lg font-semibold text-ink mb-2">多模态无接触式心理问题早期预警系统</h2>
+            <p className="text-sm text-ink-soft leading-relaxed">
               本系统通过整合量表评估、鼠标行为分析和面部微表情识别三种模态数据，利用深度学习模型进行心理问题早期预警。
               系统设计注重隐私保护，所有数据处理均在本地完成，不依赖网络连接，适合在高校等场景部署使用。
             </p>
@@ -229,7 +228,7 @@ export function AboutContent() {
         <div className="space-y-3">
           {steps.map((step, index) => (
             <div key={index} className="flex items-start gap-3">
-              <div className="w-7 h-7 bg-orange-500/15 rounded-full flex items-center justify-center shrink-0 text-sm font-bold text-orange-500">
+              <div className="w-7 h-7 bg-[#FDEEE8] rounded-full flex items-center justify-center shrink-0 text-sm font-bold text-ink">
                 {index + 1}
               </div>
               <div className="flex-1 pb-3 border-b border-warm-300/60 last:border-0">

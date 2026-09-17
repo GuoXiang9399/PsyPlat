@@ -53,12 +53,13 @@ pub async fn submit_assessment(
     };
 
     let db = app_state.get_db();
-    match db.lock().await.save_assessment(&record).await {
+    let saved = db.lock().await.save_assessment(&record);
+    match saved {
         Ok(saved_id) => {
             let _ = db.lock().await.log_access(
                 "submit_assessment",
                 Some(&format!("id={}, risk={}", saved_id, result.risk_level.as_str()))
-            ).await;
+            );
             Ok(result)
         }
         Err(e) => Err(format!("保存评估记录失败: {}", e)),

@@ -68,7 +68,7 @@ import {
 
 type TabKey = 'dashboard' | 'assessment' | 'data' | 'settings' | 'about'
 
-// 鼠标轨迹可视化：按采样顺序绘制折线（奶油色主题），标注起点/终点
+// 鼠标轨迹可视化：按采样顺序绘制折线（品牌蓝主题），标注起点/终点
 function TrajectoryCanvas({ traj }: { traj: { x: number; y: number; t: number; k?: 'm' | 'c' }[] }) {
   const ref = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
@@ -79,7 +79,7 @@ function TrajectoryCanvas({ traj }: { traj: { x: number; y: number; t: number; k
     const W = canvas.width
     const H = canvas.height
     ctx.clearRect(0, 0, W, H)
-    ctx.fillStyle = '#F7F2E8'
+    ctx.fillStyle = '#F7F6F4'
     ctx.fillRect(0, 0, W, H)
     const xs = traj.map(p => p.x)
     const ys = traj.map(p => p.y)
@@ -93,7 +93,7 @@ function TrajectoryCanvas({ traj }: { traj: { x: number; y: number; t: number; k
     const px = (x: number) => pad + ((x - minX) / spanX) * (W - pad * 2)
     const py = (y: number) => pad + ((y - minY) / spanY) * (H - pad * 2)
     // 折线
-    ctx.strokeStyle = '#A8905F'
+    ctx.strokeStyle = '#E05A3C'
     ctx.lineWidth = 1.6
     ctx.lineJoin = 'round'
     ctx.beginPath()
@@ -106,7 +106,7 @@ function TrajectoryCanvas({ traj }: { traj: { x: number; y: number; t: number; k
     traj.forEach((p, i) => {
       const isClick = p.k === 'c'
       const isEdge = i === 0 || i === traj.length - 1
-      ctx.fillStyle = isClick ? '#dc2626' : isEdge ? '#8F7A4E' : '#A8905F'
+      ctx.fillStyle = isClick ? '#D54941' : isEdge ? '#A83C24' : '#E05A3C'
       ctx.beginPath()
       if (isClick) {
         const r = 3
@@ -119,7 +119,7 @@ function TrajectoryCanvas({ traj }: { traj: { x: number; y: number; t: number; k
     // 起点/终点标注
     const first = traj[0]
     const last = traj[traj.length - 1]
-    ctx.fillStyle = '#8F7A4E'
+    ctx.fillStyle = '#A83C24'
     ctx.font = '10px sans-serif'
     ctx.fillText('起点', px(first.x) - 14, py(first.y) - 6)
     ctx.fillText('终点 ' + last.t + 'ms', px(last.x) - 18, py(last.y) + 14)
@@ -130,7 +130,7 @@ function TrajectoryCanvas({ traj }: { traj: { x: number; y: number; t: number; k
       width={560}
       height={220}
       className="w-full rounded-lg"
-      style={{ background: '#F7F2E8', maxHeight: 220 }}
+      style={{ background: '#F7F6F4', maxHeight: 220 }}
       aria-label="鼠标轨迹图"
     />
   )
@@ -162,23 +162,23 @@ function MouseMetricsCard({ metrics, signals }: { metrics: MouseMetrics | null; 
     { label: '抖动分', value: String(metrics.tremorScore), hint: metrics.tremorScore >= 3 }
   ]
   return (
-    <div className="rounded-xl border border-[#E3D9C6] bg-[#F7F2E8] p-4">
+    <div className="rounded-xl border border-orange-100 bg-orange-50/60 p-4">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h4 className="text-sm font-semibold text-[#5C4A32]">行为动力学特征</h4>
-        <span className="rounded-full bg-[#EAE3D5] px-2 py-0.5 text-xs text-[#8F7A4E]">启发式规则 · 非诊断</span>
+        <h4 className="text-sm font-semibold text-ink">行为动力学特征</h4>
+        <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs text-ink-soft">启发式规则 · 非诊断</span>
       </div>
       <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-xs sm:grid-cols-4">
         {rows.map((r) => (
           <div key={r.label} className="flex items-baseline justify-between gap-2">
-            <span className="text-[#8F7A4E]">{r.label}</span>
-            <b className={r.hint ? 'text-amber-600' : 'text-[#5C4A32]'}>{r.value}</b>
+            <span className="text-warm-600">{r.label}</span>
+            <b className={r.hint ? 'text-amber-600' : 'text-ink'}>{r.value}</b>
           </div>
         ))}
       </div>
-      <div className="mt-3 border-t border-[#E3D9C6] pt-2.5">
-        <div className="mb-1.5 text-xs font-medium text-[#8F7A4E]">行为信号</div>
+      <div className="mt-3 border-t border-orange-100 pt-2.5">
+        <div className="mb-1.5 text-xs font-medium text-warm-600">行为信号</div>
         {sigs.length === 0 ? (
-          <div className="text-xs text-[#5C4A32]">未见明显异常信号。</div>
+          <div className="text-xs text-ink">未见明显异常信号。</div>
         ) : (
           <div className="flex flex-wrap gap-1.5">
             {sigs.map((s) => (
@@ -192,7 +192,7 @@ function MouseMetricsCard({ metrics, signals }: { metrics: MouseMetrics | null; 
             ))}
           </div>
         )}
-        <p className="mt-2 text-[11px] leading-relaxed text-[#8F7A4E]">
+        <p className="mt-2 text-[11px] leading-relaxed text-warm-600">
           依据鼠标运动学研究（轨迹弯曲、速度剖面、方向反转、停顿）的启发式解读，仅供筛查参考，不代表临床诊断；请结合量表结果综合评估。
         </p>
       </div>
@@ -226,7 +226,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: TabKey; onTabChange: (
               onClick={() => onTabChange(tab.key)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                  ? 'bg-[#FDEEE8] text-ink font-medium'
                   : 'text-slate-400 hover:bg-warm-200/70 hover:text-slate-700'
               }`}
             >
@@ -421,7 +421,7 @@ export function DataContent() {
   const getRiskClass = (risk: string) => {
     switch (risk) {
       case '高风险': return 'bg-red-500/20 text-red-400'
-      case '中度风险': return 'bg-orange-500/20 text-orange-400'
+      case '中度风险': return 'bg-amber-500/15 text-amber-600'
       case '轻度风险': return 'bg-yellow-500/20 text-yellow-400'
       default: return 'bg-green-500/20 text-green-400'
     }
@@ -438,7 +438,7 @@ export function DataContent() {
 
   const getStatusClass = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-orange-500/15 text-orange-500'
+      case 'completed': return 'bg-emerald-500/15 text-emerald-600'
       case 'pending_review': return 'bg-yellow-500/20 text-yellow-400'
       case 'intervened': return 'bg-purple-500/20 text-purple-400'
       default: return 'bg-warm-200 text-slate-400'
@@ -626,7 +626,7 @@ const handleExportCSV = () => {
                   <td className="p-3 whitespace-nowrap">
                     <button
                       onClick={() => setSelected(record)}
-                      className="bg-orange-500/10 hover:bg-orange-500/20 text-orange-500 border border-orange-500/30 px-2.5 py-1 rounded flex items-center gap-1 text-xs transition-colors"
+                      className="bg-[#FDEEE8] hover:bg-[#FADDD2] text-ink-soft border border-orange-200 px-2.5 py-1 rounded flex items-center gap-1 text-xs transition-colors"
                     >
                       <Eye className="w-3.5 h-3.5" /> 查看明细
                     </button>
@@ -717,7 +717,7 @@ const handleExportCSV = () => {
                 <div className="flex items-center justify-between px-4 py-3 bg-warm-100/60 border-b border-warm-300">
                   <h3 className="text-sm font-semibold text-slate-800">PHQ-9 抑郁症筛查量表</h3>
                   <span className="text-sm text-slate-500">
-                    总分：<b className="text-orange-500 text-base">{selected.phq9Score}</b> / 27
+                    总分：<b className="text-ink text-base">{selected.phq9Score}</b> / 27
                   </span>
                 </div>
                 <div className="p-4 space-y-3">
@@ -730,7 +730,7 @@ const handleExportCSV = () => {
                             key={oi}
                             className={`px-2.5 py-1 rounded text-xs border ${
                               selected.phq9[i] === oi
-                                ? 'bg-orange-500/15 text-orange-500 border-orange-500/30 font-medium'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border-warm-300'
                             }`}
                           >
@@ -748,7 +748,7 @@ const handleExportCSV = () => {
                 <div className="flex items-center justify-between px-4 py-3 bg-warm-100/60 border-b border-warm-300">
                   <h3 className="text-sm font-semibold text-slate-800">GAD-7 广泛性焦虑量表</h3>
                   <span className="text-sm text-slate-500">
-                    总分：<b className="text-orange-500 text-base">{selected.gad7Score}</b> / 21
+                    总分：<b className="text-ink text-base">{selected.gad7Score}</b> / 21
                   </span>
                 </div>
                 <div className="p-4 space-y-3">
@@ -761,7 +761,7 @@ const handleExportCSV = () => {
                             key={oi}
                             className={`px-2.5 py-1 rounded text-xs border ${
                               selected.gad7[i] === oi
-                                ? 'bg-orange-500/15 text-orange-500 border-orange-500/30 font-medium'
+                                ? 'bg-[#FDEEE8] text-ink font-medium'
                                 : 'bg-white text-slate-400 border-warm-300'
                             }`}
                           >
@@ -783,7 +783,7 @@ const handleExportCSV = () => {
                       <span className="px-2 py-0.5 rounded text-xs bg-red-500/20 text-red-500 border border-red-500/40 font-medium">自杀风险</span>
                     )}
                     {((selected.riskFlags ?? []).includes('nssi')) && (
-                      <span className="px-2 py-0.5 rounded text-xs bg-orange-500/20 text-orange-500 border border-orange-500/40 font-medium">自伤风险</span>
+                      <span className="px-2 py-0.5 rounded text-xs bg-[#FDEEE8] text-ink font-medium">自伤风险</span>
                     )}
                   </div>
                 </div>
@@ -812,7 +812,7 @@ const handleExportCSV = () => {
                                     ans === oi
                                       ? positive
                                         ? 'bg-red-500/20 text-red-500 border-red-500/50 font-medium'
-                                        : 'bg-orange-500/15 text-orange-500 border-orange-500/30 font-medium'
+                                        : 'bg-[#FDEEE8] text-ink font-medium'
                                       : 'bg-white text-slate-400 border-warm-300'
                                   }`}>
                                     {opt}
@@ -832,7 +832,7 @@ const handleExportCSV = () => {
                       <h4 className="text-sm font-semibold text-slate-700">NSSI 非自杀性自伤筛查（过去一年）</h4>
                       <span className="text-sm text-slate-500">
                         {(selected.nssi ?? [])[0] === 1 ? (
-                          <b className="text-orange-500 text-sm">自伤行为阳性</b>
+                          <b className="text-[#D54941] text-sm">自伤行为阳性</b>
                         ) : (
                           <span className="text-slate-400">无自伤行为</span>
                         )}
@@ -849,8 +849,8 @@ const handleExportCSV = () => {
                               <span key={oi} className={`px-2.5 py-1 rounded text-xs border ${
                                 (selected.nssi ?? [])[0] === oi
                                   ? oi === 1
-                                    ? 'bg-orange-500/20 text-orange-500 border-orange-500/40 font-medium'
-                                    : 'bg-orange-500/15 text-orange-500 border-orange-500/30 font-medium'
+                                    ? 'bg-[#FDECEC] text-[#D54941] border-[#F5C6C2] font-medium'
+                                    : 'bg-[#FDEEE8] text-ink font-medium'
                                   : 'bg-white text-slate-400 border-warm-300'
                               }`}>
                                 {opt}
@@ -864,7 +864,7 @@ const handleExportCSV = () => {
                             {nssiFreqOptions.map((opt, oi) => (
                               <span key={oi} className={`px-2.5 py-1 rounded text-xs border ${
                                 (selected.nssi ?? [])[1] === oi
-                                  ? 'bg-orange-500/15 text-orange-500 border-orange-500/30 font-medium'
+                                  ? 'bg-[#FDEEE8] text-ink font-medium'
                                   : 'bg-white text-slate-400 border-warm-300'
                               }`}>
                                 {opt}
@@ -890,7 +890,7 @@ const handleExportCSV = () => {
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-sm font-semibold text-slate-700">PSS-10 感知压力量表（过去一个月）</h4>
                       <span className="text-sm text-slate-500">
-                        总分：<b className="text-orange-500 text-base">{selected.pss10Score ?? 0}</b> / 40
+                        总分：<b className="text-ink text-base">{selected.pss10Score ?? 0}</b> / 40
                         <span className="ml-2 text-xs text-slate-400">{pss10LevelOf(selected.pss10Score ?? 0)}</span>
                       </span>
                     </div>
@@ -912,7 +912,7 @@ const handleExportCSV = () => {
                                 {pss10Options.map((opt, oi) => (
                                   <span key={oi} className={`px-2.5 py-1 rounded text-xs border ${
                                     ans === oi
-                                      ? 'bg-orange-500/15 text-orange-500 border-orange-500/30 font-medium'
+                                      ? 'bg-[#FDEEE8] text-ink font-medium'
                                       : 'bg-white text-slate-400 border-warm-300'
                                   }`}>
                                     {opt}
@@ -931,7 +931,7 @@ const handleExportCSV = () => {
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-sm font-semibold text-slate-700">PSQI 匹兹堡睡眠质量指数（过去一个月）</h4>
                       <span className="text-sm text-slate-500">
-                        总分：<b className="text-orange-500 text-base">{selected.psqiScore ?? 0}</b> / 21
+                        总分：<b className="text-ink text-base">{selected.psqiScore ?? 0}</b> / 21
                         <span className="ml-2 text-xs text-slate-400">{psqiLevelOf(selected.psqiScore ?? 0)}</span>
                       </span>
                     </div>
@@ -944,7 +944,7 @@ const handleExportCSV = () => {
                           <div className="flex flex-wrap gap-1.5">
                             {(selected.psqiComps ?? []).map((c, i) => (
                               <span key={i} className="px-2 py-1 rounded text-xs border border-warm-300 bg-white text-slate-600">
-                                {psqiComponentNames[i]}：<b className="text-orange-500">{c}</b>
+                                {psqiComponentNames[i]}：<b className="text-ink">{c}</b>
                               </span>
                             ))}
                           </div>
@@ -986,7 +986,7 @@ const handleExportCSV = () => {
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-sm font-semibold text-slate-700">SIAS-6 社交焦虑筛查（过去两周）</h4>
-                      <span className="text-sm text-slate-500">总分：<b className="text-orange-500 text-base">{selected.sias6Score ?? 0}</b> / 24</span>
+                      <span className="text-sm text-slate-500">总分：<b className="text-ink text-base">{selected.sias6Score ?? 0}</b> / 24</span>
                     </div>
                     {(selected.sias6 ?? []).length === 0 ? (
                       <p className="text-sm text-slate-400 py-2">该记录未采集 SIAS-6 数据（旧版本记录）。</p>
@@ -1001,7 +1001,7 @@ const handleExportCSV = () => {
                                 {sias6Options.map((opt, oi) => (
                                   <span key={oi} className={`px-2.5 py-1 rounded text-xs border ${
                                     ans === oi
-                                      ? 'bg-orange-500/15 text-orange-500 border-orange-500/30 font-medium'
+                                      ? 'bg-[#FDEEE8] text-ink font-medium'
                                       : 'bg-white text-slate-400 border-warm-300'
                                   }`}>
                                     {opt}
@@ -1020,9 +1020,9 @@ const handleExportCSV = () => {
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="text-sm font-semibold text-slate-700">ASLEC 青少年生活事件（过去一年）</h4>
                       <span className="text-sm text-slate-500">
-                        发生事件：<b className="text-orange-500 text-base">{selected.aslecCount ?? 0}</b> 件
+                        发生事件：<b className="text-ink text-base">{selected.aslecCount ?? 0}</b> 件
                         <span className="mx-2 text-warm-400">·</span>
-                        影响总分：<b className="text-orange-500">{selected.aslecScore ?? 0}</b>
+                        影响总分：<b className="text-ink">{selected.aslecScore ?? 0}</b>
                       </span>
                     </div>
                     {(selected.aslec ?? []).length === 0 ? (
@@ -1038,7 +1038,7 @@ const handleExportCSV = () => {
                               <span className={`px-2 py-0.5 rounded text-xs whitespace-nowrap ${
                                 !occurred ? 'text-slate-300'
                                   : ans >= 5 ? 'bg-red-500/15 text-red-500 border border-red-500/30 font-medium'
-                                  : ans === 4 ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                                  : ans === 4 ? 'bg-[#FDEEE8] text-ink font-medium'
                                   : ans === 3 ? 'bg-yellow-500/15 text-yellow-600 border border-yellow-500/30'
                                   : 'bg-warm-200 text-slate-500'
                               }`}>
@@ -1064,7 +1064,7 @@ const handleExportCSV = () => {
                 <div className="flex items-center justify-between px-4 py-3 bg-warm-100/60 border-b border-warm-300">
                   <h3 className="text-sm font-semibold text-slate-800">鼠标轨迹（行为数据）</h3>
                   <span className="text-sm text-slate-500">
-                    采样点：<b className="text-orange-500 text-base">{selected.mouseTrajectory?.length ?? 0}</b>
+                    采样点：<b className="text-ink text-base">{selected.mouseTrajectory?.length ?? 0}</b>
                     <span className="mx-2 text-warm-400">·</span>
                     采集模式：{selected.cameraMode === 'degraded' ? '摄像头降级' : '正常'}
                   </span>

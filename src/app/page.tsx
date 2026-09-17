@@ -13,6 +13,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen
 } from 'lucide-react'
+import { BrandLogo } from '@/components/BrandLogo'
 import { DashboardContent } from './dashboard/content'
 import { AssessmentContent } from './assessment/content'
 import { DataContent } from './data/content'
@@ -96,45 +97,64 @@ export default function HomePage() {
   return (
     <div className="flex h-screen bg-warm-100 text-slate-500">
       {/* 侧边栏 */}
-      <aside className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-white border-r border-warm-300 flex flex-col transition-all duration-200`}>
-        {/* 顶部：折叠按钮，无 Logo */}
-        <div className="p-3 border-b border-warm-300">
-          <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
-            {!sidebarCollapsed && (
-              <h1 className="text-sm font-bold text-slate-800 leading-tight">河南大学基础医学院心理站</h1>
-            )}
-            <button
-              onClick={toggleSidebar}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-orange-500 hover:bg-warm-200/70 transition-colors"
-              aria-label={sidebarCollapsed ? '展开侧边栏' : '折叠侧边栏'}
-              title={sidebarCollapsed ? '展开侧边栏' : '折叠侧边栏'}
-            >
-              {sidebarCollapsed ? <PanelLeftOpen className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
-            </button>
-          </div>
+      <aside className={`${sidebarCollapsed ? 'w-[68px]' : 'w-[252px]'} bg-[#F7F6F4] border-r border-warm-300 flex flex-col shrink-0 transition-all duration-200`}>
+        {/* 品牌区 */}
+        <div className={`h-14 flex items-center border-b border-warm-300 ${sidebarCollapsed ? 'justify-center px-0' : 'px-3 gap-2.5'}`}>
+          <BrandLogo className="w-8 h-8 shrink-0" />
+          {!sidebarCollapsed && (
+            <div className="min-w-0 flex-1">
+              <div className="text-[13px] font-semibold text-ink truncate leading-tight">心理预警系统</div>
+              <div className="text-[11px] text-ink-muted truncate leading-tight mt-0.5">河南大学基础医学院</div>
+            </div>
+          )}
         </div>
 
         {/* 导航 */}
-        <nav className="flex-1 p-3 space-y-1">
-          {tabs.map((tab) => {
-            const Icon = tab.icon
-            return (
-              <button
-                key={tab.key}
-                onClick={() => handleTabChange(tab.key)}
-                title={sidebarCollapsed ? tab.label : undefined}
-                className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-0' : 'px-3'} gap-3 py-2.5 rounded-lg text-sm transition-colors ${
-                  activeTab === tab.key
-                    ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
-                    : 'text-slate-400 hover:bg-warm-200/70 hover:text-slate-700'
-                }`}
-              >
-                <Icon className="w-5 h-5 shrink-0" />
-                {!sidebarCollapsed && tab.label}
-              </button>
-            )
-          })}
+        <nav className="flex-1 px-2 py-3 overflow-y-auto">
+          {!sidebarCollapsed && (
+            <div className="px-3 pb-2 text-[11px] font-medium text-ink-muted">功能导航</div>
+          )}
+          <div className="space-y-0.5">
+            {tabs.map((tab) => {
+              const Icon = tab.icon
+              const active = activeTab === tab.key
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => handleTabChange(tab.key)}
+                  title={sidebarCollapsed ? tab.label : undefined}
+                  className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-0' : 'px-3'} gap-2.5 py-2 rounded-lg text-[13px] transition-colors ${
+                    active
+                      ? 'bg-[#FDEEE8] text-ink font-medium'
+                      : 'text-ink-soft hover:bg-warm-200 hover:text-ink'
+                  }`}
+                >
+                  <Icon className={`w-[18px] h-[18px] shrink-0 ${active ? 'text-[#E05A3C]' : 'text-ink-muted'}`} />
+                  {!sidebarCollapsed && <span className="truncate">{tab.label}</span>}
+                </button>
+              )
+            })}
+          </div>
         </nav>
+
+        {/* 底部：收起 */}
+        <div className="p-2 border-t border-warm-300">
+          <button
+            onClick={toggleSidebar}
+            className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-0' : 'px-3'} gap-2.5 py-2 rounded-lg text-[13px] text-ink-soft hover:bg-warm-200 hover:text-ink transition-colors`}
+            aria-label={sidebarCollapsed ? '展开侧边栏' : '收起侧边栏'}
+            title={sidebarCollapsed ? '展开侧边栏' : '收起侧边栏'}
+          >
+            {sidebarCollapsed ? (
+              <PanelLeftOpen className="w-[18px] h-[18px] text-ink-muted" />
+            ) : (
+              <>
+                <PanelLeftClose className="w-[18px] h-[18px] text-ink-muted" />
+                <span>收起侧边栏</span>
+              </>
+            )}
+          </button>
+        </div>
       </aside>
 
       {/* 主内容区 */}
@@ -147,19 +167,19 @@ export default function HomePage() {
         <div className="fixed inset-0 bg-slate-900/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl w-96 p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-ink flex items-center gap-2">
                 <Lock className="w-5 h-5 text-orange-500" />
                 管理密码验证
               </h2>
               <button
                 onClick={() => setPendingTab(null)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-ink-muted hover:text-ink"
                 aria-label="关闭"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-sm text-slate-500 mb-4">
+            <p className="text-sm text-ink-soft mb-4">
               访问「{tabs.find(t => t.key === pendingTab)?.label}」需要管理权限，请输入管理密码。
             </p>
             <input
@@ -167,7 +187,7 @@ export default function HomePage() {
               value={passwordInput}
               onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(false) }}
               onKeyDown={(e) => { if (e.key === 'Enter') handlePasswordSubmit() }}
-              className={`w-full bg-warm-100 border rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500 ${
+              className={`w-full bg-warm-100 border rounded-lg px-3 py-2 text-ink-soft text-sm focus:outline-none focus:border-orange-500 ${
                 passwordError ? 'border-red-400' : 'border-warm-300'
               }`}
               placeholder="请输入管理密码"
@@ -179,7 +199,7 @@ export default function HomePage() {
             <div className="flex gap-3 mt-5">
               <button
                 onClick={() => setPendingTab(null)}
-                className="flex-1 bg-white hover:bg-warm-200 text-slate-500 px-4 py-2 rounded-lg text-sm border border-warm-300 transition-colors"
+                className="flex-1 bg-white hover:bg-warm-200 text-ink-soft px-4 py-2 rounded-lg text-sm border border-warm-300 transition-colors"
               >
                 取消
               </button>

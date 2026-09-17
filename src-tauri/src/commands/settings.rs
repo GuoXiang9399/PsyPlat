@@ -22,13 +22,15 @@ pub async fn save_settings(
     let app_state = state.lock().await;
 
     let db = app_state.get_db();
-    match db.lock().await.save_settings(&settings).await {
+    let save_result = db.lock().await.save_settings(&settings);
+    match save_result {
         Ok(()) => {
-            let mut current = app_state.get_settings().lock().await;
+            let settings_lock = app_state.get_settings();
+            let mut current = settings_lock.lock().await;
             *current = settings;
             drop(current);
 
-            let _ = db.lock().await.log_access("save_settings", None).await;
+            let _ = db.lock().await.log_access("save_settings", None);
             Ok("设置已保存".to_string())
         }
         Err(e) => Err(format!("保存设置失败: {}", e)),

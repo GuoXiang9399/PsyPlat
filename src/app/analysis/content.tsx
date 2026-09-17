@@ -21,7 +21,7 @@ function RiskBadge({ level }: { level: string }) {
   const cls: Record<string, string> = {
     '低风险': 'bg-green-500/15 text-green-600 border border-green-500/30',
     '轻度风险': 'bg-yellow-500/15 text-yellow-600 border border-yellow-500/30',
-    '中度风险': 'bg-orange-500/15 text-orange-600 border border-orange-500/30',
+    '中度风险': 'bg-amber-500/15 text-amber-700 border border-amber-500/30',
     '高风险': 'bg-red-500/15 text-red-500 border border-red-500/40'
   }
   return (
@@ -34,7 +34,7 @@ function RiskBadge({ level }: { level: string }) {
 function CorrCell({ rho, n, effect }: { rho: number | null; n: number; effect: string }) {
   if (rho === null) return <span className="text-slate-300">–</span>
   const strength = Math.abs(rho)
-  const color = strength < 0.1 ? 'text-slate-400' : strength < 0.3 ? 'text-slate-500' : strength < 0.5 ? 'text-orange-600 font-medium' : 'text-red-500 font-bold'
+  const color = strength < 0.1 ? 'text-slate-400' : strength < 0.3 ? 'text-slate-500' : strength < 0.5 ? 'text-amber-600 font-medium' : 'text-[#D54941] font-bold'
   const sign = rho >= 0 ? '+' : ''
   return (
     <div className={`${color} text-sm`}>
@@ -305,7 +305,7 @@ function RangeBars({ rows }: {
           <g key={r.label}>
             <text x={padL - 8} y={y + 4} textAnchor="end" fontSize="10.5" className="fill-slate-600">{r.label}</text>
             <line x1={x0} y1={y} x2={x1} y2={y} stroke="#cbd5e1" strokeWidth={4} strokeLinecap="round" />
-            <circle cx={xOf(r.mean, r.min, r.max)} cy={y} r={3.5} fill="#A8905F" />
+            <circle cx={xOf(r.mean, r.min, r.max)} cy={y} r={3.5} fill="#E05A3C" />
             <circle cx={xOf(r.median, r.min, r.max)} cy={y} r={3.5} fill="#dc2626" />
             <text x={Math.min(x1 + 6, W - 4)} y={y + 4} fontSize="9.5" className="fill-slate-400">{r.min.toFixed(0)}–{r.max.toFixed(0)}</text>
           </g>
@@ -530,7 +530,7 @@ export function AnalysisContent() {
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500">分析图 · 各采集状态下平均量表分数（柱高按量表满分归一）</span>
                 <LegendRow items={[
-                  { label: '平均 PHQ-9（满分 27）', color: '#A8905F' },
+                  { label: '平均 PHQ-9（满分 27）', color: '#E05A3C' },
                   { label: '平均 PSS-10（满分 50）', color: '#ea580c' }
                 ]} />
               </div>
@@ -540,7 +540,7 @@ export function AnalysisContent() {
                   values: [row.avgPhq9, row.avgPss10]
                 }))}
                 series={[
-                  { label: '平均 PHQ-9', color: '#A8905F', max: 27 },
+                  { label: '平均 PHQ-9', color: '#E05A3C', max: 27 },
                   { label: '平均 PSS-10', color: '#ea580c', max: 50 }
                 ]}
               />
@@ -592,7 +592,7 @@ export function AnalysisContent() {
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-500">分析图 · 各指标数值范围与均值/中位数（各指标独立标尺）</span>
                 <div className="flex items-center gap-3 text-[11px] text-slate-500">
-                  <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: '#A8905F' }} />均值</span>
+                  <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: '#E05A3C' }} />均值</span>
                   <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: '#dc2626' }} />中位数</span>
                   <span className="inline-flex items-center gap-1"><span className="w-3.5 h-1 rounded" style={{ background: '#cbd5e1' }} />最小–最大</span>
                 </div>

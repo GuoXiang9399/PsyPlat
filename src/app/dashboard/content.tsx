@@ -45,7 +45,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: TabKey; onTabChange: (
               onClick={() => onTabChange(tab.key)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
+                  ? 'bg-[#FDEEE8] text-ink font-medium'
                   : 'text-slate-400 hover:bg-warm-200/70 hover:text-slate-700'
               }`}
             >
@@ -94,7 +94,7 @@ const [recentActivities] = useState([
   return (
     <div className="space-y-6">
       {/* 欢迎横幅 */}
-      <div className="bg-gradient-to-r from-orange-500 to-warm-600 rounded-lg p-6 text-white">
+      <div className="bg-gradient-to-r from-orange-700 via-orange-500 to-orange-400 rounded-lg p-6 text-white shadow-sm">
 <div className="flex items-center justify-between">
 <div>
             <h1 className="text-2xl font-bold mb-2">河南大学基础医学院心理站</h1>
@@ -145,7 +145,7 @@ const [recentActivities] = useState([
       <div className="bg-white rounded-lg border border-warm-300">
         <div className="p-4 border-b border-warm-300 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-slate-800">最近活动</h2>
-          <button className="text-orange-500 text-sm flex items-center hover:text-orange-400">
+          <button className="text-ink-soft text-sm flex items-center hover:text-[#E05A3C]">
             查看全部 <ChevronRight className="w-4 h-4" />
           </button>
         </div>
