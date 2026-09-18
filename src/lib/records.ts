@@ -1,5 +1,6 @@
 // 测评记录与量表共享定义：测评页写入、数据管理页读取，跨页面统一数据结构
 import type { PsqiAnswers } from './scales'
+import type { CustomScale, ScaleThreshold } from './appSettings'
 
 export interface TrajectoryPoint {
   x: number
@@ -181,6 +182,11 @@ export interface AssessmentRecord {
   mouseTrajectory: TrajectoryPoint[]
   mouseSamples: number
   cameraMode: string // normal | degraded
+  // 答题过程全程录制的摄像头视频（存 IndexedDB；degraded 或管理员关闭摄像头时无）
+  cameraHasVideo?: boolean
+  // 自定义量表（测评设置新增）：作答快照与逐题结果，供明细/导出展示
+  customScales?: CustomScale[]
+  customAnswers?: Record<string, number[]>
   // 行为动力学指标与信号（依据调研三/3.4；旧版本记录无此字段）
   mouseMetrics?: MouseMetrics | null
   behaviorSignals?: BehaviorSignal[]
@@ -238,12 +244,21 @@ function riskLevelOfScore(score: number, bounds: [number, string][]): string {
   return '高风险'
 }
 
-// PHQ-9 / GAD-7（0-27 / 0-21）：0-4 低 / 5-9 轻度 / 10-14 中度 / 15+ 高
-export function depRiskOf(score: number): string {
-  return riskLevelOfScore(score, [[4, '低风险'], [9, '轻度风险'], [14, '中度风险']])
+/** 按可调切分点评级：< mild 低 / < moderate 轻度 / < severe 中度 / ≥ severe 高 */
+function riskLevelOfScoreT(score: number, thr: ScaleThreshold | undefined, fallback: (s: number) => string): string {
+  if (!thr) return fallback(score)
+  if (score < thr.mild) return '低风险'
+  if (score < thr.moderate) return '轻度风险'
+  if (score < thr.severe) return '中度风险'
+  return '高风险'
 }
-export function anxRiskOf(score: number): string {
-  return depRiskOf(score)
+
+// PHQ-9 / GAD-7（0-27 / 0-21）：0-4 低 / 5-9 轻度 / 10-14 中度 / 15+ 高
+export function depRiskOf(score: number, thr?: ScaleThreshold): string {
+  return riskLevelOfScoreT(score, thr, (s) => riskLevelOfScore(s, [[4, '低风险'], [9, '轻度风险'], [14, '中度风险']]))
+}
+export function anxRiskOf(score: number, thr?: ScaleThreshold): string {
+  return depRiskOf(score, thr)
 }
 // C-SSRS（阳性条目数 0-4）：0 → 低风险；任一阳性 → 高风险（自杀风险）
 export function cssrsRiskOf(positiveCount: number): string {
@@ -257,20 +272,20 @@ export function nssiRiskOf(nssi: number[], phq9Answers?: number[]): string {
   return '中度风险'
 }
 // PSS-10（0-40）：0-13 低 / 14-19 轻度 / 20-26 中度 / 27+ 高
-export function pss10RiskOf(score: number): string {
-  return riskLevelOfScore(score, [[13, '低风险'], [19, '轻度风险'], [26, '中度风险']])
+export function pss10RiskOf(score: number, thr?: ScaleThreshold): string {
+  return riskLevelOfScoreT(score, thr, (s) => riskLevelOfScore(s, [[13, '低风险'], [19, '轻度风险'], [26, '中度风险']]))
 }
 // PSQI（0-21）：0-5 低 / 6-10 轻度 / 11-15 中度 / 16+ 高
-export function psqiRiskOf(score: number): string {
-  return riskLevelOfScore(score, [[5, '低风险'], [10, '轻度风险'], [15, '中度风险']])
+export function psqiRiskOf(score: number, thr?: ScaleThreshold): string {
+  return riskLevelOfScoreT(score, thr, (s) => riskLevelOfScore(s, [[5, '低风险'], [10, '轻度风险'], [15, '中度风险']]))
 }
 // SIAS-6（0-24）：0-6 低 / 7-12 轻度 / 13-18 中度 / 19+ 高
-export function sias6RiskOf(score: number): string {
-  return riskLevelOfScore(score, [[6, '低风险'], [12, '轻度风险'], [18, '中度风险']])
+export function sias6RiskOf(score: number, thr?: ScaleThreshold): string {
+  return riskLevelOfScoreT(score, thr, (s) => riskLevelOfScore(s, [[6, '低风险'], [12, '轻度风险'], [18, '中度风险']]))
 }
 // ASLEC（影响总分 0-135）：0-15 低 / 16-35 轻度 / 36-60 中度 / 61+ 高
-export function aslecRiskOf(score: number): string {
-  return riskLevelOfScore(score, [[15, '低风险'], [35, '轻度风险'], [60, '中度风险']])
+export function aslecRiskOf(score: number, thr?: ScaleThreshold): string {
+  return riskLevelOfScoreT(score, thr, (s) => riskLevelOfScore(s, [[15, '低风险'], [35, '轻度风险'], [60, '中度风险']]))
 }
 
 export function loadRecords(): AssessmentRecord[] {

@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: '多模态心理预警系统',
-  description: '多模态无接触式心理问题早期预警系统',
+  title: '心理测评服务平台',
+  description: '高校心理健康测评与数据管理平台',
 }
 
 export default function RootLayout({

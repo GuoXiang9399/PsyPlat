@@ -7,7 +7,7 @@
  */
 export function BrandLogo({
   className = 'w-8 h-8',
-  title = '心理预警系统',
+  title = '迹心',
 }: {
   className?: string
   title?: string

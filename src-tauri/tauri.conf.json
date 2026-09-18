@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "PsyPlat",
+  "productName": "PsyTrace",
   "version": "1.0.0",
   "identifier": "com.neurowell.psych-warning",
   "build": {

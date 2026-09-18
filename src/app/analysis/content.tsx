@@ -1,7 +1,23 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { BarChart3, Users, RefreshCw, MousePointer2, Sparkles, Video, Info, AlertTriangle } from 'lucide-react'
+import {
+  BarChart3,
+  Users,
+  RefreshCw,
+  MousePointer2,
+  Sparkles,
+  Video,
+  Info,
+  AlertTriangle,
+  ListChecks,
+  FileDown,
+  Printer,
+  ChevronDown,
+  ChevronUp,
+  Table2,
+  CheckSquare
+} from 'lucide-react'
 import { loadRecords, BEHAVIOR_SIGNAL_LABELS, type AssessmentRecord } from '@/lib/records'
 import {
   analyzeSummary,
@@ -9,37 +25,41 @@ import {
   behaviorSignalByRisk,
   cameraModeByRisk,
   summarizeNums,
-  METRIC_LABELS,
   METRIC_KEYS,
   SIGNAL_LABELS,
-  CAMERA_MODE_LABELS,
   RISK_ORDER,
   metricsRowOf
 } from '@/lib/analysis'
+import { REPORT_SCALE_DEFS, buildAnalysisReportHtml, downloadText, printHtml } from '@/lib/reportExport'
+import { useT } from '@/lib/i18n'
 
 function RiskBadge({ level }: { level: string }) {
+  const { t } = useT()
   const cls: Record<string, string> = {
     '低风险': 'bg-green-500/15 text-green-600 border border-green-500/30',
     '轻度风险': 'bg-yellow-500/15 text-yellow-600 border border-yellow-500/30',
     '中度风险': 'bg-amber-500/15 text-amber-700 border border-amber-500/30',
     '高风险': 'bg-red-500/15 text-red-500 border border-red-500/40'
   }
+  const text = level === '高风险' ? t('risk_high') : level === '中度风险' ? t('risk_moderate') : level === '轻度风险' ? t('risk_mild') : t('risk_low')
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${cls[level] || 'bg-slate-100 text-slate-500'}`}>
-      {level}
+      {text}
     </span>
   )
 }
 
 function CorrCell({ rho, n, effect }: { rho: number | null; n: number; effect: string }) {
+  const { t } = useT()
   if (rho === null) return <span className="text-slate-300">–</span>
+  const eff = effect === '可忽略' ? t('ana_eff_negligible') : effect === '弱' ? t('ana_eff_weak') : effect === '中等' ? t('ana_eff_moderate') : effect === '强' ? t('ana_eff_strong') : effect
   const strength = Math.abs(rho)
   const color = strength < 0.1 ? 'text-slate-400' : strength < 0.3 ? 'text-slate-500' : strength < 0.5 ? 'text-amber-600 font-medium' : 'text-[#D54941] font-bold'
   const sign = rho >= 0 ? '+' : ''
   return (
     <div className={`${color} text-sm`}>
       {sign}{rho.toFixed(2)}
-      <div className="text-[10px] text-slate-400 font-normal">{effect}·n={n}</div>
+      <div className="text-[10px] text-slate-400 font-normal">{eff}·n={n}</div>
     </div>
   )
 }
@@ -127,6 +147,17 @@ function CorrHeatmap({ rows, cols, cells }: {
   cols: { key: string; label: string }[]
   cells: { rho: number | null; n: number; effect: string }[][]
 }) {
+  const { t } = useT()
+  const metricLabelOf = (k: string): string => {
+    const m: Record<string, string> = {
+      duration: 'ana_m_duration', points: 'ana_m_points', distance: 'ana_m_distance',
+      avgSpeed: 'ana_m_avg_speed', speedCV: 'ana_m_speed_cv', pauseCount: 'ana_m_pause_count',
+      pauseRatio: 'ana_m_pause_ratio', initLatency: 'ana_m_init_latency', xFlips: 'ana_m_x_flips',
+      yFlips: 'ana_m_y_flips', curvature: 'ana_m_curvature', tremorScore: 'ana_m_tremor',
+      flips: 'ana_m_flips'
+    }
+    return t(m[k] || '')
+  }
   const cellW = 52, cellH = 30, padL = 118, padT = 30
   const W = padL + cols.length * cellW + 12
   const H = padT + rows.length * cellH + 10
@@ -145,12 +176,12 @@ function CorrHeatmap({ rows, cols, cells }: {
         {rows.map((rk, ri) => (
           <text key={rk as string} x={padL - 8} y={padT + ri * cellH + cellH / 2 + 4}
             textAnchor="end" fontSize="11" className="fill-slate-600">
-            {METRIC_LABELS[rk]}
+            {metricLabelOf(rk)}
           </text>
         ))}
         {/* 列标签（量表） */}
         {cols.map((c, ci) => {
-          const label = c.label.length > 6 ? c.label.slice(0, 6) + '…' : c.label
+          const label = c.label.length > 8 ? c.label.slice(0, 8) + '…' : c.label
           return (
             <text key={c.key} x={padL + ci * cellW + cellW / 2} y={padT - 10}
               textAnchor="middle" fontSize="10.5" className="fill-slate-500">
@@ -179,20 +210,20 @@ function CorrHeatmap({ rows, cols, cells }: {
         )}
       </svg>
       <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-400">
-        <span>负相关</span>
+        <span>{t('ana_legend_neg')}</span>
         <svg width="90" height="10"><defs><linearGradient id="corr-grad" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="rgba(37,99,235,.85)" />
           <stop offset="50%" stopColor="#f1f5f9" />
           <stop offset="100%" stopColor="rgba(217,119,6,.85)" />
         </linearGradient></defs><rect width="90" height="10" fill="url(#corr-grad)" rx="3" /></svg>
-        <span>正相关</span>
-        <span className="ml-auto">灰 = 样本不足或无相关，– = 无法计算</span>
+        <span>{t('ana_legend_pos')}</span>
+        <span className="ml-auto">{t('ana_heat_legend_note')}</span>
       </div>
     </div>
   )
 }
 
-/** 堆叠柱状图：行为信号 × 风险等级 */
+/** 堆叠柱状图：parts 占比堆叠（量表分布 / 行为信号 × 风险等级） */
 function StackedBars({ rows, parts }: {
   rows: { label: string; parts: number[]; total: number }[]
   parts: { label: string; color: string }[]
@@ -315,340 +346,654 @@ function RangeBars({ rows }: {
   )
 }
 
-export function AnalysisContent() {
-  const [refreshTick, setRefreshTick] = useState(0)
-  const records = useMemo<AssessmentRecord[]>(() => loadRecords(), [refreshTick])
+/* ================= 分区导航（需求 8：梳理条理） ================= */
 
-  const summary = useMemo(() => analyzeSummary(records), [records])
-  const corr = useMemo(() => computeScaleMetricCorr(records), [records])
-  const signals = useMemo(() => behaviorSignalByRisk(records), [records])
-  const camera = useMemo(() => cameraModeByRisk(records), [records])
+type SectionKey = 'overview' | 'scales' | 'behavior' | 'corr' | 'video'
+
+const SECTION_DEFS: { key: SectionKey; labelKey: string; icon: React.ElementType }[] = [
+  { key: 'overview', labelKey: 'ana_section_overview', icon: BarChart3 },
+  { key: 'scales', labelKey: 'ana_section_scales', icon: Table2 },
+  { key: 'behavior', labelKey: 'ana_section_behavior', icon: MousePointer2 },
+  { key: 'corr', labelKey: 'ana_section_corr', icon: Sparkles },
+  { key: 'video', labelKey: 'ana_section_video', icon: Video },
+]
+
+export function AnalysisContent() {
+  const { t, tFmt } = useT()
+  const riskLabel = (v: string) => v === '高风险' ? t('risk_high') : v === '中度风险' ? t('risk_moderate') : v === '轻度风险' ? t('risk_mild') : t('risk_low')
+  const metricLabel = (k: string): string => {
+    const m: Record<string, string> = {
+      duration: 'ana_m_duration', points: 'ana_m_points', distance: 'ana_m_distance',
+      avgSpeed: 'ana_m_avg_speed', speedCV: 'ana_m_speed_cv', pauseCount: 'ana_m_pause_count',
+      pauseRatio: 'ana_m_pause_ratio', initLatency: 'ana_m_init_latency', xFlips: 'ana_m_x_flips',
+      yFlips: 'ana_m_y_flips', curvature: 'ana_m_curvature', tremorScore: 'ana_m_tremor',
+      flips: 'ana_m_flips'
+    }
+    return t(m[k] || '')
+  }
+  const signalLabel = (s: string): string => {
+    const m: Record<string, string> = {
+      low_effort: 'ana_sig_low_effort', retardation: 'ana_sig_retardation',
+      hesitation: 'ana_sig_hesitation', mind_wandering: 'ana_sig_mind_wandering', tremor: 'ana_sig_tremor'
+    }
+    return m[s] ? t(m[s]) : (SIGNAL_LABELS[s] || BEHAVIOR_SIGNAL_LABELS[s as keyof typeof BEHAVIOR_SIGNAL_LABELS] || s)
+  }
+  const camLabel = (mode: string): string =>
+    mode === 'normal' ? t('ana_cam_normal') : mode === 'degraded' ? t('ana_cam_degraded') : t('ana_cam_unknown')
+  const scaleShort = (key: string): string => {
+    const m: Record<string, string> = {
+      phq9: 'ana_scale_phq9', gad7: 'ana_scale_gad7', pss10: 'ana_scale_pss10',
+      psqi: 'ana_scale_psqi', sias6: 'ana_scale_sias6', aslec: 'ana_scale_aslec', risk: 'ana_scale_risk'
+    }
+    return t(m[key] || '')
+  }
+  const scaleFull = (key: string): string => {
+    const m: Record<string, string> = {
+      phq9: 'ana_scale_full_phq9', gad7: 'ana_scale_full_gad7', cssrs: 'ana_scale_full_cssrs',
+      nssi: 'ana_scale_full_nssi', pss10: 'ana_scale_full_pss10', psqi: 'ana_scale_full_psqi',
+      sias6: 'ana_scale_full_sias6', aslec: 'ana_scale_full_aslec'
+    }
+    return m[key] ? t(m[key]) : ''
+  }
+  const [refreshTick, setRefreshTick] = useState(0)
+  const [section, setSection] = useState<SectionKey>('overview')
+  // null = 全部记录；Set = 勾选集合
+  const [selectedIds, setSelectedIds] = useState<Set<string> | null>(null)
+  const [showTargets, setShowTargets] = useState(false)
+  const [exporting, setExporting] = useState(false)
+
+  const records = useMemo<AssessmentRecord[]>(() => loadRecords(), [refreshTick])
+  const selected = useMemo<AssessmentRecord[]>(
+    () => (selectedIds === null ? records : records.filter((r) => selectedIds.has(r.id))),
+    [records, selectedIds]
+  )
+
+  const summary = useMemo(() => analyzeSummary(selected), [selected])
+  const corr = useMemo(() => computeScaleMetricCorr(selected), [selected])
+  const signals = useMemo(() => behaviorSignalByRisk(selected), [selected])
+  const camera = useMemo(() => cameraModeByRisk(selected), [selected])
 
   // 轨迹指标描述统计（基于有 mouseMetrics 的记录）
   const metricSummaries = useMemo(() => {
-    const withMetrics = records.filter((r) => r.mouseMetrics)
+    const withMetrics = selected.filter((r) => r.mouseMetrics)
     return METRIC_KEYS.map((key) => {
       const rowVals = withMetrics
         .map((r) => metricsRowOf(r.mouseMetrics!)[key] as number)
         .filter((v) => v !== undefined && v !== null && !Number.isNaN(v))
-      return { key, label: METRIC_LABELS[key], sum: summarizeNums(rowVals) }
+      return { key, label: metricLabel(key), sum: summarizeNums(rowVals) }
     })
-  }, [records])
+  }, [selected])
+
+  // 各量表独立风险分布（量表分布分区）
+  const scaleDist = useMemo(() => {
+    return REPORT_SCALE_DEFS.map((def) => {
+      const recs = selected.filter((r) => def.hasData(r))
+      const counts = RISK_ORDER.map((lv) => recs.filter((r) => def.risk(r) === lv).length)
+      const scores = recs.map((r) => def.score(r))
+      return { def, n: recs.length, counts, sum: summarizeNums(scores) }
+    })
+  }, [selected])
+
+  const toggleTarget = (id: string) => {
+    setSelectedIds((prev) => {
+      const base = prev ?? new Set(records.map((r) => r.id))
+      const next = new Set(base)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+  const selectAllTargets = () => setSelectedIds(null)
+  const selectHighRisk = () => setSelectedIds(new Set(records.filter((r) => r.risk === '高风险').map((r) => r.id)))
+  const clearTargets = () => setSelectedIds(new Set())
+
+  const dateStamp = () => new Date().toISOString().split('T')[0]
+
+  const handleExportHtml = () => {
+    if (selected.length === 0 || exporting) return
+    setExporting(true)
+    try {
+      downloadText(buildAnalysisReportHtml(selected), `analysis_report_${dateStamp()}.html`)
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  const handleExportPdf = () => {
+    if (selected.length === 0) return
+    printHtml(buildAnalysisReportHtml(selected))
+  }
 
   const empty = records.length === 0
 
-  return (
-    <div className="space-y-6">
-      {/* 页头 */}
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-orange-500" />
-            数据分析（探索性分析）
-          </h2>
-          <p className="text-sm text-slate-500 mt-1">
-            对测评记录中的量表分数、鼠标轨迹行为指标与视频采集状态做描述统计与关联探索——仅供心理站工作人员参考，
-            属启发式分析，不构成任何临床诊断。
-          </p>
-        </div>
-        <button
-          onClick={() => setRefreshTick(t => t + 1)}
-          className="flex items-center gap-2 bg-white border border-warm-300 rounded-lg px-3 py-2 text-sm text-slate-500 hover:text-orange-500 hover:border-orange-400 transition-colors"
-        >
-          <RefreshCw className="w-4 h-4" />
-          刷新数据
-        </button>
-      </div>
-
-      {empty ? (
-        <div className="bg-white rounded-xl border border-warm-300 p-10 text-center">
-          <Users className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500 text-sm">暂无测评记录。完成至少一份心理测评后，即可在此查看探索性分析。</p>
-        </div>
-      ) : (
-        <>
-          {/* 样本概况 */}
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-            <StatCard icon={<Users className="w-4 h-4" />} label="测评记录总数" value={summary.total} />
-            <StatCard icon={<MousePointer2 className="w-4 h-4" />} label="含鼠标轨迹" value={summary.withTrajectory} sub={`${summary.total > 0 ? Math.round(summary.withTrajectory / summary.total * 100) : 0}%`} />
-            <StatCard icon={<Sparkles className="w-4 h-4" />} label="含行为指标" value={summary.withMetrics} sub={`${summary.total > 0 ? Math.round(summary.withMetrics / summary.total * 100) : 0}%`} />
-            <StatCard icon={<Video className="w-4 h-4" />} label="摄像头可用(normal)" value={summary.cameraDist.find(c => c.mode === 'normal')?.count ?? 0} />
-            <StatCard icon={<Video className="w-4 h-4" />} label="摄像头降级(degraded)" value={summary.cameraDist.find(c => c.mode === 'degraded')?.count ?? 0} />
-            <StatCard icon={<AlertTriangle className="w-4 h-4" />} label="高风险记录" value={summary.riskDist.find(r => r.label === '高风险')?.count ?? 0} />
-          </div>
-
-          {/* 样本概况图：风险分布 + 摄像头状态 */}
-          <div className="bg-white rounded-xl border border-warm-300">
-            <div className="px-5 py-4 border-b border-warm-300">
-              <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                <Users className="w-5 h-5 text-orange-500" />
-                样本构成（分析图）
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">风险等级与摄像头采集状态在全部记录中的占比分布。</p>
+  const renderSection = () => {
+    switch (section) {
+      case 'overview':
+        return (
+          <>
+            {/* 样本概况 */}
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+              <StatCard icon={<Users className="w-4 h-4" />} label={t('ana_overview_total')} value={summary.total} />
+              <StatCard icon={<MousePointer2 className="w-4 h-4" />} label={t('ana_overview_traj')} value={summary.withTrajectory} sub={`${summary.total > 0 ? Math.round(summary.withTrajectory / summary.total * 100) : 0}%`} />
+              <StatCard icon={<Sparkles className="w-4 h-4" />} label={t('ana_overview_metrics')} value={summary.withMetrics} sub={`${summary.total > 0 ? Math.round(summary.withMetrics / summary.total * 100) : 0}%`} />
+              <StatCard icon={<Video className="w-4 h-4" />} label={t('ana_overview_cam_normal')} value={summary.cameraDist.find(c => c.mode === 'normal')?.count ?? 0} />
+              <StatCard icon={<Video className="w-4 h-4" />} label={t('ana_overview_cam_degraded')} value={summary.cameraDist.find(c => c.mode === 'degraded')?.count ?? 0} />
+              <StatCard icon={<AlertTriangle className="w-4 h-4" />} label={t('ana_overview_high')} value={summary.riskDist.find(r => r.label === '高风险')?.count ?? 0} />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
-              <div className="flex flex-col items-center gap-3">
-                <DonutChart
-                  items={summary.riskDist
-                    .filter((r) => r.count > 0)
-                    .map((r) => ({ label: r.label, value: r.count, color: RISK_COLORS[r.label] || '#94a3b8' }))}
-                  centerValue={summary.total}
-                  centerLabel="记录总数"
-                />
-                <LegendRow items={summary.riskDist.filter((r) => r.count > 0).map((r) => ({ label: r.label, color: RISK_COLORS[r.label] || '#94a3b8', value: r.count }))} />
+
+            {/* 样本概况图：风险分布 + 摄像头状态 */}
+            <div className="bg-white rounded-xl border border-warm-300">
+              <div className="px-5 py-4 border-b border-warm-300">
+                <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-orange-500" />
+                  {t('ana_sample_title')}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">{t('ana_sample_desc')}</p>
               </div>
-              <div className="flex flex-col items-center gap-3">
-                <DonutChart
-                  items={summary.cameraDist.map((c) => ({
-                    label: CAMERA_MODE_LABELS[c.mode] || c.mode,
-                    value: c.count,
-                    color: c.mode === 'normal' ? '#16a34a' : c.mode === 'degraded' ? '#ea580c' : '#94a3b8'
-                  }))}
-                  centerValue={summary.total}
-                  centerLabel="记录总数"
-                />
-                <LegendRow items={summary.cameraDist.map((c) => ({ label: CAMERA_MODE_LABELS[c.mode] || c.mode, color: c.mode === 'normal' ? '#16a34a' : c.mode === 'degraded' ? '#ea580c' : '#94a3b8', value: c.count }))} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-5">
+                <div className="flex flex-col items-center gap-3">
+                  <DonutChart
+                    items={summary.riskDist
+                      .filter((r) => r.count > 0)
+                      .map((r) => ({ label: riskLabel(r.label), value: r.count, color: RISK_COLORS[r.label] || '#94a3b8' }))}
+                    centerValue={summary.total}
+                    centerLabel={t('ana_records_total')}
+                  />
+                  <LegendRow items={summary.riskDist.filter((r) => r.count > 0).map((r) => ({ label: riskLabel(r.label), color: RISK_COLORS[r.label] || '#94a3b8', value: r.count }))} />
+                </div>
+                <div className="flex flex-col items-center gap-3">
+                  <DonutChart
+                    items={summary.cameraDist.map((c) => ({
+                      label: camLabel(c.mode),
+                      value: c.count,
+                      color: c.mode === 'normal' ? '#16a34a' : c.mode === 'degraded' ? '#ea580c' : '#94a3b8'
+                    }))}
+                    centerValue={summary.total}
+                    centerLabel={t('ana_records_total')}
+                  />
+                  <LegendRow items={summary.cameraDist.map((c) => ({ label: camLabel(c.mode), color: c.mode === 'normal' ? '#16a34a' : c.mode === 'degraded' ? '#ea580c' : '#94a3b8', value: c.count }))} />
+                </div>
               </div>
             </div>
-          </div>
+          </>
+        )
 
-          {/* 量表 × 鼠标轨迹 相关矩阵 */}
-          <div className="bg-white rounded-xl border border-warm-300">
-            <div className="px-5 py-4 border-b border-warm-300">
-              <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-orange-500" />
-                量表分数 × 鼠标轨迹指标（Spearman 相关）
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                探索性相关，样本 n 显示在各格；方向为正号表示指标随分数同向变化。相关≠因果，不作显著性检验。
-                {corr.maxN < 5 && (
-                  <span className="text-amber-600 ml-1">样本不足 5 条时相关不稳定，仅供直观参考。</span>
-                )}
-              </p>
-            </div>
-            <div className="p-5 border-b border-warm-300/60">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-slate-500">分析图 · Spearman 相关热力图</span>
+      case 'scales':
+        return (
+          <>
+            {/* 各量表独立风险等级分布 */}
+            <div className="bg-white rounded-xl border border-warm-300">
+              <div className="px-5 py-4 border-b border-warm-300">
+                <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                  <Table2 className="w-5 h-5 text-orange-500" />
+                  {t('ana_scale_comp_title')}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  {t('ana_scale_comp_desc')}
+                </p>
               </div>
-              <CorrHeatmap rows={corr.rows} cols={corr.cols} cells={corr.cells} />
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-warm-300">
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">轨迹指标</th>
-                    {corr.cols.map(c => (
-                      <th key={c.key as string} className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">{c.label}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {corr.rows.map((rk, ri) => (
-                    <tr key={rk} className="border-b border-warm-300/60 hover:bg-warm-200/40">
-                      <td className="p-3 text-slate-600 text-sm whitespace-nowrap font-medium">{METRIC_LABELS[rk]}</td>
-                      {corr.cols.map((c, ci) => (
-                        <td key={c.key as string} className="p-3">
-                          <CorrCell rho={corr.cells[ri][ci].rho} n={corr.cells[ri][ci].n} effect={corr.cells[ri][ci].effect} />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* 行为信号 × 风险等级 */}
-          <div className="bg-white rounded-xl border border-warm-300">
-            <div className="px-5 py-4 border-b border-warm-300">
-              <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-orange-500" />
-                行为信号 × 风险等级交叉
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">命中各行为信号（鼠标轨迹启发式规则）的记录在四档风险中的分布；同一记录可命中多个信号。</p>
-            </div>
-            {signals.length === 0 ? (
-              <p className="p-5 text-sm text-slate-400">暂无命中行为信号的记录。</p>
-            ) : (
-              <>
               <div className="p-5 border-b border-warm-300/60">
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs font-medium text-slate-500">分析图 · 各信号记录的风险等级堆叠分布</span>
-                  <LegendRow items={RISK_ORDER.map((r) => ({ label: r, color: RISK_COLORS[r] || '#94a3b8' }))} />
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <span className="text-xs font-medium text-slate-500">{t('ana_scale_comp_chart')}</span>
+                  <LegendRow items={RISK_ORDER.map((r) => ({ label: riskLabel(r), color: RISK_COLORS[r] || '#94a3b8' }))} />
                 </div>
                 <StackedBars
-                  rows={signals.map((s) => ({
-                    label: SIGNAL_LABELS[s.signal] || s.signal,
-                    parts: [s.low, s.mild, s.moderate, s.high],
-                    total: s.count
+                  rows={scaleDist.map((s) => ({
+                    label: s.def.label,
+                    parts: s.counts,
+                    total: s.n
                   }))}
-                  parts={RISK_ORDER.map((r) => ({ label: r, color: RISK_COLORS[r] || '#94a3b8' }))}
+                  parts={RISK_ORDER.map((r) => ({ label: riskLabel(r), color: RISK_COLORS[r] || '#94a3b8' }))}
                 />
-</div>
-            <div className="overflow-x-auto">
+              </div>
+              <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-warm-300">
-                      <th className="text-left p-3 text-slate-400 text-sm font-medium">行为信号</th>
-                      <th className="text-left p-3 text-slate-400 text-sm font-medium">记录数</th>
-                      {RISK_ORDER.map(r => <th key={r} className="text-left p-3 text-slate-400 text-sm font-medium">{r}</th>)}
-                      <th className="text-left p-3 text-slate-400 text-sm font-medium">高风险占比</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">{t('ana_th_scale')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">n</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">{t('ana_th_mean')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">{t('ana_th_median')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">{t('ana_th_sd')}</th>
+                      {RISK_ORDER.map((r) => (
+                        <th key={r} className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">{riskLabel(r)}</th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {signals.map(s => (
-                      <tr key={s.signal} className="border-b border-warm-300/60 hover:bg-warm-200/40">
-                        <td className="p-3 text-slate-600 text-sm whitespace-nowrap">{(SIGNAL_LABELS[s.signal] || BEHAVIOR_SIGNAL_LABELS[s.signal as keyof typeof BEHAVIOR_SIGNAL_LABELS] || s.signal)}</td>
-                        <td className="p-3 text-slate-500 text-sm">{s.count}</td>
-                        <td className="p-3"><RiskBadge level="低风险" /> <span className="text-slate-500 text-sm ml-1">{s.low}</span></td>
-                        <td className="p-3"><RiskBadge level="轻度风险" /> <span className="text-slate-500 text-sm ml-1">{s.mild}</span></td>
-                        <td className="p-3"><RiskBadge level="中度风险" /> <span className="text-slate-500 text-sm ml-1">{s.moderate}</span></td>
-                        <td className="p-3"><RiskBadge level="高风险" /> <span className="text-slate-500 text-sm ml-1">{s.high}</span></td>
-                        <td className="p-3 text-slate-600 text-sm">{s.highPct}%</td>
+                    {scaleDist.map((s) => (
+                      <tr key={s.def.key} className="border-b border-warm-300/60 hover:bg-warm-200/40">
+                        <td className="p-3 text-slate-600 text-sm whitespace-nowrap font-medium">{scaleFull(s.def.key)}</td>
+                        <td className="p-3 text-slate-500 text-sm">{s.n}</td>
+                        <td className="p-3 text-slate-500 text-sm">{s.sum ? s.sum.mean.toFixed(1) : '–'}</td>
+                        <td className="p-3 text-slate-500 text-sm">{s.sum ? s.sum.median.toFixed(1) : '–'}</td>
+                        <td className="p-3 text-slate-500 text-sm">{s.sum ? s.sum.sd.toFixed(1) : '–'}</td>
+                        {s.counts.map((c, i) => (
+                          <td key={i} className="p-3">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-slate-600 text-sm font-medium">{c}</span>
+                              {c > 0 && <RiskBadge level={RISK_ORDER[i]} />}
+                            </div>
+                          </td>
+                        ))}
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              </>
+            </div>
+          </>
+        )
+
+      case 'behavior':
+        return (
+          <>
+            {/* 轨迹指标分布 */}
+            <div className="bg-white rounded-xl border border-warm-300">
+              <div className="px-5 py-4 border-b border-warm-300">
+                <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                  <MousePointer2 className="w-5 h-5 text-orange-500" />
+                  {t('ana_traj_title')}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">{t('ana_traj_desc')}</p>
+              </div>
+              <div className="p-5 border-b border-warm-300/60">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-xs font-medium text-slate-500">{t('ana_traj_chart')}</span>
+                  <div className="flex items-center gap-3 text-[11px] text-slate-500">
+                    <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: '#E05A3C' }} />{t('ana_legend_mean')}</span>
+                    <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: '#dc2626' }} />{t('ana_legend_median')}</span>
+                    <span className="inline-flex items-center gap-1"><span className="w-3.5 h-1 rounded" style={{ background: '#cbd5e1' }} />{t('ana_legend_minmax')}</span>
+                  </div>
+                </div>
+                <RangeBars
+                  rows={metricSummaries
+                    .filter((m) => m.sum)
+                    .map((m) => ({
+                      label: m.label,
+                      min: m.sum!.min,
+                      max: m.sum!.max,
+                      median: m.sum!.median,
+                      mean: m.sum!.mean,
+                      n: m.sum!.n
+                    }))}
+                />
+                {(metricSummaries.filter((m) => m.sum).length === 0 || !metricSummaries.some((m) => m.sum && m.sum.max > m.sum.min)) && (
+                  <p className="text-sm text-slate-400">{t('ana_traj_flat')}</p>
+                )}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-warm-300">
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_metric')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">n</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_mean')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_median')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_sd')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_min')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_max')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {metricSummaries.map(m => (
+                      <tr key={m.key} className="border-b border-warm-300/60 hover:bg-warm-200/40">
+                        <td className="p-3 text-slate-600 text-sm whitespace-nowrap font-medium">{m.label}</td>
+                        <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.n : 0}</td>
+                        <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.mean.toFixed(2) : '–'}</td>
+                        <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.median.toFixed(2) : '–'}</td>
+                        <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.sd.toFixed(2) : '–'}</td>
+                        <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.min.toFixed(0) : '–'}</td>
+                        <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.max.toFixed(0) : '–'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* 行为信号 × 风险等级 */}
+            <div className="bg-white rounded-xl border border-warm-300">
+              <div className="px-5 py-4 border-b border-warm-300">
+                <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-orange-500" />
+                  {t('ana_signal_title')}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">{t('ana_signal_desc')}</p>
+              </div>
+              {signals.length === 0 ? (
+                <p className="p-5 text-sm text-slate-400">{t('ana_signal_none')}</p>
+              ) : (
+                <>
+                  <div className="p-5 border-b border-warm-300/60">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <span className="text-xs font-medium text-slate-500">{t('ana_signal_chart')}</span>
+                      <LegendRow items={RISK_ORDER.map((r) => ({ label: riskLabel(r), color: RISK_COLORS[r] || '#94a3b8' }))} />
+                    </div>
+                    <StackedBars
+                      rows={signals.map((s) => ({
+                        label: signalLabel(s.signal),
+                        parts: [s.low, s.mild, s.moderate, s.high],
+                        total: s.count
+                      }))}
+                      parts={RISK_ORDER.map((r) => ({ label: riskLabel(r), color: RISK_COLORS[r] || '#94a3b8' }))}
+                    />
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-warm-300">
+                          <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_signal')}</th>
+                          <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_count')}</th>
+                          {RISK_ORDER.map(r => <th key={r} className="text-left p-3 text-slate-400 text-sm font-medium">{riskLabel(r)}</th>)}
+                          <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_high_pct')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {signals.map(s => (
+                          <tr key={s.signal} className="border-b border-warm-300/60 hover:bg-warm-200/40">
+                            <td className="p-3 text-slate-600 text-sm whitespace-nowrap">{signalLabel(s.signal)}</td>
+                            <td className="p-3 text-slate-500 text-sm">{s.count}</td>
+                            <td className="p-3"><RiskBadge level="低风险" /> <span className="text-slate-500 text-sm ml-1">{s.low}</span></td>
+                            <td className="p-3"><RiskBadge level="轻度风险" /> <span className="text-slate-500 text-sm ml-1">{s.mild}</span></td>
+                            <td className="p-3"><RiskBadge level="中度风险" /> <span className="text-slate-500 text-sm ml-1">{s.moderate}</span></td>
+                            <td className="p-3"><RiskBadge level="高风险" /> <span className="text-slate-500 text-sm ml-1">{s.high}</span></td>
+                            <td className="p-3 text-slate-600 text-sm">{s.highPct}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
+            </div>
+          </>
+        )
+
+      case 'corr':
+        return (
+          <>
+            {/* 量表 × 鼠标轨迹 相关矩阵 */}
+            <div className="bg-white rounded-xl border border-warm-300">
+              <div className="px-5 py-4 border-b border-warm-300">
+                <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-orange-500" />
+                  {t('ana_corr_title')}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  {t('ana_corr_desc')}
+                  {corr.maxN < 5 && (
+                    <span className="text-amber-600 ml-1">{t('ana_corr_low_n')}</span>
+                  )}
+                </p>
+              </div>
+              <div className="p-5 border-b border-warm-300/60">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium text-slate-500">{t('ana_corr_chart')}</span>
+                </div>
+                <CorrHeatmap rows={corr.rows} cols={corr.cols.map((c) => ({ key: c.key as string, label: scaleShort(c.key as string) }))} cells={corr.cells} />
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-warm-300">
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">{t('ana_th_traj_metric')}</th>
+                      {corr.cols.map(c => (
+                        <th key={c.key as string} className="text-left p-3 text-slate-400 text-sm font-medium whitespace-nowrap">{scaleShort(c.key as string)}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {corr.rows.map((rk, ri) => (
+                      <tr key={rk} className="border-b border-warm-300/60 hover:bg-warm-200/40">
+                        <td className="p-3 text-slate-600 text-sm whitespace-nowrap font-medium">{metricLabel(rk as string)}</td>
+                        {corr.cols.map((c, ci) => (
+                          <td key={c.key as string} className="p-3">
+                            <CorrCell rho={corr.cells[ri][ci].rho} n={corr.cells[ri][ci].n} effect={corr.cells[ri][ci].effect} />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )
+
+      case 'video':
+        return (
+          <>
+            {/* 视频采集状态 × 量表/风险 */}
+            <div className="bg-white rounded-xl border border-warm-300">
+              <div className="px-5 py-4 border-b border-warm-300">
+                <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+                  <Video className="w-5 h-5 text-orange-500" />
+                  {t('ana_video_title')}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  {t('ana_video_desc')}
+                </p>
+              </div>
+              <div className="p-5 border-b border-warm-300/60">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-xs font-medium text-slate-500">{t('ana_video_chart')}</span>
+                  <LegendRow items={[
+                    { label: t('ana_avg_phq9'), color: '#E05A3C' },
+                    { label: t('ana_avg_pss10'), color: '#ea580c' }
+                  ]} />
+                </div>
+                <GroupBars
+                  groups={camera.map((row) => ({
+                    label: camLabel(row.mode).replace(/\s*\(.*\)/, ''),
+                    values: [row.avgPhq9, row.avgPss10]
+                  }))}
+                  series={[
+                    { label: t('ana_avg_phq9_short'), color: '#E05A3C', max: 27 },
+                    { label: t('ana_avg_pss10_short'), color: '#ea580c', max: 50 }
+                  ]}
+                />
+                <p className="text-[11px] text-slate-400 mt-2">{t('ana_video_yaxis')}</p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-warm-300">
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_status')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_count')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_high_count')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_th_high_pct')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_avg_phq9_short')}</th>
+                      <th className="text-left p-3 text-slate-400 text-sm font-medium">{t('ana_avg_pss10_short')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {camera.map(row => (
+                      <tr key={row.mode} className="border-b border-warm-300/60 hover:bg-warm-200/40">
+                        <td className="p-3 text-slate-600 text-sm whitespace-nowrap">{camLabel(row.mode)}</td>
+                        <td className="p-3 text-slate-500 text-sm">{row.count}</td>
+                        <td className="p-3 text-slate-500 text-sm">{row.high}</td>
+                        <td className="p-3 text-slate-500 text-sm">{row.highPct}%</td>
+                        <td className="p-3 text-slate-500 text-sm">{row.avgPhq9 ?? '–'}</td>
+                        <td className="p-3 text-slate-500 text-sm">{row.avgPss10 ?? '–'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-5 py-3 border-t border-warm-300/60 bg-warm-100/50 flex items-start gap-2 text-xs text-slate-400">
+                <Info className="w-4 h-4 shrink-0 mt-0.5" />
+                {t('ana_video_note')}
+              </div>
+            </div>
+          </>
+        )
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* 页头 */}
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 text-orange-500" />
+            {t('ana_title')}
+          </h2>
+          <p className="text-sm text-slate-500 mt-1">
+            {t('ana_desc')}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setRefreshTick(t2 => t2 + 1)}
+            className="flex items-center gap-2 bg-white border border-warm-300 rounded-lg px-3 py-2 text-sm text-slate-500 hover:text-orange-500 hover:border-orange-400 transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" />
+            {t('btn_refresh')}
+          </button>
+          <button
+            onClick={handleExportHtml}
+            disabled={selected.length === 0 || exporting}
+            className="flex items-center gap-2 bg-white border border-warm-300 rounded-lg px-3 py-2 text-sm text-slate-500 hover:text-orange-500 hover:border-orange-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <FileDown className="w-4 h-4" />
+            {t('ana_export_html')}
+          </button>
+          <button
+            onClick={handleExportPdf}
+            disabled={selected.length === 0}
+            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg px-3 py-2 text-sm transition-colors"
+          >
+            <Printer className="w-4 h-4" />
+            {t('ana_export_pdf')}
+          </button>
+        </div>
+      </div>
+
+      {empty ? (
+        <div className="bg-white rounded-xl border border-warm-300 p-10 text-center">
+          <Users className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+          <p className="text-slate-500 text-sm">{t('ana_empty')}</p>
+        </div>
+      ) : (
+        <>
+          {/* 分析对象选择器（需求 8：目标性分析） */}
+          <div className="bg-white rounded-xl border border-warm-300">
+            <div className="px-5 py-4 flex items-center justify-between gap-3 flex-wrap border-b border-warm-300/70">
+              <div className="flex items-center gap-3">
+                <ListChecks className="w-5 h-5 text-orange-500" />
+                <div>
+                  <h3 className="font-semibold text-slate-800">{t('ana_target')}</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {tFmt('ana_selected', { n: selected.length, total: records.length })} · {t('ana_target_desc')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={selectAllTargets}
+                  className="flex items-center gap-1.5 text-xs bg-warm-100 hover:bg-warm-200 text-ink-soft border border-warm-300 rounded-lg px-2.5 py-1.5 transition-colors"
+                >
+                  <CheckSquare className="w-3.5 h-3.5" /> {t('ana_select_all')}
+                </button>
+                <button
+                  onClick={selectHighRisk}
+                  className="flex items-center gap-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded-lg px-2.5 py-1.5 transition-colors"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" /> {t('ana_select_high')}
+                </button>
+                <button
+                  onClick={clearTargets}
+                  className="text-xs text-slate-400 hover:text-orange-500 underline underline-offset-2 transition-colors"
+                >
+                  {t('ana_select_clear')}
+                </button>
+                <button
+                  onClick={() => setShowTargets((v) => !v)}
+                  className="flex items-center gap-1 text-xs text-slate-500 hover:text-orange-500 transition-colors border border-warm-300 rounded-lg px-2 py-1.5"
+                >
+                  {showTargets ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  {showTargets ? t('ana_collapse') : t('ana_expand')}
+                </button>
+              </div>
+            </div>
+            {showTargets && (
+              <div className="p-4 border-t border-warm-300/70 max-h-64 overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                  {records.map((r) => {
+                    const checked = selectedIds === null || selectedIds.has(r.id)
+                    return (
+                      <label
+                        key={r.id}
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors ${
+                          checked ? 'bg-[#FDEEE8]/70' : 'bg-warm-100 hover:bg-warm-200/70'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleTarget(r.id)}
+                          className="w-4 h-4 accent-orange-500 rounded shrink-0"
+                        />
+                        <span className="text-slate-600 font-medium">{r.id}</span>
+                        <span className="text-slate-400 text-xs">{r.studentId} · {r.time}</span>
+                        <span className="ml-auto"><RiskBadge level={r.risk} /></span>
+                      </label>
+                    )
+                  })}
+                </div>
+              </div>
             )}
           </div>
 
-          {/* 视频采集状态 × 量表/风险 */}
-          <div className="bg-white rounded-xl border border-warm-300">
-            <div className="px-5 py-4 border-b border-warm-300">
-              <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                <Video className="w-5 h-5 text-orange-500" />
-                视频采集状态 × 量表分数
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                当前平台摄像头仅做可用性检测（normal / degraded），未存储视频帧；该交叉表展示不同采集状态下量表分数的概况，
-                用于排查采集环境（如降级样本是否系统性地伴随特定作答模式）。
-              </p>
+          {selected.length === 0 ? (
+            <div className="bg-white rounded-xl border border-warm-300 p-10 text-center">
+              <ListChecks className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+              <p className="text-slate-500 text-sm mb-4">{t('ana_none_selected')}</p>
+              <button
+                onClick={selectAllTargets}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+              >
+                {t('ana_select_all')}
+              </button>
             </div>
-            <div className="p-5 border-b border-warm-300/60">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-500">分析图 · 各采集状态下平均量表分数（柱高按量表满分归一）</span>
-                <LegendRow items={[
-                  { label: '平均 PHQ-9（满分 27）', color: '#E05A3C' },
-                  { label: '平均 PSS-10（满分 50）', color: '#ea580c' }
-                ]} />
+          ) : (
+            <div className="flex gap-6 items-start">
+              {/* 分区导航 */}
+              <div className="w-40 shrink-0 sticky top-0 space-y-1">
+                {SECTION_DEFS.map((s) => {
+                  const Icon = s.icon
+                  const active = section === s.key
+                  return (
+                    <button
+                      key={s.key}
+                      onClick={() => setSection(s.key)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                        active
+                          ? 'bg-[#FDEEE8] text-ink font-medium'
+                          : 'text-slate-400 hover:bg-warm-200/70 hover:text-slate-700'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${active ? 'text-[#E05A3C]' : ''}`} />
+                      {t(s.labelKey)}
+                    </button>
+                  )
+                })}
               </div>
-              <GroupBars
-                groups={camera.map((row) => ({
-                  label: CAMERA_MODE_LABELS[row.mode]?.replace(/\s*\(.*\)/, '') || row.mode,
-                  values: [row.avgPhq9, row.avgPss10]
-                }))}
-                series={[
-                  { label: '平均 PHQ-9', color: '#E05A3C', max: 27 },
-                  { label: '平均 PSS-10', color: '#ea580c', max: 50 }
-                ]}
-              />
-              <p className="text-[11px] text-slate-400 mt-2">纵轴为占量表满分的百分比（便于在同一图上比较）；柱顶标注为实际平均分。</p>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-warm-300">
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">采集状态</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">记录数</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">高风险数</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">高风险占比</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">平均 PHQ-9</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">平均 PSS-10</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {camera.map(row => (
-                    <tr key={row.mode} className="border-b border-warm-300/60 hover:bg-warm-200/40">
-                      <td className="p-3 text-slate-600 text-sm whitespace-nowrap">{CAMERA_MODE_LABELS[row.mode] || row.mode}</td>
-                      <td className="p-3 text-slate-500 text-sm">{row.count}</td>
-                      <td className="p-3 text-slate-500 text-sm">{row.high}</td>
-                      <td className="p-3 text-slate-500 text-sm">{row.highPct}%</td>
-                      <td className="p-3 text-slate-500 text-sm">{row.avgPhq9 ?? '–'}</td>
-                      <td className="p-3 text-slate-500 text-sm">{row.avgPss10 ?? '–'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="px-5 py-3 border-t border-warm-300/60 bg-warm-100/50 flex items-start gap-2 text-xs text-slate-400">
-              <Info className="w-4 h-4 shrink-0 mt-0.5" />
-              视频行为信号（面部动作单元、表情贫乏度、注视等）的采集建议与心理学依据详见《调研-摄像头信息心理学研究.md》，
-              当前版本尚未落库帧级指标，待阶段化增强后此卡将扩展为帧级特征关联分析。
-            </div>
-          </div>
 
-          {/* 轨迹指标分布 */}
-          <div className="bg-white rounded-xl border border-warm-300">
-            <div className="px-5 py-4 border-b border-warm-300">
-              <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-                <MousePointer2 className="w-5 h-5 text-orange-500" />
-                鼠标轨迹指标分布（描述统计）
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">基于全部含行为指标记录；均值/中位数/标准差/最小/最大，用于观察批次分布与异常作答。</p>
-            </div>
-            <div className="p-5 border-b border-warm-300/60">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-medium text-slate-500">分析图 · 各指标数值范围与均值/中位数（各指标独立标尺）</span>
-                <div className="flex items-center gap-3 text-[11px] text-slate-500">
-                  <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: '#E05A3C' }} />均值</span>
-                  <span className="inline-flex items-center gap-1"><span className="w-2 h-2 rounded-full" style={{ background: '#dc2626' }} />中位数</span>
-                  <span className="inline-flex items-center gap-1"><span className="w-3.5 h-1 rounded" style={{ background: '#cbd5e1' }} />最小–最大</span>
-                </div>
+              {/* 分区内容 */}
+              <div className="flex-1 min-w-0 space-y-5">
+                {renderSection()}
               </div>
-              <RangeBars
-                rows={metricSummaries
-                  .filter((m) => m.sum)
-                  .map((m) => ({
-                    label: m.label,
-                    min: m.sum!.min,
-                    max: m.sum!.max,
-                    median: m.sum!.median,
-                    mean: m.sum!.mean,
-                    n: m.sum!.n
-                  }))}
-              />
-              {(metricSummaries.filter((m) => m.sum).length === 0 || !metricSummaries.some((m) => m.sum && m.sum.max > m.sum.min)) && (
-                <p className="text-sm text-slate-400">当前样本各指标取值全相同（或暂无可分析的记录），暂时无法绘制范围图。</p>
-              )}
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-warm-300">
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">指标</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">n</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">均值</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">中位数</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">标准差</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">最小</th>
-                    <th className="text-left p-3 text-slate-400 text-sm font-medium">最大</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {metricSummaries.map(m => (
-                    <tr key={m.key} className="border-b border-warm-300/60 hover:bg-warm-200/40">
-                      <td className="p-3 text-slate-600 text-sm whitespace-nowrap font-medium">{m.label}</td>
-                      <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.n : 0}</td>
-                      <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.mean.toFixed(2) : '–'}</td>
-                      <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.median.toFixed(2) : '–'}</td>
-                      <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.sd.toFixed(2) : '–'}</td>
-                      <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.min.toFixed(0) : '–'}</td>
-                      <td className="p-3 text-slate-500 text-sm">{m.sum ? m.sum.max.toFixed(0) : '–'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          )}
 
           {/* 免责声明 */}
           <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4 text-sm text-amber-700 flex items-start gap-2">
             <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
             <div>
-              本页面所有统计与相关均为<b>探索性分析</b>，样本量小、存在个体差异与情境噪声，不构成心理健康评估结论；
-              相关关系不代表因果关系。请结合原始测评记录与量表结果综合判断，重要结论需专业人员复核。
+              {t('ana_disclaimer_pre')}<b>{t('ana_disclaimer_bold')}</b>{t('ana_disclaimer_post')}
             </div>
           </div>
         </>

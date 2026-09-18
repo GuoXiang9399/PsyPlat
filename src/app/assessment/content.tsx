@@ -2,12 +2,6 @@
 
 import { useState, useEffect, useRef, Fragment } from 'react'
 import {
-  FileText,
-  LayoutDashboard,
-  Database,
-  Settings,
-  Info,
-  Brain,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
@@ -18,7 +12,7 @@ import {
   RotateCcw,
   Maximize,
   Minimize,
-  BarChart3
+  ClipboardList
 } from 'lucide-react'
 import {
   AssessmentRecord,
@@ -51,109 +45,100 @@ import {
   scorePsqi,
   scoreSias6,
   scoreAslec,
-  buildRisk,
-  emptyPsqiAnswers
+  buildRisk
 } from '@/lib/scales'
 import type { PsqiAnswers } from '@/lib/scales'
+import {
+  AssessmentSettings,
+  CustomScale,
+  ScaleKey,
+  loadAssessSettings,
+  blankPsqiAnswers,
+  psqiFullyAnswered
+} from '@/lib/appSettings'
+import { saveVideo } from '@/lib/videoStore'
+import { useT, tFmt } from '@/lib/i18n'
 
-type TabKey = 'dashboard' | 'assessment' | 'data' | 'settings' | 'about'
+// 步骤 3 的问卷分页：按启用顺序排列，不向用户展示量表名称
+type QPage =
+  | { type: 'phq9' } | { type: 'gad7' } | { type: 'cssrs' } | { type: 'nssi' }
+  | { type: 'pss10' } | { type: 'psqi' } | { type: 'sias6' } | { type: 'aslec' }
+  | { type: 'custom'; custom: CustomScale }
 
-function Sidebar({ activeTab, onTabChange }: { activeTab: TabKey; onTabChange: (tab: TabKey) => void }) {
-  const tabs = [
-    { key: 'dashboard' as TabKey, label: '首页概览', icon: LayoutDashboard },
-    { key: 'assessment' as TabKey, label: '心理测评', icon: FileText },
-    { key: 'data' as TabKey, label: '数据管理', icon: Database },
-    { key: 'settings' as TabKey, label: '系统设置', icon: Settings },
-    { key: 'about' as TabKey, label: '关于系统', icon: Info },
-  ]
+const BUILTIN_ORDER: ScaleKey[] = ['phq9', 'gad7', 'cssrs', 'nssi', 'pss10', 'psqi', 'sias6', 'aslec']
 
-  return (
-    <aside className="w-64 bg-white border-r border-warm-300 flex flex-col">
-      <div className="p-4 border-b border-warm-300">
-        <div className="flex items-center gap-3">
-          <Brain className="w-8 h-8 text-orange-500" />
-          <h1 className="text-sm font-bold text-slate-800 leading-tight">河南大学基础医学院心理站</h1>
-        </div>
-      </div>
-      <nav className="flex-1 p-3 space-y-1">
-        {tabs.map((tab) => {
-          const Icon = tab.icon
-          return (
-            <button
-              key={tab.key}
-              onClick={() => onTabChange(tab.key)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                activeTab === tab.key
-                  ? 'bg-[#FDEEE8] text-ink font-medium'
-                  : 'text-slate-400 hover:bg-warm-200/70 hover:text-slate-700'
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              {tab.label}
-            </button>
-          )
-        })}
-      </nav>
-    </aside>
-  )
+const PAGE_INTRO: Record<string, string> = {
+  phq9: '在过去两周里，以下问题困扰您的频率如何？',
+  gad7: '在过去两周里，以下问题困扰您的频率如何？',
+  cssrs: '请根据过去一个月内的实际情况作答。',
+  nssi: '请根据过去一年内的实际情况作答。',
+  pss10: '过去一个月里，以下情况发生的频率如何？',
+  psqi: '请根据过去一个月的睡眠情况填写。',
+  sias6: '过去两周里，以下情况与您的符合程度如何？',
+  aslec: '过去一年内是否发生过以下事件？若发生过，请评估其影响程度。',
+  custom: '请根据您的实际情况作答。'
 }
 
-const stepLabels = ['基本信息', '知情同意', '心理测评', '结束']
-
 export function AssessmentContent() {
+  const { t } = useT()
+  const [settings] = useState<AssessmentSettings>(() => loadAssessSettings())
   const [currentStep, setCurrentStep] = useState(1)
   const [agreed, setAgreed] = useState(false)
-  const [basicInfo, setBasicInfo] = useState({ studentId: '', age: '', gender: 'male', grade: '', educationLevel: '本科', major: '' })
+  const [basicInfo, setBasicInfo] = useState({ studentId: '', age: '', gender: 'male', grade: '', educationLevel: 'undergraduate', major: '' })
   const [phq9Answers, setPhq9Answers] = useState<number[]>(new Array(9).fill(-1))
   const [gad7Answers, setGad7Answers] = useState<number[]>(new Array(7).fill(-1))
-  // 补充量表：自杀风险筛查（C-SSRS + NSSI）
   const [cssrsAnswers, setCssrsAnswers] = useState<number[]>(new Array(4).fill(-1))
   const [nssiAnswers, setNssiAnswers] = useState<number[]>([-1, -1])
-  // 补充量表：扩充画像（PSS-10 / PSQI / SIAS-6 / ASLEC）
   const [pss10Answers, setPss10Answers] = useState<number[]>(new Array(10).fill(-1))
-  const [psqiAnswers, setPsqiAnswers] = useState(emptyPsqiAnswers)
+  const [psqiAnswers, setPsqiAnswers] = useState<PsqiAnswers>(() => blankPsqiAnswers())
   const [sias6Answers, setSias6Answers] = useState<number[]>(new Array(6).fill(-1))
-  const [aslecAnswers, setAslecAnswers] = useState<number[]>(new Array(27).fill(0))
-  const [mouseProgress, setMouseProgress] = useState(0)
-  const [mouseStatus, setMouseStatus] = useState<'idle' | 'running' | 'completed'>('idle')
-  const [cameraStatus, setCameraStatus] = useState<'idle' | 'running' | 'completed'>('idle')
-  const [cameraProgress, setCameraProgress] = useState(0)
+  const [aslecAnswers, setAslecAnswers] = useState<number[]>(new Array(27).fill(-1))
+  // 自定义量表作答（key 为量表 id，值与条目一一对应，-1 未作答）
+  const [customAnswers, setCustomAnswers] = useState<Record<string, number[]>>(() =>
+    Object.fromEntries(loadAssessSettings().customScales.map(s => [s.id, new Array(s.items.length).fill(-1)]))
+  )
   const [isFullscreen, setIsFullscreen] = useState(false)
+  // 步骤 3 问卷分页游标
+  const [page, setPage] = useState(0)
+
+  // 分页问卷列表：仅启用量表 + 自定义量表
+  const pages: QPage[] = [
+    ...BUILTIN_ORDER.filter(k => settings.enabledScales[k]).map(k => ({ type: k }) as QPage),
+    ...settings.customScales.map(s => ({ type: 'custom', custom: s }) as QPage),
+  ]
+  const lastPage = pages.length - 1
+  const currentPage = pages[Math.min(page, Math.max(0, lastPage))]
 
   // 鼠标轨迹采样：记录 {x, y, t(相对首点毫秒)}，用于数据管理页查看行为数据
   const mouseTrajRef = useRef<TrajectoryPoint[]>([])
-  const mouseTimerRef = useRef<number | null>(null)
+  const mouseActiveRef = useRef(false)
   const stopMouseTrackRef = useRef<(() => void) | null>(null)
-  // 摄像头采集模式（index 3 统一改造：真实 getUserMedia）
+  // 摄像头：知情同意后一次性预授权（无感），步骤 3 答题全程静默录制
   const cameraModeRef = useRef<'normal' | 'degraded'>('normal')
   const cameraStreamRef = useRef<MediaStream | null>(null)
-  const cameraTimerRef = useRef<number | null>(null)
+  const recorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
 
   const totalSteps = 4
+  const stepLabels = [t('step1'), t('step2'), t('step3'), t('step4')]
 
   // 组件卸载时清理鼠标采样与摄像头资源
   useEffect(() => {
     return () => {
       if (stopMouseTrackRef.current) stopMouseTrackRef.current()
-      if (mouseTimerRef.current) window.clearTimeout(mouseTimerRef.current)
-      stopCameraStream()
-      if (cameraTimerRef.current) window.clearTimeout(cameraTimerRef.current)
+      try { recorderRef.current?.state !== 'inactive' && recorderRef.current?.stop() } catch {}
+      if (cameraStreamRef.current) {
+        cameraStreamRef.current.getTracks().forEach(track => track.stop())
+        cameraStreamRef.current = null
+      }
     }
   }, [])
 
-useEffect(() => {
+  useEffect(() => {
     const handler = () => setIsFullscreen(Boolean(document.fullscreenElement))
     document.addEventListener('fullscreenchange', handler)
     return () => document.removeEventListener('fullscreenchange', handler)
   }, [])
-
-  // 进入心理测评步骤时，鼠标轨迹与面部数据自动随答题一并采集，无需使用者单独操作
-  useEffect(() => {
-    if (currentStep !== 3) return
-    if (mouseStatus === 'idle') startMouseTracking()
-    if (cameraStatus === 'idle') startCamera()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStep])
 
   const toggleFullscreen = async () => {
     try {
@@ -167,117 +152,42 @@ useEffect(() => {
     }
   }
 
-const supplementaryDone = () =>
-    cssrsAnswers.every(a => a >= 0) &&
-    nssiAnswers[0] >= 0 &&
-    (nssiAnswers[0] === 0 || nssiAnswers[1] >= 0) &&
-    pss10Answers.every(a => a >= 0) &&
-    psqiAnswers.latency >= 0 && psqiAnswers.hours > 0 &&
-    sias6Answers.every(a => a >= 0)
-
-  const canProceed = () => {
-    switch (currentStep) {
-      case 1: return basicInfo.studentId.trim().length > 0
-      case 2: return agreed
-      case 3: return (
-        phq9Answers.every(a => a >= 0) &&
-        gad7Answers.every(a => a >= 0) &&
-        supplementaryDone() &&
-        cameraStatus === 'completed'
-      )
-      default: return true
+  // —— 摄像头预授权：用户点击「我同意」时一次性请求权限 ——
+  const requestCameraOnConsent = () => {
+    setAgreed(true)
+    if (!settings.camera) {
+      cameraModeRef.current = 'degraded'
+      return
     }
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+      cameraModeRef.current = 'degraded'
+      return
+    }
+    navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 }, audio: false })
+      .then((stream) => {
+        if (cameraStreamRef.current) {
+          stream.getTracks().forEach(track => track.stop())
+          return
+        }
+        cameraStreamRef.current = stream
+        cameraModeRef.current = 'normal'
+      })
+      .catch(() => {
+        cameraModeRef.current = 'degraded'
+      })
   }
 
-const handleNext = () => {
-    if (currentStep === 3) {
-      // 提交测评前停止轨迹采样，确保轨迹覆盖整个答题过程
-      finishMouseTrack()
-      // 量表全部作答且数据采集完成后，归档为一条记录（供数据管理页查看逐题结果与行为数据）
-      const traj = mouseTrajRef.current
-      const psqiResult = scorePsqi(psqiAnswers)
-      const aslecResult = scoreAslec(aslecAnswers)
-      const riskResult = buildRisk(phq9Answers, gad7Answers, cssrsAnswers, nssiAnswers)
-      const metrics = computeMouseMetrics(traj)
-      const record: AssessmentRecord = {
-        id: makeRecordId(),
-        studentId: basicInfo.studentId.trim(),
-        age: basicInfo.age,
-        gender: basicInfo.gender,
-        educationLevel: basicInfo.educationLevel,
-        grade: basicInfo.grade,
-        major: basicInfo.major,
-        time: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-'),
-        phq9: [...phq9Answers],
-        gad7: [...gad7Answers],
-        phq9Score: scoreOf(phq9Answers),
-        gad7Score: scoreOf(gad7Answers),
-        risk: riskResult.label,
-        riskFlags: riskResult.flags,
-        cssrs: [...cssrsAnswers],
-        cssrsPositive: cssrsAnswers.filter(v => v === 1).length,
-        nssi: [...nssiAnswers],
-        pss10: [...pss10Answers],
-        pss10Score: scorePss10(pss10Answers),
-        psqi: { ...psqiAnswers },
-        psqiComps: psqiResult.comps,
-        psqiScore: psqiResult.total,
-        sias6: [...sias6Answers],
-        sias6Score: scoreSias6(sias6Answers),
-        aslec: [...aslecAnswers],
-        aslecScore: aslecResult.total,
-        aslecCount: aslecResult.count,
-        status: 'completed',
-        mouseTrajectory: traj.map(p => ({ x: p.x, y: p.y, t: Math.max(0, p.t - (traj[0] ? traj[0].t : 0)), k: p.k })),
-        mouseSamples: traj.length,
-        cameraMode: cameraModeRef.current,
-        // 行为动力学指标与信号（依据《鼠标轨迹心理学研究调研》落地；旧记录无此字段）
-        mouseMetrics: metrics,
-        behaviorSignals: behaviorSignalsOf(metrics),
-      }
-      appendRecord(record)
-    }
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1)
-    }
-  }
-
-  const handlePrev = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
-    }
-  }
-
-const resetAll = () => {
-    if (stopMouseTrackRef.current) stopMouseTrackRef.current()
-    if (mouseTimerRef.current) window.clearTimeout(mouseTimerRef.current)
-    mouseTrajRef.current = []
-    stopMouseTrackRef.current = null
-    stopCameraStream()
-    if (cameraTimerRef.current) window.clearTimeout(cameraTimerRef.current)
-    setCurrentStep(1)
+  const declineConsent = () => {
     setAgreed(false)
-    setBasicInfo({ studentId: '', age: '', gender: 'male', grade: '', educationLevel: '本科', major: '' })
-    setPhq9Answers(new Array(9).fill(-1))
-    setGad7Answers(new Array(7).fill(-1))
-    setCssrsAnswers(new Array(4).fill(-1))
-    setNssiAnswers([-1, -1])
-    setPss10Answers(new Array(10).fill(-1))
-    setPsqiAnswers(emptyPsqiAnswers())
-    setSias6Answers(new Array(6).fill(-1))
-    setAslecAnswers(new Array(27).fill(0))
-    setMouseStatus('idle')
-    setMouseProgress(0)
-    setCameraStatus('idle')
-    setCameraProgress(0)
+    stopCameraStream()
+    cameraModeRef.current = 'degraded'
   }
 
-  // 进入第 3 步时自动开始鼠标行为采集（全量模式）：监听 document 上每一次 mousemove 与 click，
-  // 记录鼠标挪动的所有动作与点击动作，直到提交测评（handleNext）时停止，覆盖整个答题过程
-  const MOUSE_MAX_SAMPLES = 50000 // 安全上限：防止极端场景写入量过大（正常答题数分钟内远达不到）
+  // —— 鼠标轨迹采集（步骤 3 答题全程） ——
+  const MOUSE_MAX_SAMPLES = 50000
   const startMouseTracking = () => {
-    setMouseStatus('running')
-    setMouseProgress(0)
+    if (mouseActiveRef.current) return
+    mouseActiveRef.current = true
     mouseTrajRef.current = []
     const t0 = performance.now()
     const push = (e: MouseEvent, k: 'm' | 'c') => {
@@ -293,12 +203,11 @@ const resetAll = () => {
     const onClick = (e: MouseEvent) => push(e, 'c')
     document.addEventListener('mousemove', onMove)
     document.addEventListener('click', onClick)
-    const stop = () => {
+    stopMouseTrackRef.current = () => {
       document.removeEventListener('mousemove', onMove)
       document.removeEventListener('click', onClick)
+      mouseActiveRef.current = false
     }
-    stopMouseTrackRef.current = stop
-    // 全量采集：不设 80ms 节流、不设 60 点上限，提交测评（handleNext）时停止
   }
 
   const finishMouseTrack = () => {
@@ -306,66 +215,474 @@ const resetAll = () => {
       stopMouseTrackRef.current()
       stopMouseTrackRef.current = null
     }
-    if (mouseTimerRef.current) {
-      window.clearTimeout(mouseTimerRef.current)
-      mouseTimerRef.current = null
+  }
+
+  // —— 摄像头录制（步骤 3 答题全程静默进行，用户无感） ——
+  const startRecording = () => {
+    const stream = cameraStreamRef.current
+    if (!stream || typeof MediaRecorder === 'undefined') {
+      cameraModeRef.current = 'degraded'
+      return
     }
-    setMouseStatus('completed')
-    setMouseProgress(100)
+    if (recorderRef.current && recorderRef.current.state !== 'inactive') return
+    try {
+      const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9'
+        : MediaRecorder.isTypeSupported('video/webm')
+          ? 'video/webm'
+          : ''
+      const rec = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream)
+      chunksRef.current = []
+      rec.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) chunksRef.current.push(e.data)
+      }
+      rec.start(2000)
+      recorderRef.current = rec
+      cameraModeRef.current = 'normal'
+    } catch {
+      cameraModeRef.current = 'degraded'
+    }
+  }
+
+  const stopRecording = (): Promise<Blob | null> => {
+    return new Promise((resolve) => {
+      const rec = recorderRef.current
+      if (!rec || rec.state === 'inactive') {
+        stopCameraStream()
+        resolve(null)
+        return
+      }
+      rec.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: rec.mimeType || 'video/webm' })
+        recorderRef.current = null
+        stopCameraStream()
+        resolve(blob.size > 0 ? blob : null)
+      }
+      try {
+        rec.stop()
+      } catch {
+        recorderRef.current = null
+        stopCameraStream()
+        resolve(null)
+      }
+    })
   }
 
   const stopCameraStream = () => {
     if (cameraStreamRef.current) {
-      cameraStreamRef.current.getTracks().forEach(t => t.stop())
+      cameraStreamRef.current.getTracks().forEach(track => track.stop())
       cameraStreamRef.current = null
     }
   }
 
-  // 面部数据采集：优先真实调用 getUserMedia；权限拒绝/无摄像头/桌面环境不可用时自动降级，
-  // 以约 2.5s 的采集窗口完成状态流转，保证测评流程不被权限问题卡死
-  const startCamera = () => {
-    setCameraStatus('running')
-    setCameraProgress(0)
-    cameraModeRef.current = 'normal'
-    let settled = false
-    const settle = (mode: 'normal' | 'degraded') => {
-      if (settled) return
-      settled = true
-      cameraModeRef.current = mode
-      stopCameraStream()
-      setCameraProgress(100)
-      setCameraStatus('completed')
+  // 进入步骤 3 时：自动开始鼠标采样与摄像头录制（全程无感）
+  useEffect(() => {
+    if (currentStep !== 3) return
+    if (settings.mouseTracking) startMouseTracking()
+    startRecording()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep])
+
+  // —— 分页问卷完成判定（当前页全部作答才可进入下一份） ——
+  const pageComplete = (p: QPage): boolean => {
+    switch (p.type) {
+      case 'phq9': return phq9Answers.every(a => a >= 0)
+      case 'gad7': return gad7Answers.every(a => a >= 0)
+      case 'cssrs': return cssrsAnswers.every(a => a >= 0)
+      case 'nssi': return nssiAnswers[0] >= 0 && (nssiAnswers[0] === 0 || nssiAnswers[1] >= 0)
+      case 'pss10': return pss10Answers.every(a => a >= 0)
+      case 'psqi': return psqiFullyAnswered(psqiAnswers)
+      case 'sias6': return sias6Answers.every(a => a >= 0)
+      case 'aslec': return aslecAnswers.every(a => a >= 0)
+      case 'custom': return (customAnswers[p.custom.id] ?? []).every(a => a >= 0)
+      default: return true
     }
-    const failTimer = window.setTimeout(() => settle('degraded'), 8000)
-    cameraTimerRef.current = failTimer
-    const runWindow = () => {
-      // 保持摄像头打开约 2.5s 的采集窗口，随后关闭轨道并完成
-      cameraTimerRef.current = window.setTimeout(() => settle('normal'), 2500)
+  }
+
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1: return basicInfo.studentId.trim().length > 0
+      case 2: return agreed
+      case 3: return currentPage ? pageComplete(currentPage) : true
+      default: return true
     }
-    try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        // 环境不支持（如部分 WebView/桌面环境），降级并快速完成
-        window.clearTimeout(failTimer)
-        settle('degraded')
+  }
+
+  // 提交测评：停止采集 → 归档记录 → 保存视频（IndexedDB）→ 进入结束页
+  const handleSubmit = async () => {
+    finishMouseTrack()
+    const videoBlob = await stopRecording()
+    const traj = mouseTrajRef.current
+    const psqiEnabled = settings.enabledScales.psqi
+    const psqiResult = psqiEnabled ? scorePsqi(psqiAnswers) : { comps: [0, 0, 0, 0, 0, 0, 0], total: 0 }
+    const aslecResult = scoreAslec(aslecAnswers)
+    const riskResult = buildRisk(phq9Answers, gad7Answers, cssrsAnswers, nssiAnswers)
+    const metrics = computeMouseMetrics(traj)
+    const record: AssessmentRecord = {
+      id: makeRecordId(),
+      studentId: basicInfo.studentId.trim(),
+      age: basicInfo.age,
+      gender: basicInfo.gender,
+      educationLevel: basicInfo.educationLevel,
+      grade: basicInfo.grade,
+      major: basicInfo.major,
+      time: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-'),
+      phq9: [...phq9Answers],
+      gad7: [...gad7Answers],
+      phq9Score: scoreOf(phq9Answers),
+      gad7Score: scoreOf(gad7Answers),
+      risk: riskResult.label,
+      riskFlags: riskResult.flags,
+      cssrs: [...cssrsAnswers],
+      cssrsPositive: cssrsAnswers.filter(v => v === 1).length,
+      nssi: [...nssiAnswers],
+      pss10: [...pss10Answers],
+      pss10Score: scorePss10(pss10Answers),
+      psqi: { ...psqiAnswers },
+      psqiComps: psqiResult.comps,
+      psqiScore: psqiResult.total,
+      sias6: [...sias6Answers],
+      sias6Score: scoreSias6(sias6Answers),
+      aslec: [...aslecAnswers],
+      aslecScore: aslecResult.total,
+      aslecCount: aslecResult.count,
+      status: 'completed',
+      mouseTrajectory: settings.mouseTracking
+        ? traj.map(p => ({ x: p.x, y: p.y, t: Math.max(0, p.t - (traj[0] ? traj[0].t : 0)), k: p.k }))
+        : [],
+      mouseSamples: settings.mouseTracking ? traj.length : 0,
+      cameraMode: cameraModeRef.current,
+      cameraHasVideo: Boolean(videoBlob),
+      customScales: settings.customScales.length > 0 ? settings.customScales.map(s => ({ ...s })) : undefined,
+      customAnswers: settings.customScales.length > 0 ? { ...customAnswers } : undefined,
+      mouseMetrics: metrics,
+      behaviorSignals: behaviorSignalsOf(metrics),
+    }
+    appendRecord(record)
+    if (videoBlob) saveVideo(record.id, videoBlob)
+    setCurrentStep(4)
+  }
+
+  const handleNext = async () => {
+    if (currentStep === 3) {
+      if (currentPage && page < lastPage) {
+        setPage(page + 1)
         return
       }
-      navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 }, audio: false })
-        .then((stream) => {
-          if (settled) {
-            stream.getTracks().forEach(t => t.stop())
-            return
-          }
-          window.clearTimeout(failTimer)
-          cameraStreamRef.current = stream
-          runWindow()
-        })
-        .catch(() => {
-          window.clearTimeout(failTimer)
-          settle('degraded')
-        })
-    } catch (e) {
-      window.clearTimeout(failTimer)
-      settle('degraded')
+      await handleSubmit()
+      return
+    }
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1)
+    }
+  }
+
+  const handlePrev = () => {
+    if (currentStep === 3 && page > 0) {
+      setPage(page - 1)
+      return
+    }
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const resetAll = () => {
+    if (stopMouseTrackRef.current) stopMouseTrackRef.current()
+    stopMouseTrackRef.current = null
+    mouseTrajRef.current = []
+    try { recorderRef.current && recorderRef.current.state !== 'inactive' && recorderRef.current.stop() } catch {}
+    recorderRef.current = null
+    chunksRef.current = []
+    stopCameraStream()
+    setCurrentStep(1)
+    setPage(0)
+    setAgreed(false)
+    setBasicInfo({ studentId: '', age: '', gender: 'male', grade: '', educationLevel: 'undergraduate', major: '' })
+    setPhq9Answers(new Array(9).fill(-1))
+    setGad7Answers(new Array(7).fill(-1))
+    setCssrsAnswers(new Array(4).fill(-1))
+    setNssiAnswers([-1, -1])
+    setPss10Answers(new Array(10).fill(-1))
+    setPsqiAnswers(blankPsqiAnswers())
+    setSias6Answers(new Array(6).fill(-1))
+    setAslecAnswers(new Array(27).fill(-1))
+    setCustomAnswers(Object.fromEntries(settings.customScales.map(s => [s.id, new Array(s.items.length).fill(-1)])))
+  }
+
+  const setPsqi = (patch: Partial<PsqiAnswers>) => setPsqiAnswers(prev => ({ ...prev, ...patch }))
+
+  // 单题选项按钮组
+  const OptionRow = ({ options, value, onPick, compact }: { options: string[]; value: number; onPick: (oi: number) => void; compact?: boolean }) => (
+    <div className={`flex ${compact ? 'flex-wrap' : ''} gap-2`}>
+      {options.map((option, optionIndex) => (
+        <button
+          key={optionIndex}
+          onClick={() => onPick(optionIndex)}
+          className={`${compact ? 'py-1.5 px-3' : 'flex-1 py-2 px-2'} rounded text-xs transition-colors ${
+            value === optionIndex
+              ? 'bg-[#FDEEE8] text-ink font-medium'
+              : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
+          }`}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  )
+
+  // 问卷页内容（不显示量表名称，仅条目）
+  const renderPage = (p: QPage) => {
+    switch (p.type) {
+      case 'phq9':
+        return (
+          <div className="space-y-4">
+            {phq9Questions.map((question, index) => (
+              <div key={index} className="bg-warm-100 rounded-lg p-4">
+                <div className="text-sm text-slate-600 mb-3">{index + 1}. {question}</div>
+                <OptionRow
+                  options={riskOptions}
+                  value={phq9Answers[index]}
+                  onPick={(oi) => {
+                    const next = [...phq9Answers]
+                    next[index] = oi
+                    setPhq9Answers(next)
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )
+      case 'gad7':
+        return (
+          <div className="space-y-4">
+            {gad7Questions.map((question, index) => (
+              <div key={index} className="bg-warm-100 rounded-lg p-4">
+                <div className="text-sm text-slate-600 mb-3">{index + 1}. {question}</div>
+                <OptionRow
+                  options={riskOptions}
+                  value={gad7Answers[index]}
+                  onPick={(oi) => {
+                    const next = [...gad7Answers]
+                    next[index] = oi
+                    setGad7Answers(next)
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )
+      case 'cssrs':
+        return (
+          <div className="space-y-4">
+            {cssrsQuestions.map((question, index) => (
+              <div key={index} className="bg-warm-100 rounded-lg p-4">
+                <div className="text-sm text-slate-600 mb-3">{index + 1}. {question}</div>
+                <div className="flex gap-2 max-w-sm">
+                  <OptionRow
+                    options={cssrsOptions}
+                    value={cssrsAnswers[index]}
+                    onPick={(oi) => {
+                      const next = [...cssrsAnswers]
+                      next[index] = oi
+                      setCssrsAnswers(next)
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      case 'nssi':
+        return (
+          <div className="space-y-4">
+            <div className="bg-warm-100 rounded-lg p-4">
+              <div className="text-sm text-slate-600 mb-3">1. {nssiQuestions[0]}</div>
+              <div className="flex gap-2 max-w-sm">
+                <OptionRow
+                  options={nssiHasOptions}
+                  value={nssiAnswers[0]}
+                  onPick={(oi) => setNssiAnswers([oi, oi === 0 ? 0 : nssiAnswers[1] < 0 ? -1 : nssiAnswers[1]])}
+                />
+              </div>
+            </div>
+            {nssiAnswers[0] === 1 && (
+              <div className="bg-warm-100 rounded-lg p-4">
+                <div className="text-sm text-slate-600 mb-3">2. {nssiQuestions[1]}</div>
+                <OptionRow
+                  options={nssiFreqOptions}
+                  value={nssiAnswers[1]}
+                  onPick={(oi) => setNssiAnswers([1, oi])}
+                  compact
+                />
+              </div>
+            )}
+          </div>
+        )
+      case 'pss10':
+        return (
+          <div className="space-y-4">
+            {pss10Questions.map((question, index) => (
+              <div key={index} className="bg-warm-100 rounded-lg p-4">
+                <div className="text-sm text-slate-600 mb-3">{index + 1}. {question}</div>
+                <OptionRow
+                  options={pss10Options}
+                  value={pss10Answers[index]}
+                  onPick={(oi) => {
+                    const next = [...pss10Answers]
+                    next[index] = oi
+                    setPss10Answers(next)
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )
+      case 'psqi':
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-slate-500 mb-1">通常几点上床睡觉（小时 0-23）</label>
+                <input
+                  type="number" min={0} max={23}
+                  value={psqiAnswers.bed < 0 ? '' : psqiAnswers.bed}
+                  onChange={(e) => setPsqi({ bed: e.target.value === '' ? -1 : Math.max(0, Math.min(23, Number(e.target.value))) })}
+                  className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
+                  placeholder={t('as_input_placeholder')}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-500 mb-1">通常需要多少分钟入睡</label>
+                <input
+                  type="number" min={0} max={240}
+                  value={psqiAnswers.latency < 0 ? '' : psqiAnswers.latency}
+                  onChange={(e) => setPsqi({ latency: e.target.value === '' ? -1 : Math.max(0, Math.min(240, Number(e.target.value))) })}
+                  className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
+                  placeholder={t('as_input_placeholder')}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-500 mb-1">通常几点起床（小时 0-23）</label>
+                <input
+                  type="number" min={0} max={23}
+                  value={psqiAnswers.wake < 0 ? '' : psqiAnswers.wake}
+                  onChange={(e) => setPsqi({ wake: e.target.value === '' ? -1 : Math.max(0, Math.min(23, Number(e.target.value))) })}
+                  className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
+                  placeholder={t('as_input_placeholder')}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-slate-500 mb-1">每晚实际睡眠大约几小时（0-12）</label>
+                <input
+                  type="number" min={0} max={12}
+                  value={psqiAnswers.hours < 0 ? '' : psqiAnswers.hours}
+                  onChange={(e) => setPsqi({ hours: e.target.value === '' ? -1 : Math.max(0, Math.min(12, Number(e.target.value))) })}
+                  className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
+                  placeholder={t('as_input_placeholder')}
+                />
+              </div>
+            </div>
+            <div className="text-sm text-slate-500">过去一个月里，以下情况发生频率如何？</div>
+            {psqiDisturbanceItems.map((item, i) => (
+              <div key={i} className="bg-warm-100 rounded-lg p-3">
+                <div className="text-xs text-slate-600 mb-2">{i + 1}. {item}</div>
+                <OptionRow
+                  options={psqiFreqOptions}
+                  value={psqiAnswers.d[i]}
+                  onPick={(oi) => {
+                    const d = [...psqiAnswers.d]
+                    d[i] = oi
+                    setPsqi({ d })
+                  }}
+                />
+              </div>
+            ))}
+            <div className="grid grid-cols-2 gap-4">
+              {([
+                { key: 'quality' as const, label: '总体睡眠质量', options: psqiQualityOptions },
+                { key: 'meds' as const, label: '服用催眠药物的频率', options: psqiFreqOptions },
+                { key: 'day' as const, label: '白天保持清醒的困难程度', options: psqiFreqOptions },
+                { key: 'energy' as const, label: '做事时精力不足的频率', options: psqiFreqOptions },
+              ]).map(f => (
+                <div key={f.key}>
+                  <label className="block text-sm text-slate-500 mb-1">{f.label}</label>
+                  <select
+                    value={psqiAnswers[f.key]}
+                    onChange={(e) => setPsqi({ [f.key]: Number(e.target.value) } as Partial<PsqiAnswers>)}
+                    className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
+                  >
+                    <option value={-1} disabled>{t('psqi_select')}</option>
+                    {f.options.map((o, i) => <option key={i} value={i}>{o}</option>)}
+                  </select>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      case 'sias6':
+        return (
+          <div className="space-y-4">
+            {sias6Questions.map((question, index) => (
+              <div key={index} className="bg-warm-100 rounded-lg p-4">
+                <div className="text-sm text-slate-600 mb-3">{index + 1}. {question}</div>
+                <OptionRow
+                  options={sias6Options}
+                  value={sias6Answers[index]}
+                  onPick={(oi) => {
+                    const next = [...sias6Answers]
+                    next[index] = oi
+                    setSias6Answers(next)
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )
+      case 'aslec':
+        return (
+          <div className="space-y-3">
+            {aslecItems.map((item, index) => (
+              <div key={index} className="bg-warm-100 rounded-lg p-3">
+                <div className="text-xs text-slate-600 mb-2">{index + 1}. {item}</div>
+                <OptionRow
+                  options={aslecImpactOptions}
+                  value={aslecAnswers[index]}
+                  onPick={(oi) => {
+                    const next = [...aslecAnswers]
+                    next[index] = oi
+                    setAslecAnswers(next)
+                  }}
+                  compact
+                />
+              </div>
+            ))}
+          </div>
+        )
+      case 'custom': {
+        const scale = p.custom
+        const answers = customAnswers[scale.id] ?? new Array(scale.items.length).fill(-1)
+        return (
+          <div className="space-y-4">
+            {scale.items.map((item, index) => (
+              <div key={index} className="bg-warm-100 rounded-lg p-4">
+                <div className="text-sm text-slate-600 mb-3">{index + 1}. {item}</div>
+                <OptionRow
+                  options={scale.options}
+                  value={answers[index]}
+                  onPick={(oi) => {
+                    const next = [...answers]
+                    next[index] = oi
+                    setCustomAnswers(prev => ({ ...prev, [scale.id]: next }))
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )
+      }
+      default:
+        return null
     }
   }
 
@@ -377,72 +694,72 @@ const resetAll = () => {
             <div className="bg-white rounded-lg p-6 border border-warm-300">
               <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
                 <User className="w-5 h-5 text-orange-500" />
-                基本信息
+                {t('step1')}
               </h3>
-              <p className="text-sm text-slate-500 mb-4">请填写以下基本信息（标注 * 的为必填项），信息仅用于测评结果归档。</p>
-<div className="grid grid-cols-2 gap-4">
+              <p className="text-sm text-slate-500 mb-4">{t('assess_basic_desc')}</p>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-slate-500 mb-1">学号 <span className="text-red-400">*</span></label>
+                  <label className="block text-sm text-slate-500 mb-1">{t('assess_student_id')} <span className="text-red-400">*</span></label>
                   <input
                     type="text"
                     value={basicInfo.studentId}
                     onChange={(e) => setBasicInfo({ ...basicInfo, studentId: e.target.value })}
                     className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
-                    placeholder="请输入学号"
+                    placeholder={t('assess_student_id_ph')}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-500 mb-1">年龄</label>
+                  <label className="block text-sm text-slate-500 mb-1">{t('assess_age')}</label>
                   <input
                     type="number"
                     value={basicInfo.age}
                     onChange={(e) => setBasicInfo({ ...basicInfo, age: e.target.value })}
                     className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
-                    placeholder="请输入年龄"
+                    placeholder={t('assess_age_ph')}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-500 mb-1">性别</label>
+                  <label className="block text-sm text-slate-500 mb-1">{t('assess_gender')}</label>
                   <select
                     value={basicInfo.gender}
                     onChange={(e) => setBasicInfo({ ...basicInfo, gender: e.target.value })}
                     className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
                   >
-                    <option value="male">男</option>
-                    <option value="female">女</option>
-                    <option value="other">其他</option>
+                    <option value="male">{t('gender_male')}</option>
+                    <option value="female">{t('gender_female')}</option>
+                    <option value="other">{t('gender_other')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-500 mb-1">学习层次</label>
+                  <label className="block text-sm text-slate-500 mb-1">{t('assess_edu')}</label>
                   <select
                     value={basicInfo.educationLevel}
                     onChange={(e) => setBasicInfo({ ...basicInfo, educationLevel: e.target.value })}
                     className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
                   >
-                    <option value="本科">本科</option>
-                    <option value="硕士研究生">硕士研究生</option>
-                    <option value="博士研究生">博士研究生</option>
+                    <option value="undergraduate">{t('edu_undergrad')}</option>
+                    <option value="master">{t('edu_master')}</option>
+                    <option value="doctor">{t('edu_doctor')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-500 mb-1">年级</label>
+                  <label className="block text-sm text-slate-500 mb-1">{t('assess_grade')}</label>
                   <input
                     type="text"
                     value={basicInfo.grade}
                     onChange={(e) => setBasicInfo({ ...basicInfo, grade: e.target.value })}
                     className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
-                    placeholder="如：2026"
+                    placeholder={t('assess_grade_ph')}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-500 mb-1">专业</label>
+                  <label className="block text-sm text-slate-500 mb-1">{t('assess_major')}</label>
                   <input
                     type="text"
                     value={basicInfo.major}
                     onChange={(e) => setBasicInfo({ ...basicInfo, major: e.target.value })}
                     className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500"
-                    placeholder="请输入专业"
+                    placeholder={t('assess_major_ph')}
                   />
                 </div>
               </div>
@@ -456,490 +773,86 @@ const resetAll = () => {
             <div className="bg-white rounded-lg p-6 border border-warm-300">
               <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
                 <Shield className="w-5 h-5 text-orange-500" />
-                知情同意书
+                {t('consent_title')}
               </h3>
               <div className="space-y-3 text-slate-600 text-sm leading-relaxed">
-                <p>本系统旨在通过多模态数据采集（包括量表评估、鼠标行为追踪和面部微表情分析）进行心理问题早期预警。</p>
-                <p>在参与测评前，请您了解以下事项：</p>
+                <p>{t('consent_intro')}</p>
+                <p>{t('consent_before')}</p>
                 <ul className="list-disc list-inside space-y-1 text-slate-400">
-                  <li>所有数据仅用于心理健康评估目的</li>
-                  <li>您的个人信息将被加密存储和匿名化处理</li>
-                  <li>您可以随时终止测评过程</li>
-                  <li>测评结果仅供参考，不作为临床诊断依据</li>
-                  <li>数据采集过程不会记录可识别个人身份的视频图像</li>
+                  <li>{t('consent_li1')}</li>
+                  <li>{t('consent_li2')}</li>
+                  <li>{t('consent_li3')}</li>
+                  <li>{t('consent_li4')}</li>
+                  <li>{t('consent_li5')}</li>
                 </ul>
-                <p className="text-slate-400">请仔细阅读以上内容，确认理解并同意后继续。</p>
+                <p className="text-slate-400">{t('consent_tail')}</p>
               </div>
             </div>
             <div className="flex gap-4">
               <button
-                onClick={() => setAgreed(true)}
+                onClick={requestCameraOnConsent}
                 className={`flex-1 py-3 rounded-lg flex items-center justify-center gap-2 text-sm transition-colors ${
                   agreed
                     ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                     : 'bg-white text-slate-500 border border-warm-300 hover:bg-warm-200'
                 }`}
               >
-                <Check className="w-4 h-4" /> 我同意
+                <Check className="w-4 h-4" /> {t('consent_agree')}
               </button>
               <button
-                onClick={() => setAgreed(false)}
+                onClick={declineConsent}
                 className={`flex-1 py-3 rounded-lg flex items-center justify-center gap-2 text-sm transition-colors ${
                   !agreed
                     ? 'bg-red-500/20 text-red-400 border border-red-500/30'
                     : 'bg-white text-slate-500 border border-warm-300 hover:bg-warm-200'
                 }`}
               >
-                <X className="w-4 h-4" /> 我不同意
+                <X className="w-4 h-4" /> {t('consent_disagree')}
               </button>
             </div>
           </div>
         )
 
-      case 3:
-        {
-const answeredCount =
-            phq9Answers.filter(a => a >= 0).length +
-            gad7Answers.filter(a => a >= 0).length +
-            cssrsAnswers.filter(a => a >= 0).length +
-            (nssiAnswers[0] >= 0 ? (nssiAnswers[0] === 0 || nssiAnswers[1] >= 0 ? 2 : 1) : 0) +
-            pss10Answers.filter(a => a >= 0).length +
-            sias6Answers.filter(a => a >= 0).length
-          const totalQuestions = phq9Questions.length + gad7Questions.length + 4 + 2 + pss10Questions.length + sias6Questions.length
-          const nssiAnswered = () => nssiAnswers[0] >= 0 ? (nssiAnswers[0] === 0 || nssiAnswers[1] >= 0 ? 2 : 1) : 0
-          const psqiValid = () => psqiAnswers.latency >= 0 && psqiAnswers.hours > 0
-          const setPsqi = (patch: Partial<PsqiAnswers>) => setPsqiAnswers(prev => ({ ...prev, ...patch }))
-
-return (
-            <div className="space-y-6">
-{/* 测评进度汇总 */}
-              <div className="bg-white rounded-lg p-4 border border-warm-300 flex items-center justify-between text-sm">
-                <span className="text-slate-500">
-                  量表答题进度：<span className="text-ink font-semibold">{answeredCount}/{totalQuestions}</span>
-                </span>
-                <span className="text-slate-500">
-                  温馨提示：作答过程中系统将自动同步采集行为与生理数据，无需额外操作。
-                </span>
-              </div>
-
-              {/* PHQ-9 */}
-              <div className="bg-white rounded-lg p-6 border border-warm-300">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-orange-500" />
-                    PHQ-9 抑郁症筛查量表
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded ${phq9Answers.every(a => a >= 0) ? 'bg-green-500/20 text-green-400' : 'bg-warm-200 text-slate-500'}`}>
-                    {phq9Answers.every(a => a >= 0) ? '已完成' : `已答 ${phq9Answers.filter(a => a >= 0).length}/9`}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-4">在过去两周里，以下问题困扰您的频率如何？</p>
-                <div className="space-y-4">
-                  {phq9Questions.map((question, index) => (
-                    <div key={index} className="bg-warm-100 rounded-lg p-4">
-                      <div className="text-sm text-slate-600 mb-3">
-                        {index + 1}. {question}
-                      </div>
-                      <div className="flex gap-2">
-                        {riskOptions.map((option, optionIndex) => (
-                          <button
-                            key={optionIndex}
-                            onClick={() => {
-                              const newAnswers = [...phq9Answers]
-                              newAnswers[index] = optionIndex
-                              setPhq9Answers(newAnswers)
-                            }}
-                            className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
-                              phq9Answers[index] === optionIndex
-                                ? 'bg-[#FDEEE8] text-ink font-medium'
-                                : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-{/* GAD-7 */}
-              <div className="bg-white rounded-lg p-6 border border-warm-300">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-orange-500" />
-                    GAD-7 广泛性焦虑量表
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded ${gad7Answers.every(a => a >= 0) ? 'bg-green-500/20 text-green-400' : 'bg-warm-200 text-slate-500'}`}>
-                    {gad7Answers.every(a => a >= 0) ? '已完成' : `已答 ${gad7Answers.filter(a => a >= 0).length}/7`}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-4">在过去两周里，以下问题困扰您的频率如何？</p>
-                <div className="space-y-4">
-                  {gad7Questions.map((question, index) => (
-                    <div key={index} className="bg-warm-100 rounded-lg p-4">
-                      <div className="text-sm text-slate-600 mb-3">
-                        {index + 1}. {question}
-                      </div>
-                      <div className="flex gap-2">
-                        {riskOptions.map((option, optionIndex) => (
-                          <button
-                            key={optionIndex}
-                            onClick={() => {
-                              const newAnswers = [...gad7Answers]
-                              newAnswers[index] = optionIndex
-                              setGad7Answers(newAnswers)
-                            }}
-                            className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
-                              gad7Answers[index] === optionIndex
-                                ? 'bg-[#FDEEE8] text-ink font-medium'
-                                : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* C-SSRS 哥伦比亚自杀严重度评定量表 */}
-              <div className="bg-white rounded-lg p-6 border border-warm-300">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-orange-500" />
-                    C-SSRS 哥伦比亚自杀严重度评定量表
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded ${cssrsAnswers.every(a => a >= 0) ? 'bg-green-500/20 text-green-400' : 'bg-warm-200 text-slate-500'}`}>
-                    {cssrsAnswers.every(a => a >= 0) ? '已完成' : `已答 ${cssrsAnswers.filter(a => a >= 0).length}/4`}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-4">请根据过去一个月内的实际情况作答（本次筛查结果仅用于预警参考）。</p>
-                <div className="space-y-4">
-                  {cssrsQuestions.map((question, index) => (
-                    <div key={index} className="bg-warm-100 rounded-lg p-4">
-                      <div className="text-sm text-slate-600 mb-3">
-                        {index + 1}. {question}
-                      </div>
-                      <div className="flex gap-2 max-w-sm">
-                        {cssrsOptions.map((option, optionIndex) => (
-                          <button
-                            key={optionIndex}
-                            onClick={() => {
-                              const newAnswers = [...cssrsAnswers]
-                              newAnswers[index] = optionIndex
-                              setCssrsAnswers(newAnswers)
-                            }}
-                            className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
-                              cssrsAnswers[index] === optionIndex
-                                ? 'bg-[#FDEEE8] text-ink font-medium'
-                                : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* NSSI 非自杀性自伤 */}
-              <div className="bg-white rounded-lg p-6 border border-warm-300">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-orange-500" />
-                    NSSI 非自杀性自伤筛查
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded ${nssiAnswered() >= 2 ? 'bg-green-500/20 text-green-400' : 'bg-warm-200 text-slate-500'}`}>
-                    {nssiAnswered() >= 2 ? '已完成' : `已答 ${nssiAnswered()}/2`}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-4">请根据过去一年内的实际情况作答。</p>
-                <div className="space-y-4">
-                  <div className="bg-warm-100 rounded-lg p-4">
-                    <div className="text-sm text-slate-600 mb-3">1. {nssiQuestions[0]}</div>
-                    <div className="flex gap-2 max-w-sm">
-                      {nssiHasOptions.map((option, optionIndex) => (
-                        <button
-                          key={optionIndex}
-                          onClick={() => setNssiAnswers([optionIndex, optionIndex === 0 ? 0 : nssiAnswers[1]])}
-                          className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
-                            nssiAnswers[0] === optionIndex
-                              ? 'bg-[#FDEEE8] text-ink font-medium'
-                              : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
-                          }`}
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {nssiAnswers[0] === 1 && (
-                    <div className="bg-warm-100 rounded-lg p-4">
-                      <div className="text-sm text-slate-600 mb-3">2. {nssiQuestions[1]}</div>
-                      <div className="flex gap-2 flex-wrap">
-                        {nssiFreqOptions.map((option, optionIndex) => (
-                          <button
-                            key={optionIndex}
-                            onClick={() => setNssiAnswers([1, optionIndex])}
-                            className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
-                              nssiAnswers[1] === optionIndex
-                                ? 'bg-[#FDEEE8] text-ink font-medium'
-                                : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* PSS-10 感知压力量表 */}
-              <div className="bg-white rounded-lg p-6 border border-warm-300">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-orange-500" />
-                    PSS-10 感知压力量表
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded ${pss10Answers.every(a => a >= 0) ? 'bg-green-500/20 text-green-400' : 'bg-warm-200 text-slate-500'}`}>
-                    {pss10Answers.every(a => a >= 0) ? '已完成' : `已答 ${pss10Answers.filter(a => a >= 0).length}/10`}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-4">过去一个月里，以下情况发生的频率如何？（标注 * 的题目为反向计分题）</p>
-                <div className="space-y-4">
-                  {pss10Questions.map((question, index) => (
-                    <div key={index} className="bg-warm-100 rounded-lg p-4">
-                      <div className="text-sm text-slate-600 mb-3">
-                        {index + 1}. {question}
-                        {[3, 4, 6, 7].includes(index) && <span className="text-red-400 text-xs ml-1">（反向计分）</span>}
-                      </div>
-                      <div className="flex gap-2">
-                        {pss10Options.map((option, optionIndex) => (
-                          <button
-                            key={optionIndex}
-                            onClick={() => {
-                              const newAnswers = [...pss10Answers]
-                              newAnswers[index] = optionIndex
-                              setPss10Answers(newAnswers)
-                            }}
-                            className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
-                              pss10Answers[index] === optionIndex
-                                ? 'bg-[#FDEEE8] text-ink font-medium'
-                                : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* PSQI 匹兹堡睡眠质量指数 */}
-              <div className="bg-white rounded-lg p-6 border border-warm-300">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-orange-500" />
-                    PSQI 匹兹堡睡眠质量指数
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded ${psqiValid() ? 'bg-green-500/20 text-green-400' : 'bg-warm-200 text-slate-500'}`}>
-                    {psqiValid() ? '已完成' : '请完善睡眠信息'}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-4">请根据过去一个月的睡眠情况填写。</p>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm text-slate-500 mb-1">通常几点上床睡觉（小时 0-23）</label>
-                    <input type="number" min={0} max={23} value={psqiAnswers.bed}
-                      onChange={(e) => setPsqi({ bed: Math.max(0, Math.min(23, Number(e.target.value) || 0)) })}
-                      className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-slate-500 mb-1">通常需要多少分钟入睡</label>
-                    <input type="number" min={0} max={240} value={psqiAnswers.latency}
-                      onChange={(e) => setPsqi({ latency: Math.max(0, Math.min(240, Number(e.target.value) || 0)) })}
-                      className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-slate-500 mb-1">通常几点起床（小时 0-23）</label>
-                    <input type="number" min={0} max={23} value={psqiAnswers.wake}
-                      onChange={(e) => setPsqi({ wake: Math.max(0, Math.min(23, Number(e.target.value) || 0)) })}
-                      className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500" />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-slate-500 mb-1">每晚实际睡眠大约几小时（0-12）</label>
-                    <input type="number" min={0} max={12} value={psqiAnswers.hours}
-                      onChange={(e) => setPsqi({ hours: Math.max(0, Math.min(12, Number(e.target.value) || 0)) })}
-                      className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500" />
-                  </div>
-                </div>
-                <div className="text-sm text-slate-500 mb-2">过去一个月里，以下情况发生频率如何？</div>
-                <div className="space-y-3">
-                  {psqiDisturbanceItems.map((item, i) => (
-                    <div key={i} className="bg-warm-100 rounded-lg p-3">
-                      <div className="text-xs text-slate-600 mb-2">{i + 1}. {item}</div>
-                      <div className="flex gap-2">
-                        {psqiFreqOptions.map((option, optionIndex) => (
-                          <button
-                            key={optionIndex}
-                            onClick={() => {
-                              const d = [...psqiAnswers.d]
-                              d[i] = optionIndex
-                              setPsqi({ d })
-                            }}
-                            className={`flex-1 py-1.5 px-2 rounded text-xs transition-colors ${
-                              psqiAnswers.d[i] === optionIndex
-                                ? 'bg-[#FDEEE8] text-ink font-medium'
-                                : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div>
-                    <label className="block text-sm text-slate-500 mb-1">总体睡眠质量</label>
-                    <select value={psqiAnswers.quality}
-                      onChange={(e) => setPsqi({ quality: Number(e.target.value) })}
-                      className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500">
-                      {psqiQualityOptions.map((o, i) => <option key={i} value={i}>{o}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-slate-500 mb-1">服用催眠药物的频率</label>
-                    <select value={psqiAnswers.meds}
-                      onChange={(e) => setPsqi({ meds: Number(e.target.value) })}
-                      className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500">
-                      {psqiFreqOptions.map((o, i) => <option key={i} value={i}>{o}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-slate-500 mb-1">白天保持清醒的困难程度</label>
-                    <select value={psqiAnswers.day}
-                      onChange={(e) => setPsqi({ day: Number(e.target.value) })}
-                      className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500">
-                      {psqiFreqOptions.map((o, i) => <option key={i} value={i}>{o}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm text-slate-500 mb-1">做事时精力不足的频率</label>
-                    <select value={psqiAnswers.energy}
-                      onChange={(e) => setPsqi({ energy: Number(e.target.value) })}
-                      className="w-full bg-warm-100 border border-warm-300 rounded-lg px-3 py-2 text-slate-600 text-sm focus:outline-none focus:border-orange-500">
-                      {psqiFreqOptions.map((o, i) => <option key={i} value={i}>{o}</option>)}
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* SIAS-6 社交焦虑简化筛查 */}
-              <div className="bg-white rounded-lg p-6 border border-warm-300">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-orange-500" />
-                    SIAS-6 社交焦虑简化筛查
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded ${sias6Answers.every(a => a >= 0) ? 'bg-green-500/20 text-green-400' : 'bg-warm-200 text-slate-500'}`}>
-                    {sias6Answers.every(a => a >= 0) ? '已完成' : `已答 ${sias6Answers.filter(a => a >= 0).length}/6`}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mb-4">过去两周里，以下情况与您的符合程度如何？</p>
-                <div className="space-y-4">
-                  {sias6Questions.map((question, index) => (
-                    <div key={index} className="bg-warm-100 rounded-lg p-4">
-                      <div className="text-sm text-slate-600 mb-3">{index + 1}. {question}</div>
-                      <div className="flex gap-2">
-                        {sias6Options.map((option, optionIndex) => (
-                          <button
-                            key={optionIndex}
-                            onClick={() => {
-                              const newAnswers = [...sias6Answers]
-                              newAnswers[index] = optionIndex
-                              setSias6Answers(newAnswers)
-                            }}
-                            className={`flex-1 py-2 px-2 rounded text-xs transition-colors ${
-                              sias6Answers[index] === optionIndex
-                                ? 'bg-[#FDEEE8] text-ink font-medium'
-                                : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* ASLEC 青少年生活事件量表 */}
-              <div className="bg-white rounded-lg p-6 border border-warm-300">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-orange-500" />
-                    ASLEC 青少年生活事件量表
-                  </h3>
-                  <span className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-400">共 {aslecItems.length} 项</span>
-                </div>
-                <p className="text-sm text-slate-400 mb-4">过去一年内是否发生过以下事件？若发生过，请评估其对你的影响程度。</p>
-                <div className="space-y-3">
-                  {aslecItems.map((item, index) => (
-                    <div key={index} className="bg-warm-100 rounded-lg p-3">
-                      <div className="text-xs text-slate-600 mb-2">{index + 1}. {item}</div>
-                      <div className="flex gap-2 flex-wrap">
-                        {aslecImpactOptions.map((option, optionIndex) => (
-                          <button
-                            key={optionIndex}
-                            onClick={() => {
-                              const newAnswers = [...aslecAnswers]
-                              newAnswers[index] = optionIndex
-                              setAslecAnswers(newAnswers)
-                            }}
-                            className={`py-1.5 px-3 rounded text-xs transition-colors ${
-                              aslecAnswers[index] === optionIndex
-                                ? 'bg-[#FDEEE8] text-ink font-medium'
-                                : 'bg-white text-slate-400 border border-warm-300 hover:bg-warm-200'
-                            }`}
-                          >
-                            {option}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+      case 3: {
+        if (!currentPage) {
+          return (
+            <div className="bg-white rounded-lg border border-warm-300 p-10 text-center text-sm text-slate-400">
+              {t('assess_no_scales')}
             </div>
           )
         }
+        return (
+          <div className="space-y-5">
+            {/* 问卷分页指示 */}
+            <div className="bg-white rounded-lg p-4 border border-warm-300 flex items-center justify-between text-sm">
+              <span className="text-slate-500 flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-orange-500" />
+                {tFmt('q_progress', { x: page + 1, n: pages.length })}
+              </span>
+              <span className="text-xs text-slate-400">{t('q_pager_hint')}</span>
+            </div>
+            {/* 当前问卷条目（不显示问卷名称） */}
+            <div className="bg-white rounded-lg p-6 border border-warm-300">
+              <p className="text-sm text-slate-400 mb-4">{currentPage.type === 'custom' ? t('intro_custom') : PAGE_INTRO[currentPage.type]}</p>
+              {renderPage(currentPage)}
+            </div>
+          </div>
+        )
+      }
 
       case 4:
         return (
           <div className="bg-white rounded-lg border border-warm-300 p-10 text-center">
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-slate-800 mb-2">本次心理测评已完成</h3>
+            <h3 className="text-xl font-bold text-slate-800 mb-2">{t('assess_done_title')}</h3>
             <p className="text-sm text-slate-500 mb-6 max-w-md mx-auto leading-relaxed">
-              感谢您的配合！您的测评数据已安全提交，将由心理站工作人员统一查看与跟进，请您耐心等待后续反馈。
+              {t('assess_done_desc')}
             </p>
             <button
               onClick={resetAll}
               className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-lg inline-flex items-center gap-2 text-sm transition-colors"
             >
-              <RotateCcw className="w-4 h-4" /> 重新开始测评
+              <RotateCcw className="w-4 h-4" /> {t('assess_restart')}
             </button>
           </div>
         )
@@ -949,34 +862,32 @@ return (
     }
   }
 
-return (
+  return (
     <div className="space-y-6">
       {/* 测评全屏工具栏（覆盖整个心理测评流程，步骤 1-4 通用） */}
       <div className="bg-white rounded-lg p-4 border border-warm-300 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-sm text-slate-500 min-w-0">
           <Maximize className="w-4 h-4 text-orange-500 shrink-0" />
-          <span className="truncate">
-            心理测评全流程可开启全屏模式，不受其他界面干扰。
-          </span>
+          <span className="truncate">{t('fullscreen_tip')}</span>
         </div>
         <button
           onClick={toggleFullscreen}
           className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors"
         >
           {isFullscreen
-            ? <><Minimize className="w-4 h-4" /> 退出全屏</>
-            : <><Maximize className="w-4 h-4" /> 全屏模式</>}
+            ? <><Minimize className="w-4 h-4" /> {t('fullscreen_off')}</>
+            : <><Maximize className="w-4 h-4" /> {t('fullscreen_on')}</>}
         </button>
       </div>
       {isFullscreen && (
         <div className="bg-[#FDEEE8] border border-orange-200 rounded-lg px-4 py-2 text-xs text-ink-soft">
-          已进入全屏模式，测评过程中不会触碰到屏幕其他区域；可按 Esc 键或点击上方按钮退出。
+          {t('fullscreen_active')}
         </div>
       )}
 
       {/* 步骤指示器 */}
       <div className="bg-white rounded-lg p-4 border border-warm-300">
-<div className="flex items-center">
+        <div className="flex items-center">
           {Array.from({ length: totalSteps }).map((_, index) => {
             const step = index + 1
             return (
@@ -986,8 +897,8 @@ return (
                     step < currentStep
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                       : step === currentStep
-                      ? 'bg-[#FDEEE8] text-ink font-medium'
-                      : 'bg-warm-100 text-slate-500 border border-warm-300'
+                        ? 'bg-[#FDEEE8] text-ink font-medium'
+                        : 'bg-warm-100 text-slate-500 border border-warm-300'
                   }`}>
                     {step < currentStep ? <Check className="w-4 h-4" /> : step}
                   </div>
@@ -998,9 +909,7 @@ return (
                   </span>
                 </div>
                 {step < totalSteps && (
-                  <div className={`flex-1 h-0.5 mx-2 ${
-                    step < currentStep ? 'bg-green-500/30' : 'bg-warm-200'
-                  }`} />
+                  <div className={`flex-1 h-0.5 mx-2 ${step < currentStep ? 'bg-green-500/30' : 'bg-warm-200'}`} />
                 )}
               </Fragment>
             )
@@ -1019,18 +928,21 @@ return (
             disabled={currentStep === 1}
             className="bg-white hover:bg-warm-200 disabled:opacity-50 text-slate-500 px-4 py-2 rounded-lg flex items-center gap-2 text-sm border border-warm-300 transition-colors"
           >
-            <ChevronLeft className="w-4 h-4" /> 上一步
+            <ChevronLeft className="w-4 h-4" />
+            {currentStep === 3 && page > 0 ? t('q_prev') : t('btn_prev')}
           </button>
           <button
             onClick={handleNext}
             disabled={!canProceed()}
             className="bg-orange-500 hover:bg-orange-600 disabled:bg-warm-200 disabled:opacity-50 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors"
           >
-            {currentStep === 3 ? '完成测评' : '下一步'} <ChevronRight className="w-4 h-4" />
+            {currentStep === 3
+              ? (page < lastPage ? t('q_next') : t('btn_finish'))
+              : t('btn_next')}
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       )}
     </div>
   )
 }
-

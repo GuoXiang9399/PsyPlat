@@ -25,16 +25,18 @@ import {
   AlertTriangle
 } from 'lucide-react'
 import { BrandLogo } from '@/components/BrandLogo'
+import { useT } from '@/lib/i18n'
 
 type TabKey = 'dashboard' | 'assessment' | 'data' | 'settings' | 'about'
 
 function Sidebar({ activeTab, onTabChange }: { activeTab: TabKey; onTabChange: (tab: TabKey) => void }) {
+  const { t } = useT()
   const tabs = [
-    { key: 'dashboard' as TabKey, label: '首页概览', icon: LayoutDashboard },
-    { key: 'assessment' as TabKey, label: '心理测评', icon: FileText },
-    { key: 'data' as TabKey, label: '数据管理', icon: Database },
-    { key: 'settings' as TabKey, label: '系统设置', icon: Settings },
-    { key: 'about' as TabKey, label: '关于系统', icon: Info },
+    { key: 'dashboard' as TabKey, label: t('nav_home'), icon: LayoutDashboard },
+    { key: 'assessment' as TabKey, label: t('nav_assessment'), icon: FileText },
+    { key: 'data' as TabKey, label: t('nav_data'), icon: Database },
+    { key: 'settings' as TabKey, label: t('nav_settings'), icon: Settings },
+    { key: 'about' as TabKey, label: t('nav_about'), icon: Info },
   ]
 
   return (
@@ -42,7 +44,7 @@ function Sidebar({ activeTab, onTabChange }: { activeTab: TabKey; onTabChange: (
       <div className="p-4 border-b border-warm-300">
         <div className="flex items-center gap-3">
           <Brain className="w-8 h-8 text-orange-500" />
-          <h1 className="text-sm font-bold text-slate-800 leading-tight">河南大学基础医学院心理站</h1>
+          <h1 className="text-sm font-bold text-slate-800 leading-tight">{t('about_brand')}</h1>
         </div>
       </div>
       <nav className="flex-1 p-3 space-y-1">
@@ -104,6 +106,7 @@ function TreeItem({ node, depth = 0 }: { node: TreeNode; depth?: number }) {
 }
 
 export function AboutContent() {
+  const { t } = useT()
   const [activeSection, setActiveSection] = useState<string | null>(null)
 
   const toggleSection = (section: string) => {
@@ -112,67 +115,64 @@ export function AboutContent() {
 
   const techTree: TreeNode[] = [
     {
-      label: '前端层',
+      label: t('tech_front'),
       icon: Layers,
       children: [
         { label: 'Tauri 2 (Rust + WebView)', icon: Cpu },
         { label: 'Next.js 14', icon: Layers },
         { label: 'TailwindCSS', icon: Layers },
         { label: 'TypeScript', icon: Tag },
-        { label: 'Lucide 图标', icon: Eye },
+        { label: t('tech_lucide'), icon: Eye },
       ]
     },
     {
-      label: '后端层',
+      label: t('tech_back'),
       icon: Cpu,
       children: [
         { label: 'Rust + Tokio', icon: Cpu },
         { label: 'Tauri IPC', icon: GitBranch },
-        { label: 'SQLite 本地存储', icon: DBIcon },
+        { label: t('tech_sqlite'), icon: DBIcon },
       ]
     },
     {
-      label: '数据采集层',
+      label: t('tech_data'),
       icon: Eye,
       children: [
-        { label: '鼠标轨迹追踪', icon: Eye },
-        { label: 'OpenCV 面部检测', icon: Eye },
-        { label: '心率变异性分析', icon: Eye },
+        { label: t('tech_mouse'), icon: Eye },
+        { label: t('tech_opencv'), icon: Eye },
+        { label: t('tech_hrv'), icon: Eye },
       ]
     },
     {
-      label: 'AI 模型层',
+      label: t('tech_ai'),
       icon: Brain,
       children: [
-        { label: '多模态融合模型', icon: Brain },
-        { label: 'PHQ-9 / GAD-7 量表', icon: FileText },
-        { label: '行为特征提取', icon: Cpu },
+        { label: t('tech_multimodal'), icon: Brain },
+        { label: t('tech_scales'), icon: FileText },
+        { label: t('tech_behavior'), icon: Cpu },
       ]
     }
   ]
 
   const steps = [
-    { title: '知情同意', desc: '阅读并同意隐私声明和知情同意书' },
-    { title: '填写信息', desc: '输入学号、年龄、性别等基本信息' },
-    { title: '量表测评', desc: '完成 PHQ-9 和 GAD-7 心理量表' },
-    { title: '行为采集', desc: '在指定区域移动鼠标，系统自动追踪轨迹' },
-    { title: '视频采集', desc: '摄像头采集面部微表情数据（不保存视频）' },
-    { title: '查看结果', desc: '查看风险评估结果和建议' }
+    { title: t('about_step1'), desc: t('about_step1_desc') },
+    { title: t('about_step2'), desc: t('about_step2_desc') },
+    { title: t('about_step3'), desc: t('about_step3_desc') },
+    { title: t('about_step4'), desc: t('about_step4_desc') }
   ]
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-ink">关于系统</h1>
+      <h1 className="text-2xl font-bold text-ink">{t('about_title')}</h1>
 
       {/* 系统概述 */}
       <div className="bg-white rounded-lg p-6 border border-warm-300">
         <div className="flex items-start gap-4">
           <BrandLogo className="w-16 h-16 shrink-0" />
           <div>
-            <h2 className="text-lg font-semibold text-ink mb-2">多模态无接触式心理问题早期预警系统</h2>
+            <h2 className="text-lg font-semibold text-ink mb-2">{t('about_system_name')}</h2>
             <p className="text-sm text-ink-soft leading-relaxed">
-              本系统通过整合量表评估、鼠标行为分析和面部微表情识别三种模态数据，利用深度学习模型进行心理问题早期预警。
-              系统设计注重隐私保护，所有数据处理均在本地完成，不依赖网络连接，适合在高校等场景部署使用。
+              {t('about_intro')}
             </p>
           </div>
         </div>
@@ -183,23 +183,23 @@ export function AboutContent() {
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-6 h-6 text-yellow-400 shrink-0 mt-0.5" />
           <div>
-            <h3 className="text-lg font-semibold text-yellow-400 mb-2">隐私保护声明</h3>
+            <h3 className="text-lg font-semibold text-yellow-400 mb-2">{t('about_privacy_title')}</h3>
             <ul className="space-y-2 text-sm text-slate-500">
               <li className="flex items-start gap-2">
                 <Lock className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
-                <span>所有测评数据采用 AES-256 加密存储，密钥由用户本地管理</span>
+                <span>{t('about_privacy_1')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Eye className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
-                <span>视频采集仅提取特征向量，不保存任何原始图像数据</span>
+                <span>{t('about_privacy_2')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Shield className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
-                <span>学号等个人信息经过单向哈希处理，无法逆向还原</span>
+                <span>{t('about_privacy_3')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <Cpu className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
-                <span>AI 模型推理完全在本地运行，不涉及任何云端传输</span>
+                <span>{t('about_privacy_4')}</span>
               </li>
             </ul>
           </div>
@@ -210,7 +210,7 @@ export function AboutContent() {
       <div className="bg-white rounded-lg p-6 border border-warm-300">
         <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
           <Cpu className="w-5 h-5 text-orange-500" />
-          技术架构
+          {t('about_arch')}
         </h2>
         <div className="space-y-1">
           {techTree.map((node, index) => (
@@ -223,7 +223,7 @@ export function AboutContent() {
       <div className="bg-white rounded-lg p-6 border border-warm-300">
         <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
           <FileText className="w-5 h-5 text-orange-500" />
-          使用说明
+          {t('about_guide')}
         </h2>
         <div className="space-y-3">
           {steps.map((step, index) => (
@@ -244,35 +244,35 @@ export function AboutContent() {
       <div className="bg-white rounded-lg p-6 border border-warm-300">
         <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
           <Tag className="w-5 h-5 text-orange-500" />
-          版本信息
+          {t('about_version')}
         </h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center gap-3">
             <Tag className="w-4 h-4 text-slate-400" />
             <div>
-              <div className="text-xs text-slate-500">系统版本</div>
+              <div className="text-xs text-slate-500">{t('about_ver')}</div>
               <div className="text-sm text-slate-500 font-medium">v2.1.0</div>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <Calendar className="w-4 h-4 text-slate-400" />
             <div>
-              <div className="text-xs text-slate-500">发布日期</div>
+              <div className="text-xs text-slate-500">{t('about_date')}</div>
               <div className="text-sm text-slate-500 font-medium">2026-09-01</div>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <User className="w-4 h-4 text-slate-400" />
             <div>
-              <div className="text-xs text-slate-500">开发者</div>
-              <div className="text-sm text-slate-500 font-medium">心理预警系统开发团队</div>
+              <div className="text-xs text-slate-500">{t('about_dev')}</div>
+              <div className="text-sm text-slate-500 font-medium">Xiang Guo</div>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <Mail className="w-4 h-4 text-slate-400" />
             <div>
-              <div className="text-xs text-slate-500">联系邮箱</div>
-              <div className="text-sm text-slate-500 font-medium">support@psych-warning.dev</div>
+              <div className="text-xs text-slate-500">{t('about_mail')}</div>
+              <div className="text-sm text-slate-500 font-medium">guoxiang@henu.edu.cn</div>
             </div>
           </div>
         </div>

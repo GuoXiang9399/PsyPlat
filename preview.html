@@ -25,7 +25,6 @@
   .logo-text { min-width: 0; flex: 1; }
   .sidebar.collapsed .logo-text { display: none; }
   .logo-title { font-size: 13px; font-weight: 600; color: #1F1D1A; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .logo-sub { font-size: 11px; color: #86817A; line-height: 1.3; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .nav { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
   .nav-group { padding: 0 12px 8px; font-size: 11px; font-weight: 500; color: #86817A; }
   .sidebar.collapsed .nav-group { display: none; }
@@ -50,6 +49,34 @@
   .sidebar.collapsed .collapse-btn { justify-content: center; padding: 8px 0; }
   .collapse-btn svg { width: 18px; height: 18px; color: #86817A; flex-shrink: 0; }
   .collapse-btn:hover { background: #F1EFEC; color: #1F1D1A; }
+
+  /* ===== 端切换（用户端 / 管理端） ===== */
+  .mode-switch { padding: 12px 8px 0; }
+  .mode-seg { display: flex; gap: 4px; background: rgba(241,239,236,.7); border-radius: 8px; padding: 4px; }
+  .mode-seg button {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 6px 0; border: none; background: transparent; border-radius: 6px;
+    font-size: 12px; font-family: inherit; color: #86817A; cursor: pointer; transition: all .15s;
+  }
+  .mode-seg button svg { width: 14px; height: 14px; }
+  .mode-seg button:hover { color: #1F1D1A; }
+  .mode-seg button.active { background: #ffffff; color: #1F1D1A; font-weight: 500; box-shadow: 0 1px 3px rgba(31,29,26,.08); }
+  .sidebar.collapsed .mode-seg { flex-direction: column; }
+  .sidebar.collapsed .mode-seg .seg-label { display: none; }
+
+  /* ===== 首页概览：站点名称编辑（与左侧栏联动） ===== */
+  .banner-main { min-width: 0; flex: 1; }
+  .banner-edit-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.15); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer; transition: background .15s; flex-shrink: 0; }
+  .banner-edit-btn:hover { background: rgba(255,255,255,.25); }
+  .banner-edit-btn svg { width: 16px; height: 16px; }
+  .banner-edit-area { display: none; }
+  .banner-edit-area input { max-width: 420px; font-size: 16px; font-weight: 600; color: #3A362F; }
+  .banner-edit-hint { font-size: 12px; color: rgba(255,255,255,.85); margin-top: 6px; }
+  .banner-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .banner-cancel-btn { background: rgba(255,255,255,.2); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-family: inherit; cursor: pointer; transition: background .15s; }
+  .banner-cancel-btn:hover { background: rgba(255,255,255,.3); }
+  .banner-save-btn { background: #ffffff; color: #C74A2F; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: background .15s; }
+  .banner-save-btn:hover { background: #FDEEE8; }
 
 
   /* ===== 主内容 ===== */
@@ -249,6 +276,91 @@
   .icon-btn { background: none; border: none; cursor: pointer; color: #86817A; padding: 4px; }
   .icon-btn:hover { color: #55504A; }
   .pwd-err { font-size: 12px; color: #d54941; margin-top: 8px; }
+
+  /* ===== 侧边栏语言选择（需求 2） ===== */
+  .lang-box { padding: 8px 8px 4px; }
+  .lang-head { display: flex; align-items: center; gap: 6px; padding: 0 12px 6px; font-size: 11px; font-weight: 500; color: #86817A; }
+  .lang-head svg { width: 14px; height: 14px; }
+  .lang-seg { display: flex; gap: 4px; background: rgba(241,239,236,.7); border-radius: 8px; padding: 4px; }
+  .lang-seg button { flex: 1; padding: 5px 0; border: none; background: transparent; border-radius: 6px; font-size: 12px; font-family: inherit; color: #86817A; cursor: pointer; transition: all .15s; }
+  .lang-seg button:hover { color: #1F1D1A; }
+  .lang-seg button.active { background: #ffffff; color: #1F1D1A; font-weight: 500; box-shadow: 0 1px 3px rgba(31,29,26,.08); }
+  .lang-note { font-size: 10px; color: #a9a49c; padding: 6px 12px 2px; line-height: 1.5; }
+  .sidebar.collapsed .lang-box .lang-head, .sidebar.collapsed .lang-box .lang-seg { display: none; }
+  .sidebar.collapsed .lang-box { padding: 4px; }
+  .lang-mini { display: none; }
+  .sidebar.collapsed .lang-mini { display: flex; align-items: center; justify-content: center; padding: 6px 0; border: none; background: transparent; border-radius: 8px; color: #524E48; cursor: pointer; width: 100%; }
+  .sidebar.collapsed .lang-mini:hover { background: #F1EFEC; color: #1F1D1A; }
+
+  /* ===== 测评设置页（需求 1） ===== */
+  .as-desc-card { background: rgba(224,90,60,.06); border: 1px solid rgba(224,90,60,.25); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #524E48; line-height: 1.7; }
+  .scale-row { display: flex; align-items: center; gap: 12px; background: #FBFAF9; border: 1px solid #E6E3DE; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; transition: all .15s; }
+  .scale-row.off { opacity: .55; }
+  .scale-row .s-info { flex: 1; min-width: 0; }
+  .scale-row .s-name { font-size: 14px; font-weight: 500; color: #3A362F; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .scale-row .s-meta { font-size: 12px; color: #86817A; margin-top: 2px; }
+  .scale-row .s-thr { font-size: 11px; color: #86817A; background: #fff; border: 1px solid #E6E3DE; border-radius: 999px; padding: 1px 8px; }
+  .scale-row .s-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .as-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; font-size: 12px; font-weight: 600; color: #86817A; letter-spacing: .5px; }
+  .as-divider::after { content: ""; flex: 1; height: 1px; background: #EFEDE9; }
+  .thr-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .thr-item label { display: block; font-size: 13px; color: #86817A; margin-bottom: 6px; }
+  .thr-hint { font-size: 12px; color: #86817A; background: #FBFAF9; border: 1px solid #E6E3DE; border-radius: 8px; padding: 10px 12px; margin-top: 14px; line-height: 1.7; }
+  .upload-box { display: flex; align-items: center; gap: 8px; }
+  .upload-box input[type="file"] { display: none; }
+  .switch { position: relative; width: 40px; height: 22px; flex-shrink: 0; cursor: pointer; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .sl { position: absolute; inset: 0; background: #E6E3DE; border-radius: 999px; transition: background .15s; }
+  .switch .sl::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: transform .15s; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+  .switch input:checked + .sl { background: #E05A3C; }
+  .switch input:checked + .sl::after { transform: translateX(18px); }
+  .capture-row { display: flex; align-items: center; gap: 12px; background: #FBFAF9; border: 1px solid #E6E3DE; border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; }
+  .capture-row .c-ico { width: 34px; height: 34px; border-radius: 8px; background: #fff; border: 1px solid #E6E3DE; display: flex; align-items: center; justify-content: center; color: #86817A; flex-shrink: 0; }
+  .cs-scale-item { display: flex; align-items: center; gap: 10px; background: #FBFAF9; border: 1px solid #E6E3DE; border-radius: 8px; padding: 10px 14px; margin-bottom: 8px; }
+  .cs-scale-item .cs-name { font-size: 14px; font-weight: 500; color: #3A362F; }
+  .cs-scale-item .cs-meta { font-size: 12px; color: #86817A; margin-top: 2px; }
+  .mini-btn { background: none; border: 1px solid #E6E3DE; border-radius: 6px; padding: 4px 8px; font-size: 12px; color: #86817A; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; transition: all .15s; }
+  .mini-btn:hover { background: #F1EFEC; color: #55504A; }
+  .mini-btn.danger:hover { background: rgba(213,73,65,.08); color: #d54941; border-color: rgba(213,73,65,.3); }
+  .save-tip { font-size: 12px; color: #2ba344; margin-left: 10px; }
+
+  /* ===== 测评分页（需求 6） ===== */
+  .pager-bar { background: #ffffff; border: 1px solid #E6E3DE; border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: #6B665F; flex-wrap: wrap; gap: 8px; }
+  .pager-bar b { color: #1F1D1A; }
+  .pager-hint { font-size: 12px; color: #86817A; }
+  .pager-dots { display: flex; gap: 5px; align-items: center; }
+  .pager-dot { width: 9px; height: 9px; border-radius: 50%; background: #E6E3DE; transition: all .15s; }
+  .pager-dot.done { background: rgba(43,163,68,.65); }
+  .pager-dot.now { background: #E05A3C; transform: scale(1.25); }
+
+  /* ===== 数据分析重构（需求 8） ===== */
+  .anl-layout { display: flex; gap: 20px; align-items: flex-start; }
+  .anl-nav { width: 150px; flex-shrink: 0; position: sticky; top: 0; display: flex; flex-direction: column; gap: 4px; }
+  .anl-nav button { width: 100%; display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 8px; border: 1px solid transparent; background: transparent; color: #86817A; font-size: 13px; font-family: inherit; cursor: pointer; text-align: left; transition: all .15s; }
+  .anl-nav button:hover { background: #F1EFEC; color: #55504A; }
+  .anl-nav button.active { background: #FDEEE8; color: #1F1D1A; font-weight: 500; }
+  .anl-nav button svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .anl-nav button.active svg { color: #E05A3C; }
+  .anl-main { flex: 1; min-width: 0; }
+  .tgt-row { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; background: #FBFAF9; border: 1px solid transparent; transition: all .1s; }
+  .tgt-row:hover { background: #F1EFEC; }
+  .tgt-row.checked { background: rgba(224,90,60,.06); border-color: rgba(224,90,60,.3); }
+
+  /* ===== 导出 / 报告弹窗（需求 7 / 9） ===== */
+  .exp-modal { width: 460px; max-width: 94vw; }
+  .exp-opt { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border: 1px solid #E6E3DE; border-radius: 8px; margin-bottom: 8px; cursor: pointer; background: #FBFAF9; transition: all .15s; }
+  .exp-opt:hover { background: #F1EFEC; }
+  .exp-opt.on { border-color: rgba(224,90,60,.4); background: rgba(224,90,60,.05); }
+  .exp-opt input[type="checkbox"], .exp-opt input[type="radio"] { margin-top: 2px; }
+  .exp-opt .t { font-size: 13px; font-weight: 500; color: #3A362F; }
+  .exp-opt .d { font-size: 12px; color: #86817A; margin-top: 1px; }
+  .exp-label { font-size: 12px; font-weight: 600; color: #86817A; margin: 14px 0 8px; letter-spacing: .3px; }
+  .radio-pill { display: inline-flex; border: 1px solid #E6E3DE; border-radius: 8px; overflow: hidden; }
+  .radio-pill label { padding: 7px 14px; font-size: 13px; color: #86817A; cursor: pointer; background: #FBFAF9; transition: all .15s; }
+  .radio-pill input { display: none; }
+  .radio-pill input:checked + span { color: #1F1D1A; font-weight: 500; }
+  .radio-pill label.on { background: #FDEEE8; color: #1F1D1A; font-weight: 500; }
+  .hint-box { background: rgba(234,179,8,.08); border: 1px solid rgba(234,179,8,.3); border-radius: 8px; padding: 10px 12px; font-size: 12px; color: #92700B; line-height: 1.7; margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -271,6 +383,7 @@
   <symbol id="i-chev-l" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></symbol>
   <symbol id="i-chev-d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
   <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
   <symbol id="i-rotate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></symbol>
@@ -284,6 +397,9 @@
   <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
   <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M2 14h4"/><path d="M10 8h4"/><path d="M18 16h4"/></symbol>
   <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></symbol>
   <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
   <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 15h3"/><path d="M1 9h3"/><path d="M1 15h3"/></symbol>
@@ -302,6 +418,10 @@
   <symbol id="i-video" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
 <symbol id="i-logo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#FDEEE8"/><path d="M16 25C16 25 8 19.5 8 15.5C8 13 10 11.5 12 11.5C14 11.5 16 13.5 16 13.5C16 13.5 18 11.5 20 11.5C22 11.5 24 13 24 15.5C24 19.5 16 25 16 25Z" fill="#E05A3C"/><path d="M16 14L16 7.5" stroke="#8CAF50" stroke-width="1.6" stroke-linecap="round"/><path d="M16 11.5C13 11.5 11.5 9.5 11.5 7.5C14 7 16 9 16 11.5Z" fill="#A8C46A"/><path d="M16 10.5C19 10.5 20.5 8.5 20.5 6.5C18 6 16 8 16 10.5Z" fill="#8CAF50"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.642 16.374a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+  <symbol id="i-shield-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></symbol>
+  <symbol id="i-list-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></symbol>
 </svg>
 
 <div class="app">
@@ -311,23 +431,42 @@
       <div class="logo-inner">
         <div class="logo-mark"><svg width="32" height="32"><use href="#i-logo"/></svg></div>
         <div class="logo-text">
-          <div class="logo-title">心理预警系统</div>
-          <div class="logo-sub">河南大学基础医学院</div>
+          <div class="logo-title" id="station-name" data-i18n="about_brand">迹心 · PsyTrace</div>
         </div>
       </div>
     </div>
+
+    <!-- 端切换：用户端 / 管理端 -->
+    <div class="mode-switch">
+      <div class="mode-seg" id="mode-seg">
+        <button type="button" id="mode-user" class="active" title="用户端"><svg width="14" height="14"><use href="#i-user"/></svg><span class="seg-label" data-i18n="mode_user">用户端</span></button>
+        <button type="button" id="mode-admin" title="管理端"><svg width="14" height="14"><use href="#i-shield-check"/></svg><span class="seg-label" data-i18n="mode_admin">管理端</span></button>
+      </div>
+    </div>
+
     <nav class="nav" id="nav">
-      <div class="nav-group">功能导航</div>
-      <button class="nav-btn active" data-tab="dashboard"><svg width="20" height="20"><use href="#i-dash"/></svg><span class="nav-label">首页概览</span></button>
-      <button class="nav-btn" data-tab="assessment"><svg width="20" height="20"><use href="#i-doc"/></svg><span class="nav-label">心理测评</span></button>
-      <button class="nav-btn" data-tab="data"><svg width="20" height="20"><use href="#i-db"/></svg><span class="nav-label">数据管理</span></button>
-      <button class="nav-btn" data-tab="analysis"><svg width="20" height="20"><use href="#i-chart"/></svg><span class="nav-label">数据分析</span></button>
-      <button class="nav-btn" data-tab="settings"><svg width="20" height="20"><use href="#i-set"/></svg><span class="nav-label">系统设置</span></button>
-      <button class="nav-btn" data-tab="about"><svg width="20" height="20"><use href="#i-info"/></svg><span class="nav-label">关于系统</span></button>
+      <div class="nav-group" id="nav-group-title">功能导航</div>
+      <button class="nav-btn admin-tab" data-tab="dashboard" style="display:none"><svg width="20" height="20"><use href="#i-dash"/></svg><span class="nav-label" data-i18n="nav_home">首页概览</span></button>
+      <button class="nav-btn admin-tab" data-tab="assess" style="display:none"><svg width="20" height="20"><use href="#i-sliders"/></svg><span class="nav-label" data-i18n="nav_assess_settings">测评设置</span></button>
+      <button class="nav-btn user-tab active" data-tab="assessment"><svg width="20" height="20"><use href="#i-doc"/></svg><span class="nav-label" data-i18n="nav_assessment">心理测评</span></button>
+      <button class="nav-btn admin-tab" data-tab="data" style="display:none"><svg width="20" height="20"><use href="#i-db"/></svg><span class="nav-label" data-i18n="nav_data">数据管理</span></button>
+      <button class="nav-btn admin-tab" data-tab="analysis" style="display:none"><svg width="20" height="20"><use href="#i-chart"/></svg><span class="nav-label" data-i18n="nav_analysis">数据分析</span></button>
+      <button class="nav-btn admin-tab" data-tab="settings" style="display:none"><svg width="20" height="20"><use href="#i-set"/></svg><span class="nav-label" data-i18n="nav_settings">系统设置</span></button>
+      <button class="nav-btn admin-tab" data-tab="about" style="display:none"><svg width="20" height="20"><use href="#i-info"/></svg><span class="nav-label" data-i18n="nav_about">关于系统</span></button>
     </nav>
+    <!-- 语言选择（需求 2）：侧栏最下方 -->
+    <div class="lang-box" style="border-top:1px solid #E6E3DE">
+      <button class="lang-mini" id="lang-mini" title="Language"><svg width="18" height="18"><use href="#i-globe"/></svg></button>
+      <div class="lang-head"><svg><use href="#i-globe"/></svg><span id="lang-label">语言 / Language</span></div>
+      <div class="lang-seg" id="lang-seg">
+        <button type="button" id="lang-zh" class="active">中文</button>
+        <button type="button" id="lang-en">English</button>
+      </div>
+      <p class="lang-note" id="lang-note">量表内容为中文版权量表，不随界面语言切换</p>
+    </div>
     <div class="sidebar-foot">
       <button class="collapse-btn" id="collapseBtn" title="收起侧边栏" aria-label="收起侧边栏">
-        <svg width="18" height="18"><use href="#i-panel-l"/></svg><span class="nav-label">收起侧边栏</span>
+        <svg width="18" height="18"><use href="#i-panel-l"/></svg><span class="nav-label" data-i18n="sidebar_collapse">收起侧边栏</span>
       </button>
     </div>
   </aside>
@@ -336,11 +475,22 @@
   <main class="main">
 
     <!-- ==================== 首页概览 ==================== -->
-    <section class="tab-panel active" id="tab-dashboard">
+    <section class="tab-panel" id="tab-dashboard">
       <div class="space-y\:6">
         <div class="banner">
-          <div>
-            <h1>河南大学基础医学院心理站</h1>
+          <div class="banner-main">
+            <h1 id="banner-title">河南大学基础医学院心理站</h1>
+            <div class="banner-edit-area" id="banner-edit-area">
+              <input type="text" id="banner-name-input" placeholder="输入站点名称">
+              <p class="banner-edit-hint">保存后将同步更新左侧栏显示的名称</p>
+            </div>
+          </div>
+          <div class="banner-actions" id="banner-actions">
+            <button class="banner-edit-btn" id="banner-edit-btn" title="编辑站点名称（与左侧栏联动）"><svg width="16" height="16"><use href="#i-pencil"/></svg><span>编辑名称</span></button>
+          </div>
+          <div class="banner-actions" id="banner-save-actions" style="display:none">
+            <button class="banner-cancel-btn" id="banner-cancel-btn">取消</button>
+            <button class="banner-save-btn" id="banner-save-btn">保存</button>
           </div>
         </div>
 
@@ -380,6 +530,21 @@
           </div>
         </div>
 
+        <!-- 首页设置（需求 4）：站点名称编辑外，支持修改管理员密码 -->
+        <div class="card p-6" style="margin-top:24px">
+          <h2 class="sec-title" style="margin-bottom:8px"><svg width="20" height="20"><use href="#i-lock"/></svg>管理密码</h2>
+          <p style="font-size:12px;color:#86817A;margin-bottom:14px">进入管理端的访问密码（至少 6 位）</p>
+          <div class="form-grid">
+            <div><label class="field-label">原密码</label><input type="password" id="dash-pwd-old" placeholder="请输入原密码"></div>
+            <div><label class="field-label">新密码</label><input type="password" id="dash-pwd-new" placeholder="至少 6 位"></div>
+            <div style="display:flex;align-items:flex-end;gap:8px">
+              <div style="flex:1"><label class="field-label">确认新密码</label><input type="password" id="dash-pwd-confirm" placeholder="再次输入新密码"></div>
+              <button class="btn btn-primary" id="dash-pwd-change" style="flex-shrink:0">修改</button>
+            </div>
+          </div>
+          <p id="dash-pwd-msg" style="font-size:12px;margin-top:8px;display:none"></p>
+        </div>
+
         <div class="btn-row">
           <button class="btn btn-primary" id="btn-start-assessment"><svg width="16" height="16"><use href="#i-arrow-r"/></svg>开始新测评</button>
           <button class="btn btn-ghost"><svg width="16" height="16"><use href="#i-activity"/></svg>查看统计</button>
@@ -388,8 +553,22 @@
       </div>
     </section>
 
+    <!-- ==================== 测评设置（需求 1） ==================== -->
+    <section class="tab-panel" id="tab-assess">
+      <div class="space-y\:6">
+        <div class="flex-between">
+          <h1 class="page-title" data-i18n="as_title">测评设置</h1>
+          <div class="btn-row">
+            <span class="save-tip" id="as-save-tip" style="display:none"></span>
+            <button class="btn btn-primary" id="btn-as-save"><svg width="16" height="16"><use href="#i-save"/></svg><span data-i18n="btn_save">保存设置</span></button>
+          </div>
+        </div>
+        <div id="assess-content"></div>
+      </div>
+    </section>
+
     <!-- ==================== 心理测评 ==================== -->
-    <section class="tab-panel" id="tab-assessment">
+    <section class="tab-panel active" id="tab-assessment">
       <div class="space-y\:6">
         <!-- 全屏工具条（覆盖整个心理测评流程，步骤 1-4 通用） -->
         <div class="fs-bar" id="fs-bar">
@@ -413,8 +592,8 @@
     <section class="tab-panel" id="tab-data">
       <div class="space-y\:6">
         <div class="flex-between">
-          <h1 class="page-title">数据管理</h1>
-          <div class="flex-center text-sm text-slate-400"><svg width="16" height="16"><use href="#i-db"/></svg>共 <span id="data-count">8</span> 条记录</div>
+          <h1 class="page-title" data-i18n="data_title">数据管理</h1>
+          <div class="flex-center text-sm text-slate-400"><svg width="16" height="16"><use href="#i-db"/></svg><span id="data-count-label">共 <span id="data-count">8</span> 条记录</span></div>
         </div>
 
         <div class="stat-grid">
@@ -439,7 +618,7 @@
               <option value="高风险">高风险</option>
             </select>
           </div>
-          <button class="btn btn-primary" id="btn-export"><svg width="16" height="16"><use href="#i-download"/></svg>导出CSV</button>
+          <button class="btn btn-primary" id="btn-export"><svg width="16" height="16"><use href="#i-download"/></svg><span data-i18n="data_export">导出数据</span></button>
         </div>
 
         <div class="flex" id="scale-filter-row" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px">
@@ -478,9 +657,13 @@
     <!-- ==================== 数据分析 ==================== -->
     <section class="tab-panel" id="tab-analysis">
       <div class="space-y\:6" id="analysis-body">
-        <div class="flex-between">
-          <h1 class="page-title">数据分析（探索性分析）</h1>
-          <button class="btn" id="btn-analysis-refresh" style="background:#fff;border:1px solid #E6E3DE;color:#524E48"><svg width="16" height="16"><use href="#i-refresh"/></svg>刷新数据</button>
+        <div class="flex-between" style="flex-wrap:wrap;gap:10px">
+          <h1 class="page-title" data-i18n="ana_title">数据分析（探索性分析）</h1>
+          <div class="btn-row">
+            <button class="btn btn-ghost" id="btn-analysis-refresh"><svg width="16" height="16"><use href="#i-refresh"/></svg><span data-i18n="btn_refresh">刷新数据</span></button>
+            <button class="btn btn-ghost" id="btn-anl-report-html"><svg width="16" height="16"><use href="#i-download"/></svg><span data-i18n="ana_export_html">导出 HTML 报告</span></button>
+            <button class="btn btn-primary" id="btn-anl-report-pdf"><svg width="16" height="16"><use href="#i-file-check"/></svg><span data-i18n="ana_export_pdf">导出 PDF（打印）</span></button>
+          </div>
         </div>
         <div class="anal-note" id="anal-note" style="display:none"></div>
         <div id="anal-content"></div>
@@ -500,9 +683,7 @@
 
         <div class="flex-gap-6">
           <div class="sub-nav" id="sub-nav">
-            <button class="sub-btn active" data-sub="capture"><svg width="16" height="16"><use href="#i-eye"/></svg>采集设置</button>
-            <button class="sub-btn" data-sub="privacy"><svg width="16" height="16"><use href="#i-shield"/></svg>隐私保护</button>
-            <button class="sub-btn" data-sub="warning"><svg width="16" height="16"><use href="#i-bell"/></svg>预警配置</button>
+            <button class="sub-btn active" data-sub="privacy"><svg width="16" height="16"><use href="#i-shield"/></svg>隐私保护</button>
             <button class="sub-btn" data-sub="system"><svg width="16" height="16"><use href="#i-sliders"/></svg>系统选项</button>
           </div>
 
@@ -520,9 +701,9 @@
           <div style="display:flex; gap:16px; align-items:flex-start">
             <div class="about-icon-box"><svg width="32" height="32"><use href="#i-brain"/></svg></div>
             <div>
-              <h2 style="font-size:16px; font-weight:600; color:#3A362F; margin-bottom:8px">多模态无接触式心理问题早期预警系统</h2>
+              <h2 style="font-size:16px; font-weight:600; color:#3A362F; margin-bottom:8px" data-i18n="about_system_name">迹心心理测评服务平台</h2>
               <p style="font-size:14px; color:#86817A; line-height:1.6">
-                本系统通过整合量表评估、鼠标行为分析和面部微表情识别三种模态数据，利用深度学习模型进行心理问题早期预警。
+                本系统面向高校心理健康服务场景，提供心理测评、数据管理与探索性分析等功能。
                 系统设计注重隐私保护，所有数据处理均在本地完成，不依赖网络连接，适合在高校等场景部署使用。
               </p>
             </div>
@@ -552,10 +733,10 @@
         <div class="card p-6">
           <h2 class="sec-title"><svg width="20" height="20" class="c-blue"><use href="#i-doc"/></svg>使用说明</h2>
           <div class="step-list">
-            <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">基本信息</div><div class="step-desc">输入学号、年龄、性别等基本信息</div></div></div>
-            <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">知情同意</div><div class="step-desc">阅读并同意隐私声明和知情同意书</div></div></div>
-            <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">心理测评</div><div class="step-desc">完成 PHQ-9 / GAD-7 量表，答题过程中自动采集鼠标与面部数据（可全屏进行）</div></div></div>
-            <div class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">结束</div><div class="step-desc">测评完成，数据已安全提交，由心理站工作人员统一跟进</div></div></div>
+            <div class="step-item"><div class="step-num">1</div><div class="step-body"><div class="step-title">知情同意</div><div class="step-desc">阅读并同意知情同意书；摄像头权限在此时一次性授权</div></div></div>
+            <div class="step-item"><div class="step-num">2</div><div class="step-body"><div class="step-title">填写信息</div><div class="step-desc">输入学号、年龄、性别等基本信息</div></div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-body"><div class="step-title">量表测评</div><div class="step-desc">逐份完成问卷；系统自动记录鼠标轨迹与摄像头视频，全程无需额外操作</div></div></div>
+            <div class="step-item"><div class="step-num">4</div><div class="step-body"><div class="step-title">数据归档</div><div class="step-desc">测评数据安全提交，由心理站工作人员统一查看与跟进</div></div></div>
           </div>
         </div>
 
@@ -564,8 +745,8 @@
           <div class="version-grid">
             <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-tag"/></svg><div><div class="version-k">系统版本</div><div class="version-v">v2.1.0</div></div></div>
             <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-cal"/></svg><div><div class="version-k">发布日期</div><div class="version-v">2026-09-01</div></div></div>
-            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-user"/></svg><div><div class="version-k">开发者</div><div class="version-v">河南大学基础医学院心理站</div></div></div>
-            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-mail"/></svg><div><div class="version-k">联系邮箱</div><div class="version-v">support@psych-warning.dev</div></div></div>
+            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-user"/></svg><div><div class="version-k">开发者</div><div class="version-v">Xiang Guo</div></div></div>
+            <div class="version-item"><svg width="16" height="16" class="text-slate-400"><use href="#i-mail"/></svg><div><div class="version-k">联系邮箱</div><div class="version-v">guoxiang@henu.edu.cn</div></div></div>
           </div>
         </div>
       </div>
@@ -573,14 +754,14 @@
   </main>
 </div>
 
-<!-- ======== 管理密码验证弹窗 ======== -->
+<!-- ======== 管理密码验证弹窗（进入管理端） ======== -->
 <div class="modal-mask" id="pwd-mask" style="display:none">
   <div class="modal">
     <div class="flex-between mb-2">
-      <h2 class="modal-title"><svg width="20" height="20"><use href="#i-lock"/></svg>管理密码验证</h2>
+      <h2 class="modal-title"><svg width="20" height="20"><use href="#i-lock"/></svg><span id="pwd-title-t">进入管理端</span></h2>
       <button class="icon-btn" id="pwd-close" aria-label="关闭"><svg width="20" height="20"><use href="#i-x"/></svg></button>
     </div>
-    <p class="modal-desc">访问「<span id="pwd-tab-name"></span>」需要管理权限，请输入管理密码。</p>
+    <p class="modal-desc" id="pwd-desc">管理端包含首页概览、测评设置、数据管理、数据分析、系统设置与关于系统，请输入管理密码验证。</p>
     <input type="password" id="pwd-input" placeholder="请输入管理密码">
     <p class="pwd-err" id="pwd-err" style="display:none">密码错误，请重新输入</p>
     <div class="btn-row mt-4" style="justify-content:flex-end">
@@ -596,6 +777,119 @@
   </div>
 </div>
 
+<!-- ======== 数据导出弹窗（需求 7） ======== -->
+<div class="modal-mask" id="export-mask" style="display:none">
+  <div class="modal exp-modal">
+    <div class="flex-between mb-2">
+      <h2 class="modal-title"><svg width="20" height="20"><use href="#i-download"/></svg><span id="exp-title">导出测评数据</span></h2>
+      <button class="icon-btn" id="exp-close" aria-label="关闭"><svg width="20" height="20"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="modal-desc" id="exp-scope">导出范围：当前筛选结果（0 条）</p>
+    <div class="exp-label" id="exp-content-label">导出内容</div>
+    <div id="exp-content-opts"></div>
+    <div class="exp-label" id="exp-format-label">导出格式</div>
+    <div class="radio-pill" id="exp-format-seg">
+      <label id="exp-fmt-csv-l" class="on"><input type="radio" name="exp-fmt" value="csv" checked><span>CSV 表格</span></label>
+      <label id="exp-fmt-json-l"><input type="radio" name="exp-fmt" value="json"><span>JSON（结构化）</span></label>
+    </div>
+    <label class="exp-opt" id="exp-privacy-row" style="margin-top:14px">
+      <input type="checkbox" id="exp-privacy">
+      <div><div class="t" id="exp-privacy-t">隐私化（脱敏学号与个人信息）</div></div>
+    </label>
+    <div class="hint-box" id="exp-video-note" style="display:none">视频将以独立 .webm 文件逐条保存（含面部影像，请妥善保管）</div>
+    <div class="btn-row mt-4" style="justify-content:flex-end">
+      <button class="btn btn-ghost" id="exp-cancel">取消</button>
+      <button class="btn btn-primary" id="exp-confirm">导出</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 行级报告导出弹窗（需求 9） ======== -->
+<div class="modal-mask" id="report-mask" style="display:none">
+  <div class="modal exp-modal">
+    <div class="flex-between mb-2">
+      <h2 class="modal-title"><svg width="20" height="20"><use href="#i-file-check"/></svg><span id="rep-title">导出报告</span></h2>
+      <button class="icon-btn" id="rep-close" aria-label="关闭"><svg width="20" height="20"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="modal-desc"><span id="rep-target">记录：</span></p>
+    <div class="exp-label" id="rep-privacy-label">报告隐私形式</div>
+    <div class="radio-pill" id="rep-privacy-seg">
+      <label id="rep-priv-on-l" class="on"><input type="radio" name="rep-priv" value="on" checked><span>隐私化</span></label>
+      <label id="rep-priv-off-l"><input type="radio" name="rep-priv" value="off"><span>未隐私化</span></label>
+    </div>
+    <div class="hint-box" id="rep-hint">隐私化报告将脱敏学号、年龄与专业等个人信息；未隐私化报告包含完整信息，请妥善保管。</div>
+    <div class="btn-row mt-4" style="justify-content:flex-end">
+      <button class="btn btn-ghost" id="rep-cancel">取消</button>
+      <button class="btn btn-primary" id="rep-confirm">导出 HTML 报告</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 阈值调整弹窗（量表管理） ======== -->
+<div class="modal-mask" id="as-thr-mask" style="display:none">
+  <div class="modal exp-modal">
+    <div class="flex-between mb-2">
+      <h2 class="modal-title"><svg width="20" height="20"><use href="#i-gauge"/></svg><span id="as-thr-title">阈值调整</span></h2>
+      <button class="icon-btn" id="as-thr-close" aria-label="关闭"><svg width="20" height="20"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="modal-desc" id="as-thr-desc">设置风险等级切分点：得分 ≥ 轻度为轻度风险，≥ 中度、≥ 重度依次升档。</p>
+    <div class="thr-grid">
+      <div class="thr-item"><label for="as-thr-mild">轻度阈值</label><input type="number" id="as-thr-mild" min="1"></div>
+      <div class="thr-item"><label for="as-thr-moderate">中度阈值</label><input type="number" id="as-thr-moderate" min="1"></div>
+      <div class="thr-item"><label for="as-thr-severe">重度阈值</label><input type="number" id="as-thr-severe" min="1"></div>
+    </div>
+    <div class="thr-hint">当前量表总分上限为 <b id="as-thr-max">0</b> 分；阈值需满足 轻度 ≤ 中度 ≤ 重度。保存后立即对后续测评的风险判定与报告生效。</div>
+    <p class="pwd-err" id="as-thr-err" style="display:none">阈值需为不小于 1 的整数，且满足 轻度 ≤ 中度 ≤ 重度</p>
+    <div class="btn-row mt-4" style="justify-content:flex-end">
+      <button class="btn btn-ghost" id="as-thr-cancel">取消</button>
+      <button class="btn btn-primary" id="as-thr-save">保存阈值</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 内置量表编辑弹窗（名称 / 描述） ======== -->
+<div class="modal-mask" id="as-edit-mask" style="display:none">
+  <div class="modal exp-modal">
+    <div class="flex-between mb-2">
+      <h2 class="modal-title"><svg width="20" height="20"><use href="#i-edit"/></svg><span id="as-edit-title">编辑量表</span></h2>
+      <button class="icon-btn" id="as-edit-close" aria-label="关闭"><svg width="20" height="20"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="modal-desc">自定义量表在测评流程中显示的名称与说明文字（留空恢复默认）。</p>
+    <div style="margin-bottom:12px"><label class="field-label">量表名称</label><input type="text" id="as-edit-name" placeholder="量表名称"></div>
+    <div style="margin-bottom:12px"><label class="field-label">量表描述</label><input type="text" id="as-edit-desc" placeholder="一句话说明用途"></div>
+    <div class="btn-row mt-4" style="justify-content:flex-end">
+      <button class="btn btn-ghost" id="as-edit-cancel">取消</button>
+      <button class="btn btn-primary" id="as-edit-save">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 自定义量表添加 / 编辑弹窗（含上传录入） ======== -->
+<div class="modal-mask" id="as-custom-mask" style="display:none">
+  <div class="modal exp-modal">
+    <div class="flex-between mb-2">
+      <h2 class="modal-title"><svg width="20" height="20"><use href="#i-doc"/></svg><span id="as-custom-title">添加自定义量表</span></h2>
+      <button class="icon-btn" id="as-custom-close" aria-label="关闭"><svg width="20" height="20"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="modal-desc">手动录入或上传 JSON / TXT 文件（TXT 首行选项 / 分隔，其余每行一条目）。</p>
+    <div class="upload-box" style="margin-bottom:12px">
+      <button class="btn btn-ghost" id="as-custom-upload-btn"><svg width="16" height="16"><use href="#i-upload"/></svg> 上传文件</button>
+      <input type="file" id="as-custom-file" accept=".json,.txt">
+      <span id="as-custom-file-name" style="font-size:12px;color:#86817A"></span>
+    </div>
+    <div style="margin-bottom:12px"><label class="field-label">量表名称</label><input type="text" id="as-custom-name" placeholder="如：学习倦怠自评量表"></div>
+    <div style="margin-bottom:12px"><label class="field-label">选项（用 / 分隔）</label><input type="text" id="as-custom-opts" placeholder="从不 / 偶尔 / 经常 / 总是"></div>
+    <div style="margin-bottom:12px"><label class="field-label">条目（每行一条）</label>
+      <textarea id="as-custom-items" rows="5" placeholder="每行一个条目&#10;如：我感到学习没有意义" style="width:100%;background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:10px 12px;font-size:14px;color:#55504A;font-family:inherit;resize:vertical"></textarea>
+    </div>
+    <p class="pwd-err" id="as-custom-err" style="display:none">请填写名称、至少 2 个选项与至少 1 个条目</p>
+    <div class="btn-row mt-4" style="justify-content:flex-end">
+      <button class="btn btn-ghost" id="as-custom-cancel">取消</button>
+      <button class="btn btn-primary" id="as-custom-save">保存量表</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   "use strict";
@@ -604,6 +898,144 @@
   function icon(id, size) {
     return '<svg width="' + (size || 16) + '" height="' + (size || 16) + '"><use href="#' + id + '"/></svg>';
   }
+
+  /* ============ 全局：语言切换（需求 2：中文 / English） ============ */
+  var I18N = {
+    zh: {
+      mode_user: "用户端", mode_admin: "管理端",
+      nav_home: "首页概览", nav_assess_settings: "测评设置", nav_data: "数据管理",
+      nav_analysis: "数据分析", nav_settings: "系统设置", nav_about: "关于系统", nav_assessment: "心理测评",
+      about_brand: "迹心 · PsyTrace", about_system_name: "迹心心理测评服务平台",
+      nav_group_admin: "管理功能", nav_group_user: "功能导航",
+      sidebar_collapse: "收起侧边栏", sidebar_expand: "展开侧边栏",
+      language: "语言 / Language",
+      lang_note: "量表内容为中文版权量表，不随界面语言切换",
+      pwd_title: "进入管理端", pwd_desc: "管理端包含首页概览、测评设置、数据管理、数据分析、系统设置与关于系统，请输入管理密码验证。",
+      pwd_placeholder: "请输入管理密码", pwd_error: "密码错误，请重新输入",
+      btn_cancel: "取消", btn_confirm: "确认", btn_next: "下一步", btn_prev: "上一步", btn_finish: "完成测评",
+      btn_save: "保存", btn_refresh: "刷新数据", btn_details: "查看明细", btn_export_report: "导出报告",
+      btn_expand_list: "展开列表", btn_collapse_list: "收起列表",
+      step1: "基本信息", step2: "知情同意", step3: "心理测评", step4: "结束",
+      q_prev: "上一份", q_next: "下一份", q_pager_hint: "填完当前问卷后自动解锁下一份",
+      q_progress: "第 {x} / {n} 份", q_empty: "当前没有启用的问卷，请联系管理员在「测评设置」中启用量表。",
+      data_title: "数据管理", data_export: "导出数据",
+      data_export_title: "导出测评数据", data_export_content: "导出内容", data_export_format: "导出格式",
+      data_export_privacy: "隐私化（脱敏学号与个人信息）",
+      data_export_video_note: "视频将以独立 .webm 文件逐条保存（含面部影像，请妥善保管）",
+      data_export_btn: "导出",
+      report_title: "导出报告", report_btn: "导出 HTML 报告", report_privacy_q: "报告隐私形式",
+      report_privacy_on: "隐私化", report_privacy_off: "未隐私化",
+      as_title: "测评设置",
+      ana_title: "数据分析（探索性分析）",
+      ana_export_html: "导出 HTML 报告", ana_export_pdf: "导出 PDF（打印）",
+      ana_target: "分析对象", ana_target_desc: "勾选要纳入分析的测评记录（默认全部）",
+      ana_selected: "已选 {n} / {total} 条",
+      ana_select_all: "全选", ana_select_high: "高风险", ana_select_clear: "清空",
+      ana_section_overview: "总览", ana_section_scales: "量表分布", ana_section_behavior: "行为指标",
+      ana_section_corr: "关联探索", ana_section_video: "视频采集"
+    },
+    en: {
+      mode_user: "User", mode_admin: "Admin",
+      nav_home: "Overview", nav_assess_settings: "Assessment Setup", nav_data: "Data",
+      nav_analysis: "Analysis", nav_settings: "Settings", nav_about: "About", nav_assessment: "Assessment",
+      about_brand: "PsyTrace", about_system_name: "PsyTrace Assessment Platform",
+      nav_group_admin: "Admin Functions", nav_group_user: "Navigation",
+      sidebar_collapse: "Collapse Sidebar", sidebar_expand: "Expand Sidebar",
+      language: "Language / 语言",
+      lang_note: "Scale items are copyrighted Chinese instruments and are not translated",
+      pwd_title: "Enter Admin Mode", pwd_desc: "Admin mode includes Overview, Assessment Setup, Data, Analysis, Settings and About. Please enter the admin password.",
+      pwd_placeholder: "Enter admin password", pwd_error: "Incorrect password, please try again",
+      btn_cancel: "Cancel", btn_confirm: "Confirm", btn_next: "Next", btn_prev: "Back", btn_finish: "Finish",
+      btn_save: "Save", btn_refresh: "Refresh", btn_details: "Details", btn_export_report: "Export Report",
+      btn_expand_list: "Show list", btn_collapse_list: "Hide list",
+      step1: "Basic Info", step2: "Consent", step3: "Assessment", step4: "Done",
+      q_prev: "Previous", q_next: "Next", q_pager_hint: "Complete the current questionnaire to unlock the next one",
+      q_progress: "Part {x} / {n}", q_empty: "No questionnaire is enabled. Please ask the administrator to enable scales in Assessment Setup.",
+      data_title: "Data Management", data_export: "Export Data",
+      data_export_title: "Export Assessment Data", data_export_content: "Content", data_export_format: "Format",
+      data_export_privacy: "Privacy mode (mask student ID & personal info)",
+      data_export_video_note: "Videos will be saved as separate .webm files (contain facial imagery, handle with care)",
+      data_export_btn: "Export",
+      report_title: "Export Report", report_btn: "Export HTML Report", report_privacy_q: "Report privacy form",
+      report_privacy_on: "Privacy", report_privacy_off: "Full",
+      as_title: "Assessment Setup",
+      ana_title: "Data Analysis (Exploratory)",
+      ana_export_html: "Export HTML Report", ana_export_pdf: "Export PDF (Print)",
+      ana_target: "Targets", ana_target_desc: "Check the records to include in analysis (all by default)",
+      ana_selected: "{n} / {total} selected",
+      ana_select_all: "All", ana_select_high: "High Risk", ana_select_clear: "Clear",
+      ana_section_overview: "Overview", ana_section_scales: "Scales", ana_section_behavior: "Behavior",
+      ana_section_corr: "Correlations", ana_section_video: "Camera"
+    }
+  };
+  var curLang = "zh";
+  try { curLang = localStorage.getItem("psyc_lang") === "en" ? "en" : "zh"; } catch (e) {}
+  function t(key) { return (I18N[curLang] && I18N[curLang][key]) || I18N.zh[key] || key; }
+  function tfmt(key, vars) {
+    var s = (I18N[curLang] && I18N[curLang][key]) || I18N.zh[key] || key;
+    Object.keys(vars || {}).forEach(function (k) { s = s.split("{" + k + "}").join(vars[k]); });
+    return s;
+  }
+  var LANG_ID_MAP = {
+    "pwd-title-t": "pwd_title", "pwd-desc": "pwd_desc", "pwd-cancel": "btn_cancel", "pwd-confirm": "btn_confirm",
+    "exp-title": "data_export_title", "exp-content-label": "data_export_content", "exp-format-label": "data_export_format",
+    "exp-privacy-t": "data_export_privacy", "exp-video-note": "data_export_video_note",
+    "exp-cancel": "btn_cancel", "exp-confirm": "data_export_btn",
+    "rep-title": "report_title", "rep-privacy-label": "report_privacy_q", "rep-confirm": "report_btn", "rep-cancel": "btn_cancel"
+  };
+  function applyLang() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n");
+      var txt = I18N[curLang][key] || I18N.zh[key];
+      if (txt) el.textContent = txt;
+    });
+    Object.keys(LANG_ID_MAP).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = t(LANG_ID_MAP[id]);
+    });
+    var langLabel = document.getElementById("lang-label");
+    if (langLabel) langLabel.textContent = t("language");
+    var langNote = document.getElementById("lang-note");
+    if (langNote) langNote.textContent = t("lang_note");
+    var langZh = document.getElementById("lang-zh");
+    var langEn = document.getElementById("lang-en");
+    if (langZh) langZh.classList.toggle("active", curLang === "zh");
+    if (langEn) langEn.classList.toggle("active", curLang === "en");
+    var navTitle = document.getElementById("nav-group-title");
+    if (navTitle) navTitle.textContent = mode === "admin" ? t("nav_group_admin") : t("nav_group_user");
+    var pwdPh = document.getElementById("pwd-input");
+    if (pwdPh) pwdPh.placeholder = t("pwd_placeholder");
+    var repOn = document.querySelector('#rep-privacy-seg label[for] input[value="on"]');
+    var repOff = document.querySelector('#rep-privacy-seg input[value="off"]');
+    var repOnL = repOn ? repOn.closest("label").querySelector("span") : null;
+    var repOffL = repOff ? repOff.closest("label").querySelector("span") : null;
+    if (repOnL) repOnL.textContent = t("report_privacy_on");
+    if (repOffL) repOffL.textContent = t("report_privacy_off");
+    var expCsv = document.querySelector('#exp-format-seg input[value="csv"]');
+    var expJson = document.querySelector('#exp-format-seg input[value="json"]');
+    var expCsvL = expCsv ? expCsv.closest("label").querySelector("span") : null;
+    var expJsonL = expJson ? expJson.closest("label").querySelector("span") : null;
+    if (expCsvL) expCsvL.textContent = curLang === "en" ? "CSV table" : "CSV 表格";
+    if (expJsonL) expJsonL.textContent = curLang === "en" ? "JSON (structured)" : "JSON（结构化）";
+    if (typeof applySidebarState === "function") applySidebarState();
+    if (typeof renderSteps === "function" && typeof step !== "undefined" && step > 0) { renderSteps(); updateNav(); }
+    var anlPanel = document.getElementById("tab-analysis");
+    if (typeof renderAnalysis === "function" && anlPanel && anlPanel.classList.contains("active")) renderAnalysis();
+  }
+  function setLangOf(lang) {
+    curLang = lang;
+    try { localStorage.setItem("psyc_lang", lang); } catch (e) {}
+    applyLang();
+  }
+  (function bindLangButtons() {
+    var zh = document.getElementById("lang-zh");
+    var en = document.getElementById("lang-en");
+    var mini = document.getElementById("lang-mini");
+    if (zh) zh.addEventListener("click", function () { setLangOf("zh"); });
+    if (en) en.addEventListener("click", function () { setLangOf("en"); });
+    if (mini) mini.addEventListener("click", function () { setLangOf(curLang === "zh" ? "en" : "zh"); });
+  })();
+  applyLang();
 
   /* ============ 全局：侧边栏折叠 ============ */
   var sidebarEl = document.getElementById("sidebar");
@@ -614,7 +1046,7 @@
     if (!sidebarEl) return;
     if (sidebarCollapsed) sidebarEl.classList.add("collapsed"); else sidebarEl.classList.remove("collapsed");
     if (collapseBtn) {
-      collapseBtn.title = sidebarCollapsed ? "展开侧边栏" : "折叠侧边栏";
+      collapseBtn.title = sidebarCollapsed ? t("sidebar_expand") : t("sidebar_collapse");
       collapseBtn.setAttribute("aria-label", collapseBtn.title);
       collapseBtn.innerHTML = icon(sidebarCollapsed ? "i-panel-r" : "i-panel-l", 18);
     }
@@ -628,35 +1060,77 @@
     });
   }
 
-  /* ============ 全局：管理密码 ============ */
-  var PROTECTED = { data: "数据管理", analysis: "数据分析", settings: "系统设置", about: "关于系统" };
+  /* ============ 全局：站点名称（左侧栏与首页概览联动） ============ */
+  var DEFAULT_STATION_NAME = "河南大学基础医学院心理站";
+  var stationName = DEFAULT_STATION_NAME;
+  try { stationName = localStorage.getItem("psyc_station_name") || DEFAULT_STATION_NAME; } catch (e) {}
+  function applyStationName() {
+    document.getElementById("banner-title").textContent = stationName;
+    document.title = stationName + " - 本地预览 Preview";
+  }
+  applyStationName();
+
+  var bannerTitleEl = document.getElementById("banner-title");
+  var bannerEditArea = document.getElementById("banner-edit-area");
+  var bannerNameInput = document.getElementById("banner-name-input");
+  function beginBannerEdit() {
+    bannerNameInput.value = stationName;
+    bannerTitleEl.style.display = "none";
+    document.getElementById("banner-actions").style.display = "none";
+    bannerEditArea.style.display = "block";
+    document.getElementById("banner-save-actions").style.display = "flex";
+    bannerNameInput.focus();
+  }
+  function endBannerEdit() {
+    bannerEditArea.style.display = "none";
+    bannerTitleEl.style.display = "";
+    document.getElementById("banner-actions").style.display = "";
+    document.getElementById("banner-save-actions").style.display = "none";
+  }
+  function confirmBannerEdit() {
+    var name = bannerNameInput.value.trim();
+    if (name) {
+      stationName = name;
+      try { localStorage.setItem("psyc_station_name", name); } catch (e) {}
+      applyStationName();
+    }
+    endBannerEdit();
+  }
+  document.getElementById("banner-edit-btn").addEventListener("click", beginBannerEdit);
+  document.getElementById("banner-cancel-btn").addEventListener("click", endBannerEdit);
+  document.getElementById("banner-save-btn").addEventListener("click", confirmBannerEdit);
+  bannerNameInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") confirmBannerEdit();
+    if (e.key === "Escape") endBannerEdit();
+  });
+
+  /* ============ 全局：端切换与管理密码 ============ */
+  var USER_TABS = ["assessment"];
+  var ADMIN_TABS = ["dashboard", "assess", "data", "analysis", "settings", "about"];
+  var mode = "user";
+  var adminOk = false;
+  try { adminOk = sessionStorage.getItem("psyc_admin_auth") === "1"; } catch (e) {}
   function getAdminPwd() {
     try { return localStorage.getItem("psyc_admin_pwd") || "123456"; } catch (e) { return "123456"; }
   }
-  var adminOk = false;
-  try { adminOk = sessionStorage.getItem("psyc_admin_auth") === "1"; } catch (e) {}
-  var pendingTab = null;
 
   var pwdMask = document.getElementById("pwd-mask");
   var pwdInput = document.getElementById("pwd-input");
   var pwdErr = document.getElementById("pwd-err");
 
-  function showPwdModal(tab) {
-    pendingTab = tab;
-    document.getElementById("pwd-tab-name").textContent = PROTECTED[tab];
+  function showPwdModal() {
     pwdInput.value = "";
     pwdErr.style.display = "none";
     pwdMask.style.display = "flex";
     pwdInput.focus();
   }
-  function hidePwdModal() { pwdMask.style.display = "none"; pendingTab = null; }
+  function hidePwdModal() { pwdMask.style.display = "none"; }
   function submitPwd() {
     if (pwdInput.value === getAdminPwd()) {
       adminOk = true;
       try { sessionStorage.setItem("psyc_admin_auth", "1"); } catch (e) {}
-      var go = pendingTab;
       hidePwdModal();
-      if (go) activateTab(go);
+      setMode("admin");
     } else {
       pwdErr.style.display = "block";
       pwdInput.focus();
@@ -667,7 +1141,27 @@
   document.getElementById("pwd-confirm").addEventListener("click", submitPwd);
   pwdInput.addEventListener("keydown", function (e) { if (e.key === "Enter") submitPwd(); });
 
-  /* ============ 全局：主 Tab 切换 ============ */
+  /* ============ 首页概览：管理密码修改（需求 4） ============ */
+  document.getElementById("dash-pwd-change").addEventListener("click", function () {
+    var oldEl = document.getElementById("dash-pwd-old");
+    var newEl = document.getElementById("dash-pwd-new");
+    var confEl = document.getElementById("dash-pwd-confirm");
+    var msgEl = document.getElementById("dash-pwd-msg");
+    var oldV = oldEl.value, newV = newEl.value, confV = confEl.value;
+    var showMsg = function (ok, text) {
+      msgEl.style.display = "block";
+      msgEl.style.color = ok ? "#2ba344" : "#d54941";
+      msgEl.textContent = text;
+    };
+    if (oldV !== getAdminPwd()) { showMsg(false, "原密码不正确"); return; }
+    if (newV.length < 6) { showMsg(false, "新密码不能少于 6 位"); return; }
+    if (newV !== confV) { showMsg(false, "两次输入的新密码不一致"); return; }
+    try { localStorage.setItem("psyc_admin_pwd", newV); } catch (e) {}
+    oldEl.value = ""; newEl.value = ""; confEl.value = "";
+    showMsg(true, "管理密码修改成功");
+  });
+
+  /* ============ 全局：主 Tab 切换（按端过滤） ============ */
   var navBtns = document.querySelectorAll("#nav .nav-btn");
   function activateTab(tab) {
     navBtns.forEach(function (b) { b.classList.remove("active"); });
@@ -677,17 +1171,332 @@
     if (tab === "data" && typeof renderData === "function") renderData();
     if (tab === "analysis" && typeof renderAnalysis === "function") renderAnalysis();
   }
+  function setMode(m) {
+    if (mode === m) return;
+    mode = m;
+    document.getElementById("mode-user").classList.toggle("active", m === "user");
+    document.getElementById("mode-admin").classList.toggle("active", m === "admin");
+    var allowed = m === "admin" ? ADMIN_TABS : USER_TABS;
+    navBtns.forEach(function (b) {
+      b.style.display = allowed.indexOf(b.getAttribute("data-tab")) >= 0 ? "" : "none";
+    });
+    document.getElementById("nav-group-title").textContent = m === "admin" ? t("nav_group_admin") : t("nav_group_user");
+    activateTab(m === "admin" ? "dashboard" : "assessment");
+  }
+  document.getElementById("mode-user").addEventListener("click", function () { setMode("user"); });
+  document.getElementById("mode-admin").addEventListener("click", function () {
+    if (adminOk) { setMode("admin"); } else { showPwdModal(); }
+  });
   navBtns.forEach(function (btn) {
     btn.addEventListener("click", function () {
-      var tab = btn.getAttribute("data-tab");
-      if (PROTECTED[tab] && !adminOk) { showPwdModal(tab); return; }
-      activateTab(tab);
+      activateTab(btn.getAttribute("data-tab"));
     });
   });
 
   document.getElementById("btn-start-assessment").addEventListener("click", function () {
-    activateTab("assessment");
+    setMode("user");
   });
+
+  /* ============ 测评设置页（需求 1：量表管理 / 行为数据采集 / 自定义量表） ============ */
+  var AS_SCALE_DEFS = [
+    { key: "phq9",  name: "PHQ-9 抑郁症筛查量表",       count: 9,  desc: "抑郁症状频率（过去两周）" },
+    { key: "gad7",  name: "GAD-7 广泛性焦虑量表",        count: 7,  desc: "焦虑症状频率（过去两周）" },
+    { key: "cssrs", name: "C-SSRS 自杀严重度评定量表",   count: 4,  desc: "自杀风险筛查（过去一个月）" },
+    { key: "nssi",  name: "NSSI 非自杀性自伤筛查",       count: 2,  desc: "自伤行为与频率（过去一年）" },
+    { key: "pss10", name: "PSS-10 感知压力量表",         count: 10, desc: "感知压力水平（过去一个月）" },
+    { key: "psqi",  name: "PSQI 匹兹堡睡眠质量指数",     count: 19, desc: "睡眠质量 7 成分（过去一个月）" },
+    { key: "sias6", name: "SIAS-6 社交焦虑简化筛查",    count: 6,  desc: "社交焦虑（过去两周）" },
+    { key: "aslec", name: "ASLEC 青少年生活事件量表",   count: 27, desc: "负性生活事件影响（过去一年）" }
+  ];
+  // 分级筛查量表（阳性即预警，无可调切分点）
+  var AS_BINARY = { cssrs: true, nssi: true };
+  // 各量表默认切分点（可在量表管理中调整）
+  var AS_DEFAULT_THR = {
+    phq9:  { mild: 5, moderate: 10, severe: 15 },
+    gad7:  { mild: 5, moderate: 10, severe: 15 },
+    pss10: { mild: 14, moderate: 20, severe: 27 },
+    psqi:  { mild: 6, moderate: 11, severe: 16 },
+    sias6: { mild: 7, moderate: 13, severe: 19 },
+    aslec: { mild: 16, moderate: 36, severe: 61 }
+  };
+  // 各量表总分上限（阈值弹窗提示）
+  var AS_SCALE_MAX = { phq9: 27, gad7: 21, cssrs: 4, nssi: 2, pss10: 40, psqi: 21, sias6: 24, aslec: 135 };
+  function loadAssessCfg() {
+    var def = { enabled: { phq9: true, gad7: true, cssrs: true, nssi: true, pss10: true, psqi: true, sias6: true, aslec: true }, mouse: true, cam: true, custom: [], thresholds: {}, meta: {} };
+    try {
+      var raw = localStorage.getItem("psyc_assess_settings");
+      if (!raw) return def;
+      var p = JSON.parse(raw);
+      return {
+        enabled: { phq9: true, gad7: true, cssrs: true, nssi: true, pss10: true, psqi: true, sias6: true, aslec: true, ...(p.enabled || {}) },
+        mouse: p.mouse !== false,
+        cam: p.cam !== false,
+        custom: Array.isArray(p.custom) ? p.custom : [],
+        thresholds: p.thresholds && typeof p.thresholds === "object" ? p.thresholds : {},
+        meta: p.meta && typeof p.meta === "object" ? p.meta : {}
+      };
+    } catch (e) { return def; }
+  }
+  function saveAssessCfg() {
+    try { localStorage.setItem("psyc_assess_settings", JSON.stringify(assessCfg)); } catch (e) {}
+  }
+  var assessCfg = loadAssessCfg();
+  function thrOf(key) {
+    return assessCfg.thresholds[key] || AS_DEFAULT_THR[key] || { mild: 1, moderate: 2, severe: 3 };
+  }
+  function nameOf(key, defName) {
+    var m = assessCfg.meta[key];
+    return (m && m.name && String(m.name).trim()) ? m.name : defName;
+  }
+  function descOf(key, defDesc) {
+    var m = assessCfg.meta[key];
+    return (m && m.desc && String(m.desc).trim()) ? m.desc : defDesc;
+  }
+  function modalShow(id) { document.getElementById(id).style.display = "flex"; }
+  function modalHide(id) { document.getElementById(id).style.display = "none"; }
+  function maskClick(e, id) { if (e.target === document.getElementById(id)) modalHide(id); }
+  var curThrKey = null, curEditKey = null, curCustomId = null;
+
+  function openThrModal(key) {
+    curThrKey = key;
+    var def = AS_SCALE_DEFS.find(function (s) { return s.key === key; });
+    var thr = thrOf(key);
+    document.getElementById("as-thr-title").textContent = "阈值调整 · " + nameOf(key, def.name);
+    document.getElementById("as-thr-max").textContent = String(AS_SCALE_MAX[key] || 0);
+    document.getElementById("as-thr-mild").value = thr.mild;
+    document.getElementById("as-thr-moderate").value = thr.moderate;
+    document.getElementById("as-thr-severe").value = thr.severe;
+    document.getElementById("as-thr-err").style.display = "none";
+    modalShow("as-thr-mask");
+  }
+  function openEditModal(key) {
+    curEditKey = key;
+    var def = AS_SCALE_DEFS.find(function (s) { return s.key === key; });
+    var m = assessCfg.meta[key] || {};
+    document.getElementById("as-edit-title").textContent = "编辑量表 · " + def.name;
+    document.getElementById("as-edit-name").value = m.name || "";
+    document.getElementById("as-edit-desc").value = m.desc || "";
+    modalShow("as-edit-mask");
+  }
+  function openCustomModal(id) {
+    curCustomId = id || null;
+    document.getElementById("as-custom-title").textContent = curCustomId ? "编辑自定义量表" : "添加自定义量表";
+    document.getElementById("as-custom-file").value = "";
+    document.getElementById("as-custom-file-name").textContent = "";
+    document.getElementById("as-custom-err").style.display = "none";
+    if (curCustomId) {
+      var s = assessCfg.custom.find(function (c) { return c.id === curCustomId; });
+      if (s) {
+        document.getElementById("as-custom-name").value = s.name;
+        document.getElementById("as-custom-opts").value = s.options.join(" / ");
+        document.getElementById("as-custom-items").value = s.items.join("\n");
+        return;
+      }
+    }
+    document.getElementById("as-custom-name").value = "";
+    document.getElementById("as-custom-opts").value = "";
+    document.getElementById("as-custom-items").value = "";
+  }
+  function parseCustomUpload(fileName, text) {
+    var base = fileName.replace(/\.(json|txt)$/i, "").trim() || "未命名量表";
+    var name = base, options = [], items = [];
+    var trimmed = text.trim();
+    if (/\.json$/i.test(fileName)) {
+      try {
+        var data = JSON.parse(trimmed);
+        if (!data || typeof data !== "object") return null;
+        name = String(data.name || base).trim();
+        options = Array.isArray(data.options) ? data.options.map(String) : [];
+        items = Array.isArray(data.items) ? data.items.map(String) : [];
+      } catch (e) { return null; }
+    } else {
+      var lines = trimmed.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+      if (lines.length < 2) return null;
+      options = lines[0].split("/").map(function (s) { return s.trim(); }).filter(Boolean);
+      items = lines.slice(1);
+    }
+    if (!name || items.length === 0 || options.length < 2) return null;
+    return { id: "C" + String(Date.now()).slice(-6), name: name, items: items, options: options };
+  }
+  (function bindAsModals() {
+    document.getElementById("as-thr-close").addEventListener("click", function () { modalHide("as-thr-mask"); });
+    document.getElementById("as-thr-cancel").addEventListener("click", function () { modalHide("as-thr-mask"); });
+    document.getElementById("as-thr-mask").addEventListener("click", function (e) { maskClick(e, "as-thr-mask"); });
+    document.getElementById("as-thr-save").addEventListener("click", function () {
+      var mild = parseInt(document.getElementById("as-thr-mild").value, 10);
+      var moderate = parseInt(document.getElementById("as-thr-moderate").value, 10);
+      var severe = parseInt(document.getElementById("as-thr-severe").value, 10);
+      if (!(mild >= 1 && moderate >= 1 && severe >= 1 && mild <= moderate && moderate <= severe)) {
+        document.getElementById("as-thr-err").style.display = "block";
+        return;
+      }
+      if (!assessCfg.thresholds) assessCfg.thresholds = {};
+      assessCfg.thresholds[curThrKey] = { mild: mild, moderate: moderate, severe: severe };
+      saveAssessCfg();
+      modalHide("as-thr-mask");
+      renderAssessSettings();
+    });
+    document.getElementById("as-edit-close").addEventListener("click", function () { modalHide("as-edit-mask"); });
+    document.getElementById("as-edit-cancel").addEventListener("click", function () { modalHide("as-edit-mask"); });
+    document.getElementById("as-edit-mask").addEventListener("click", function (e) { maskClick(e, "as-edit-mask"); });
+    document.getElementById("as-edit-save").addEventListener("click", function () {
+      if (!assessCfg.meta) assessCfg.meta = {};
+      assessCfg.meta[curEditKey] = {
+        name: document.getElementById("as-edit-name").value.trim(),
+        desc: document.getElementById("as-edit-desc").value.trim()
+      };
+      saveAssessCfg();
+      modalHide("as-edit-mask");
+      renderAssessSettings();
+    });
+    document.getElementById("as-custom-close").addEventListener("click", function () { modalHide("as-custom-mask"); });
+    document.getElementById("as-custom-cancel").addEventListener("click", function () { modalHide("as-custom-mask"); });
+    document.getElementById("as-custom-mask").addEventListener("click", function (e) { maskClick(e, "as-custom-mask"); });
+    document.getElementById("as-custom-upload-btn").addEventListener("click", function () { document.getElementById("as-custom-file").click(); });
+    document.getElementById("as-custom-file").addEventListener("change", function () {
+      var f = this.files && this.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var parsed = parseCustomUpload(f.name, String(reader.result || ""));
+        if (!parsed) {
+          document.getElementById("as-custom-err").textContent = "文件解析失败：请确认 JSON（{name, options[], items[]}）或 TXT（首行选项 / 分隔，其余每行一条目）格式";
+          document.getElementById("as-custom-err").style.display = "block";
+          return;
+        }
+        document.getElementById("as-custom-file-name").textContent = "已读取：" + f.name + "（" + parsed.items.length + " 条）";
+        document.getElementById("as-custom-name").value = parsed.name;
+        document.getElementById("as-custom-opts").value = parsed.options.join(" / ");
+        document.getElementById("as-custom-items").value = parsed.items.join("\n");
+        document.getElementById("as-custom-err").style.display = "none";
+      };
+      reader.readAsText(f);
+    });
+    document.getElementById("as-custom-save").addEventListener("click", function () {
+      var name = document.getElementById("as-custom-name").value.trim();
+      var itemsText = document.getElementById("as-custom-items").value || "";
+      var optsText = document.getElementById("as-custom-opts").value.trim();
+      var items = itemsText.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+      var opts = optsText.split("/").map(function (s) { return s.trim(); }).filter(Boolean);
+      if (!name || items.length === 0 || opts.length < 2) {
+        document.getElementById("as-custom-err").textContent = "请填写名称、至少 2 个选项与至少 1 个条目";
+        document.getElementById("as-custom-err").style.display = "block";
+        return;
+      }
+      if (curCustomId) {
+        assessCfg.custom = assessCfg.custom.map(function (c) {
+          return c.id === curCustomId ? { id: c.id, name: name, items: items, options: opts } : c;
+        });
+      } else {
+        assessCfg.custom.push({ id: "C" + String(Date.now()).slice(-6), name: name, items: items, options: opts });
+      }
+      saveAssessCfg();
+      modalHide("as-custom-mask");
+      renderAssessSettings();
+    });
+  })();
+
+  function renderAssessSettings() {
+    var box = document.getElementById("assess-content");
+    if (!box) return;
+    var scaleRow = function (s) {
+      var on = assessCfg.enabled[s.key] !== false;
+      var binary = !!AS_BINARY[s.key];
+      var thr = thrOf(s.key);
+      var thrTxt = binary
+        ? '<span class="s-thr">阳性即预警</span>'
+        : '<span class="s-thr">阈值 ' + thr.mild + ' / ' + thr.moderate + ' / ' + thr.severe + '</span>';
+      return '<div class="scale-row' + (on ? "" : " off") + '">' +
+        '<input type="checkbox" data-scale="' + s.key + '"' + (on ? " checked" : "") + ' style="width:16px;height:16px;accent-color:#E05A3C;cursor:pointer">' +
+        '<div class="s-info">' +
+          '<div class="s-name">' + nameOf(s.key, s.name) +
+            '<span class="badge ' + (on ? "b-green" : "b-blue") + '">' + (on ? "已启用" : "已停用") + '</span>' + thrTxt + '</div>' +
+          '<div class="s-meta">' + s.count + ' 条 · ' + descOf(s.key, s.desc) + '</div>' +
+        '</div>' +
+        '<div class="s-actions">' +
+          '<button class="mini-btn" data-edit-scale="' + s.key + '">' + icon("i-edit", 12) + ' 编辑</button>' +
+          (binary ? '' : '<button class="mini-btn" data-thr-scale="' + s.key + '">' + icon("i-gauge", 12) + ' 阈值</button>') +
+        '</div>' +
+      '</div>';
+    };
+    var captureRow = function (id, iconId, title, desc, on) {
+      return '<div class="capture-row">' +
+        '<div class="c-ico">' + icon(iconId, 18) + '</div>' +
+        '<div style="flex:1"><div style="font-size:14px;font-weight:500;color:#3A362F">' + title + '</div>' +
+        '<div style="font-size:12px;color:#86817A;margin-top:2px">' + desc + '</div></div>' +
+        '<label class="switch"><input type="checkbox" id="' + id + '"' + (on ? " checked" : "") + '><span class="sl"></span></label></div>';
+    };
+    var customEmpty = assessCfg.custom.length === 0;
+    var customItems = customEmpty
+      ? '<div style="font-size:13px;color:#86817A;padding:14px;text-align:center;border:1px dashed #E6E3DE;border-radius:8px">暂未添加自定义量表</div>'
+      : assessCfg.custom.map(function (s) {
+          return '<div class="cs-scale-item">' +
+            '<svg width="16" height="16" style="color:#E05A3C;flex-shrink:0"><use href="#i-doc"/></svg>' +
+            '<div style="flex:1;min-width:0"><div class="cs-name">' + s.name + '</div>' +
+            '<div class="cs-meta">' + s.items.length + ' 条 · ' + s.options.join(" / ") + '</div></div>' +
+            '<button class="mini-btn" data-edit-custom="' + s.id + '">' + icon("i-edit", 12) + ' 编辑</button>' +
+            '<button class="mini-btn danger" data-del-custom="' + s.id + '">' + icon("i-x", 12) + ' 删除</button></div>';
+        }).join("");
+    box.innerHTML =
+      '<div class="as-desc-card">配置用户端测评使用的量表与行为数据采集方式，保存后立即对下一次测评生效。</div>' +
+      '<div class="card p-6" style="margin-top:16px">' +
+        '<h3 class="sec-title">' + icon("i-doc", 20) + '量表管理</h3>' +
+        '<p class="text-sm text-slate-400 mb-4" style="margin-bottom:12px">勾选的量表将出现在用户端测评流程中；每份量表可单独编辑显示名称、调整风险阈值。</p>' +
+        AS_SCALE_DEFS.map(scaleRow).join("") +
+        '<div class="as-divider">自定义量表</div>' +
+        '<div style="display:flex;gap:8px;margin-bottom:10px">' +
+          '<button class="btn btn-ghost" id="cs-upload">' + icon("i-upload", 16) + ' 上传</button>' +
+          '<button class="btn btn-primary" id="cs-add">' + icon("i-plus", 16) + ' 添加</button>' +
+        '</div>' +
+        customItems +
+      '</div>' +
+      '<div class="card p-6" style="margin-top:16px">' +
+        '<h3 class="sec-title">' + icon("i-eye", 20) + '行为数据采集</h3>' +
+        '<p class="text-sm text-slate-400 mb-4" style="margin-bottom:12px">鼠标轨迹与摄像头均在答题过程中自动完成，用户无需额外操作。</p>' +
+        captureRow("as-mouse", "i-mouse", "鼠标轨迹采集", "记录答题过程中的鼠标移动与点击（用于行为动力学分析）", assessCfg.mouse) +
+        captureRow("as-cam", "i-cam", "摄像头采集", "答题过程中静默录制面部视频（权限在知情同意后一次性确认）", assessCfg.cam) +
+      '</div>';
+
+    box.querySelectorAll("input[data-scale]").forEach(function (chk) {
+      chk.addEventListener("change", function () {
+        assessCfg.enabled[chk.getAttribute("data-scale")] = chk.checked;
+        renderAssessSettings();
+      });
+    });
+    box.querySelectorAll("[data-thr-scale]").forEach(function (btn) {
+      btn.addEventListener("click", function () { openThrModal(btn.getAttribute("data-thr-scale")); });
+    });
+    box.querySelectorAll("[data-edit-scale]").forEach(function (btn) {
+      btn.addEventListener("click", function () { openEditModal(btn.getAttribute("data-edit-scale")); });
+    });
+    var mouseTgl = document.getElementById("as-mouse");
+    if (mouseTgl) mouseTgl.addEventListener("change", function () { assessCfg.mouse = mouseTgl.checked; });
+    var camTgl = document.getElementById("as-cam");
+    if (camTgl) camTgl.addEventListener("change", function () { assessCfg.cam = camTgl.checked; });
+    box.querySelectorAll("[data-del-custom]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var id = btn.getAttribute("data-del-custom");
+        assessCfg.custom = assessCfg.custom.filter(function (s) { return s.id !== id; });
+        saveAssessCfg();
+        renderAssessSettings();
+      });
+    });
+    box.querySelectorAll("[data-edit-custom]").forEach(function (btn) {
+      btn.addEventListener("click", function () { openCustomModal(btn.getAttribute("data-edit-custom")); });
+    });
+    var uploadBtn = document.getElementById("cs-upload");
+    if (uploadBtn) uploadBtn.addEventListener("click", function () { openCustomModal(null); });
+    var addBtn = document.getElementById("cs-add");
+    if (addBtn) addBtn.addEventListener("click", function () { openCustomModal(null); });
+  }
+  document.getElementById("btn-as-save").addEventListener("click", function () {
+    saveAssessCfg();
+    var tip = document.getElementById("as-save-tip");
+    tip.textContent = "测评设置已保存";
+    tip.style.display = "inline";
+    setTimeout(function () { tip.style.display = "none"; }, 2000);
+  });
+  renderAssessSettings();
 
   /* ============ 最近活动数据 ============ */
   var dashData = [
@@ -710,17 +1519,18 @@
     var html = '<tr>' +
       '<td>' + r.id + '</td><td>' + r.sid + '</td><td>' + r.time + '</td>' +
       scaleMeta.map(function (m) {
-        var hasData = (m.key === 'nssi' || m.key === 'cssrs')
+        var hasData = (m.key === "nssi" || m.key === "cssrs" || m.key === "pss10" || m.key === "sias6" || m.key === "aslec")
           ? (((r[m.key] || []).length || 0) > 0)
-          : true;
+          : (m.key === "psqi" ? (r.psqi !== null && r.psqi !== undefined) : true);
         var score = hasData ? (m.score(r) ?? 0) : '—';
-        var risk = m.risk(r);
+        var risk = hasData ? m.risk(r) : '未采集';
         return '<td style="white-space:nowrap"><span class="scale-score">' + score + '</span>' +
-          '<span class="badge ' + riskClass[risk] + '" style="margin-left:5px;font-size:10px;padding:1px 5px">' + risk + '</span></td>';
+          '<span class="badge ' + (riskClass[risk] || "b-blue") + '" style="margin-left:5px;font-size:10px;padding:1px 5px">' + risk + '</span></td>';
       }).join('') +
       '<td><span class="badge ' + riskClass[r.risk] + '">' + r.risk + '</span></td>' +
       '<td><span class="badge ' + statusClass[r.st] + '">' + statusText[r.st] + '</span></td>' +
-      '<td><button class="detail-btn" onclick="openDetail(&quot;' + r.id + '&quot;)">' + icon("i-eye", 14) + ' 查看明细</button></td></tr>';
+      '<td style="white-space:nowrap"><button class="detail-btn" onclick="openDetail(&quot;' + r.id + '&quot;)">' + icon("i-eye", 14) + ' 查看明细</button> ' +
+      '<button class="detail-btn" onclick="openReportModal(&quot;' + r.id + '&quot;)">' + icon("i-file-check", 14) + ' 导出报告</button></td></tr>';
     return html;
   }
 
@@ -1242,14 +2052,14 @@ suppDetailHtml(r) +
   /* ---- 数据管理：各量表列定义（分值 + 独立风险等级，与 source records.ts 一致） ---- */
   var RISK_ORDER = { "低风险": 0, "轻度风险": 1, "中度风险": 2, "高风险": 3 };
   var scaleMeta = [
-    { key: "phq9",  label: "PHQ-9",  score: function (r) { return r.p ?? 0; },        risk: function (r) { return depRiskOf(r.p ?? 0); } },
-    { key: "gad7",  label: "GAD-7",  score: function (r) { return r.g ?? 0; },        risk: function (r) { return anxRiskOf(r.g ?? 0); } },
+    { key: "phq9",  label: "PHQ-9",  score: function (r) { return r.p ?? 0; },        risk: function (r) { return depRiskOf(r.p ?? 0, thrOf("phq9")); } },
+    { key: "gad7",  label: "GAD-7",  score: function (r) { return r.g ?? 0; },        risk: function (r) { return anxRiskOf(r.g ?? 0, thrOf("gad7")); } },
     { key: "cssrs", label: "C-SSRS", score: function (r) { return r.cssrsPositive ?? 0; }, risk: function (r) { return cssrsRiskOf(r.cssrsPositive ?? 0); } },
     { key: "nssi",  label: "NSSI",   score: function (r) { return (r.nssi || [])[0] ?? 0; }, risk: function (r) { return nssiRiskOf(r.nssi || [], r.phq9); } },
-    { key: "pss10", label: "PSS-10", score: function (r) { return r.pss10Score ?? 0; }, risk: function (r) { return pss10RiskOf(r.pss10Score ?? 0); } },
-    { key: "psqi",  label: "PSQI",   score: function (r) { return r.psqiScore ?? 0; }, risk: function (r) { return psqiRiskOf(r.psqiScore ?? 0); } },
-    { key: "sias6", label: "SIAS-6", score: function (r) { return r.sias6Score ?? 0; },risk: function (r) { return sias6RiskOf(r.sias6Score ?? 0); } },
-    { key: "aslec", label: "ASLEC",  score: function (r) { return r.aslecScore ?? 0; },risk: function (r) { return aslecRiskOf(r.aslecScore ?? 0); } }
+    { key: "pss10", label: "PSS-10", score: function (r) { return r.pss10Score ?? 0; }, risk: function (r) { return pss10RiskOf(r.pss10Score ?? 0, thrOf("pss10")); } },
+    { key: "psqi",  label: "PSQI",   score: function (r) { return r.psqiScore ?? 0; }, risk: function (r) { return psqiRiskOf(r.psqiScore ?? 0, thrOf("psqi")); } },
+    { key: "sias6", label: "SIAS-6", score: function (r) { return r.sias6Score ?? 0; },risk: function (r) { return sias6RiskOf(r.sias6Score ?? 0, thrOf("sias6")); } },
+    { key: "aslec", label: "ASLEC",  score: function (r) { return r.aslecScore ?? 0; },risk: function (r) { return aslecRiskOf(r.aslecScore ?? 0, thrOf("aslec")); } }
   ];
   var dataSortKey = "time", dataSortDir = "desc", dataScaleFilter = {};
   var SORT_KEYS = ["id", "studentId", "time", "phq9", "gad7", "cssrs", "nssi", "pss10", "psqi", "sias6", "aslec", "risk", "status"];
@@ -1346,24 +2156,363 @@ suppDetailHtml(r) +
   renderScaleFilters();
   renderData();
 
-  document.getElementById("btn-export").addEventListener("click", function () {
-    var headers = ["ID", "学号", "时间"];
-    scaleMeta.forEach(function (m) { headers.push(m.label + "分值", m.label + "风险"); });
-    headers.push("整体风险", "状态");
-    var rows = dataRecords.map(function (r) {
-      var cells = [r.id, r.sid, r.time];
-      scaleMeta.forEach(function (m) { cells.push(m.score(r) ?? 0, m.risk(r)); });
-      cells.push(r.risk, statusText[r.st]);
-      return cells.join(",");
+  /* ============ 数据导出弹窗（需求 7：内容 / 格式 / 隐私化 / 视频） ============ */
+  function filteredRecords() {
+    var q = searchInput.value.trim();
+    var f = filterSelect.value;
+    return dataRecords.filter(function (r) {
+      var okSearch = !q || (r.sid || "").indexOf(q) >= 0 || (r.id || "").indexOf(q) >= 0;
+      var okRisk = f === "all" || r.risk === f;
+      var okScales = true;
+      for (var k in dataScaleFilter) {
+        if (!dataScaleFilter[k] || dataScaleFilter[k] === "all") continue;
+        var m = scaleMeta.filter(function (x) { return x.key === k; })[0];
+        if (m && m.risk(r) !== dataScaleFilter[k]) { okScales = false; break; }
+      }
+      return okSearch && okRisk && okScales;
     });
-    var csv = "\ufeff" + headers.join(",") + "\n" + rows.join("\n");
-    var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  }
+  function maskSid(sid) {
+    var s = String(sid || "");
+    if (s.length <= 4) return "****";
+    return s.slice(0, 2) + "****" + s.slice(-2);
+  }
+  function expDateStamp() { return new Date().toISOString().split("T")[0]; }
+  function downloadTextFile(text, filename, mime) {
+    var blob = new Blob([text], { type: mime || "text/plain;charset=utf-8" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "assessment_data_" + new Date().toISOString().split("T")[0] + ".csv";
+    a.download = filename;
     a.click();
-    URL.revokeObjectURL(a.href);
-  });
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function downloadBlobFile(blob, filename) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+  function csvCell(v) {
+    var s = String(v === null || v === undefined ? "" : v);
+    if (/[",\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+  var EXPORT_CONTENT_DEFS = [
+    { key: "basic", label: "基础信息与量表分值 / 风险等级" },
+    { key: "raw", label: "原始条目结果与数值选择（逐题）" },
+    { key: "traj", label: "鼠标轨迹（坐标序列）" },
+    { key: "video", label: "摄像头视频（WebM）" }
+  ];
+  function openExportModal() {
+    var list = filteredRecords();
+    document.getElementById("exp-scope").textContent = "导出范围：当前筛选结果（" + list.length + " 条）";
+    var optsBox = document.getElementById("exp-content-opts");
+    optsBox.innerHTML = EXPORT_CONTENT_DEFS.map(function (d, i) {
+      return '<label class="exp-opt' + (i < 2 ? " on" : "") + '">' +
+        '<input type="checkbox" data-exp="' + d.key + '"' + (i < 2 ? " checked" : "") + '>' +
+        '<div class="t">' + d.label + '</div></label>';
+    }).join("");
+    syncExportState();
+    document.getElementById("export-mask").style.display = "flex";
+  }
+  function syncExportState() {
+    var checked = document.querySelectorAll("#exp-content-opts input:checked").length;
+    var any = checked > 0;
+    document.getElementById("exp-confirm").disabled = !any;
+    document.getElementById("exp-confirm").style.opacity = any ? "1" : ".5";
+    var videoOn = document.querySelector('#exp-content-opts input[data-exp="video"]') &&
+      document.querySelector('#exp-content-opts input[data-exp="video"]').checked;
+    document.getElementById("exp-video-note").style.display = videoOn ? "block" : "none";
+    document.querySelectorAll("#exp-content-opts .exp-opt").forEach(function (l) {
+      l.classList.toggle("on", l.querySelector("input").checked);
+    });
+  }
+  function getExportOpts() {
+    var o = { basic: false, raw: false, traj: false, video: false };
+    document.querySelectorAll("#exp-content-opts input[data-exp]").forEach(function (chk) {
+      o[chk.getAttribute("data-exp")] = chk.checked;
+    });
+    o.privacy = document.getElementById("exp-privacy").checked;
+    o.format = (document.querySelector('input[name="exp-fmt"]:checked') || {}).value === "json" ? "json" : "csv";
+    return o;
+  }
+  function buildExportRows(opts) {
+    var headers = ["ID", "学号", "时间"];
+    if (opts.basic) {
+      headers.push("年龄", "性别", "学习层次", "年级", "专业");
+      scaleMeta.forEach(function (m) { headers.push(m.label + "分值", m.label + "风险"); });
+      headers.push("整体风险", "状态", "摄像头采集", "视频已录制");
+    }
+    if (opts.raw) {
+      ["phq9", "gad7", "cssrs", "nssi", "pss10", "sias6", "aslec"].forEach(function (k) {
+        var def = { phq9: 9, gad7: 7, cssrs: 4, nssi: 2, pss10: 10, sias6: 6, aslec: 27 }[k];
+        for (var i = 1; i <= def; i++) headers.push(k.toUpperCase() + "_" + i);
+      });
+      ["上床时间", "入睡时长", "起床时间", "睡眠时长", "睡眠质量", "药物使用", "白天困倦", "精力不足"].forEach(function (lb) { headers.push("PSQI_" + lb); });
+      for (var j = 1; j <= 10; j++) headers.push("PSQI_障碍" + j);
+    }
+    if (opts.traj) headers.push("轨迹点数", "鼠标轨迹(x,y,t,k)");
+    var rows = filteredRecords().map(function (r) {
+      var cells = [r.id, opts.privacy ? maskSid(r.sid) : r.sid, r.time];
+      if (opts.basic) {
+        cells.push(opts.privacy ? "" : (r.age || ""), r.gender === "male" ? "男" : r.gender === "female" ? "女" : "其他",
+          opts.privacy ? "" : (r.edu || ""), opts.privacy ? "" : (r.grade || ""), opts.privacy ? "" : (r.major || ""));
+        scaleMeta.forEach(function (m) {
+          var hasData = (["nssi", "cssrs", "pss10", "sias6", "aslec", "phq9", "gad7"].indexOf(m.key) >= 0)
+            ? (((r[m.key] || []).length || 0) > 0)
+            : (m.key === "psqi" ? (r.psqi !== null && r.psqi !== undefined) : true);
+          cells.push(hasData ? (m.score(r) ?? 0) : "", hasData ? m.risk(r) : "");
+        });
+        cells.push(r.risk, statusText[r.st], r.cam === "degraded" ? "降级" : "正常", r.camVideo ? "是" : "否");
+      }
+      if (opts.raw) {
+        ["phq9", "gad7", "cssrs", "nssi", "pss10", "sias6", "aslec"].forEach(function (k) {
+          var arr = r[k] || [];
+          var def = { phq9: 9, gad7: 7, cssrs: 4, nssi: 2, pss10: 10, sias6: 6, aslec: 27 }[k];
+          for (var i = 0; i < def; i++) cells.push(arr.length > 0 ? (arr[i] === undefined ? "" : arr[i]) : "");
+        });
+        var p = r.psqi;
+        if (p) cells.push(p.bed, p.latency, p.wake, p.hours, p.quality, p.meds, p.day, p.energy);
+        else for (var q = 0; q < 8; q++) cells.push("");
+        var ds = p ? p.d : [];
+        for (var d = 0; d < 10; d++) cells.push(ds[d] === undefined ? "" : ds[d]);
+      }
+      if (opts.traj) {
+        var traj = r.traj || [];
+        cells.push(traj.length, JSON.stringify(traj));
+      }
+      return cells;
+    });
+    return { headers: headers, rows: rows };
+  }
+  function buildExportJson(opts) {
+    return filteredRecords().map(function (r) {
+      var o = { id: r.id, sid: opts.privacy ? maskSid(r.sid) : r.sid, time: r.time };
+      if (opts.basic) {
+        o.basic = {
+          age: opts.privacy ? null : (r.age || null),
+          gender: r.gender || null,
+          educationLevel: opts.privacy ? null : (r.edu || null),
+          grade: opts.privacy ? null : (r.grade || null),
+          major: opts.privacy ? null : (r.major || null),
+          overallRisk: r.risk,
+          status: r.st,
+          cameraMode: r.cam || "unknown",
+          hasVideo: !!r.camVideo,
+          scales: scaleMeta.map(function (m) { return { key: m.key, score: m.score(r) ?? 0, risk: m.risk(r) }; })
+        };
+      }
+      if (opts.raw) {
+        o.raw = {
+          phq9: r.phq9 || [], gad7: r.gad7 || [], cssrs: r.cssrs || [], nssi: r.nssi || [],
+          pss10: r.pss10 || [], sias6: r.sias6 || [], aslec: r.aslec || [],
+          psqi: r.psqi || null
+        };
+      }
+      if (opts.traj) o.trajectory = r.traj || [];
+      return o;
+    });
+  }
+  function handleExportConfirm() {
+    var opts = getExportOpts();
+    if (!opts.basic && !opts.raw && !opts.traj && !opts.video) return;
+    var prefix = opts.privacy ? "assessment_data_privacy_" : "assessment_data_";
+    if (opts.basic || opts.raw || opts.traj) {
+      if (opts.format === "csv") {
+        var built = buildExportRows(opts);
+        var csv = "\ufeff" + [built.headers.map(csvCell).join(",")].concat(
+          built.rows.map(function (row) { return row.map(csvCell).join(","); })
+        ).join("\n");
+        downloadTextFile(csv, prefix + expDateStamp() + ".csv", "text/csv;charset=utf-8");
+      } else {
+        downloadTextFile(JSON.stringify(buildExportJson(opts), null, 2), prefix + expDateStamp() + ".json", "application/json;charset=utf-8");
+      }
+    }
+    if (opts.video) {
+      var withVideo = filteredRecords().filter(function (r) { return r.camVideo && videoBlobs[r.id]; });
+      if (withVideo.length === 0) {
+        alert("所选记录中没有已录制的视频（视频仅在本机完成过摄像头授权的测评中生成）。");
+      } else {
+        withVideo.forEach(function (r, i) {
+          setTimeout(function () { downloadBlobFile(videoBlobs[r.id], "camera_" + r.id + ".webm"); }, i * 300);
+        });
+      }
+    }
+    document.getElementById("export-mask").style.display = "none";
+  }
+  document.getElementById("btn-export").addEventListener("click", openExportModal);
+  document.getElementById("exp-cancel").addEventListener("click", function () { document.getElementById("export-mask").style.display = "none"; });
+  document.getElementById("exp-close").addEventListener("click", function () { document.getElementById("export-mask").style.display = "none"; });
+  document.getElementById("exp-confirm").addEventListener("click", handleExportConfirm);
+  document.getElementById("exp-content-opts").addEventListener("change", syncExportState);
+
+  /* ============ 行级报告导出（需求 9：隐私化 / 未隐私化） ============ */
+  var reportTarget = null;
+  function openReportModal(id) {
+    var r = null;
+    for (var i = 0; i < dataRecords.length; i++) if (dataRecords[i].id === id) { r = dataRecords[i]; break; }
+    if (!r) return;
+    reportTarget = r;
+    document.getElementById("rep-target").textContent = "记录：" + r.id + " · " + r.time + " · " + r.risk;
+    document.querySelector('#rep-privacy-seg input[value="on"]').checked = true;
+    document.getElementById("report-mask").style.display = "flex";
+  }
+  window.openReportModal = openReportModal;
+  function reportEsc(s) {
+    return String(s === null || s === undefined ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function reportStyle() {
+    return '<style>' +
+      '* { box-sizing: border-box; margin: 0; padding: 0; }' +
+      'body { font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; color: #3A362F; background: #FBFAF9; padding: 32px; line-height: 1.6; }' +
+      '.wrap { max-width: 860px; margin: 0 auto; }' +
+      '.head { border-bottom: 3px solid #E05A3C; padding-bottom: 16px; margin-bottom: 20px; }' +
+      '.head h1 { font-size: 22px; margin-bottom: 10px; }' +
+      '.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12.5px; color: #6B665F; }' +
+      '.meta b { color: #3A362F; }' +
+      '.badge { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11.5px; border: 1px solid; }' +
+      '.sec { background: #fff; border: 1px solid #E6E3DE; border-radius: 10px; padding: 18px 20px; margin-bottom: 16px; page-break-inside: avoid; }' +
+      '.sec h2 { font-size: 15px; padding-bottom: 10px; margin-bottom: 12px; border-bottom: 1px solid #F1EFEC; color: #3A362F; }' +
+      '.sec .sub { font-size: 12px; color: #86817A; font-weight: 400; margin-left: 8px; }' +
+      'table { width: 100%; border-collapse: collapse; font-size: 12.5px; }' +
+      'th { text-align: left; padding: 7px 10px; color: #6B665F; border-bottom: 1px solid #E6E3DE; font-weight: 500; background: #FBFAF9; }' +
+      'td { padding: 7px 10px; border-bottom: 1px solid #F1EFEC; vertical-align: top; }' +
+      '.kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }' +
+      '.kv .k { font-size: 11px; color: #86817A; }' +
+      '.kv .v { font-size: 13.5px; font-weight: 500; color: #3A362F; margin-top: 2px; }' +
+      '.opt { display: inline-block; border: 1px solid #E6E3DE; border-radius: 6px; padding: 2px 8px; font-size: 11.5px; color: #86817A; margin: 2px 3px 2px 0; }' +
+      '.opt.on { background: rgba(224,90,60,.10); border-color: rgba(224,90,60,.45); color: #C74A2F; font-weight: 500; }' +
+      '.q { margin-bottom: 10px; }' +
+      '.q .qt { font-size: 12.5px; color: #55504A; margin-bottom: 4px; }' +
+      '.foot { font-size: 11.5px; color: #86817A; border-top: 1px solid #E6E3DE; padding-top: 12px; margin-top: 8px; line-height: 1.8; }' +
+      '@media print { body { background: #fff; padding: 12px; } .sec { border: 1px solid #ddd; } }' +
+      '</style>';
+  }
+  function reportBadge(risk) {
+    var colors = { "高风险": "#d54941", "中度风险": "#ea580c", "轻度风险": "#ca8a04", "低风险": "#16a34a" };
+    var c = colors[risk] || "#86817A";
+    return '<span class="badge" style="color:' + c + ';border-color:' + c + '">' + reportEsc(risk) + '</span>';
+  }
+  function reportItemsTable(qs, answers, opts) {
+    var rows = (qs || []).map(function (q, i) {
+      var a = (answers || [])[i];
+      var chips = (opts || []).map(function (o, oi) {
+        return '<span class="opt' + (a === oi ? " on" : "") + '">' + reportEsc(o) + (a === oi ? " ✓" : "") + '</span>';
+      }).join("");
+      return '<tr><td style="width:26px;color:#86817A">' + (i + 1) + '</td><td><div class="q"><div class="qt">' + reportEsc(q) + '</div>' + chips + '</div></td></tr>';
+    }).join("");
+    return '<table><tbody>' + rows + '</tbody></table>';
+  }
+  function buildRecordReportHtml(r, privacy) {
+    var now = new Date();
+    var pad2 = function (n) { return (n < 10 ? "0" : "") + n; };
+    var genTime = now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate()) + " " + pad2(now.getHours()) + ":" + pad2(now.getMinutes());
+    var kv = function (k, v) { return '<div><div class="k">' + k + '</div><div class="v">' + (v === "" || v === null || v === undefined ? "—" : reportEsc(v)) + '</div></div>'; };
+    var basicKv =
+      kv("记录编号", r.id) + kv("学号", privacy ? maskSid(r.sid) : r.sid) +
+      kv("测评时间", r.time) + kv("性别", r.gender === "male" ? "男" : r.gender === "female" ? "女" : "其他") +
+      (privacy ? "" : kv("年龄", r.age || "") + kv("学习层次", r.edu || "") + kv("年级", r.grade || "") + kv("专业", r.major || ""));
+    var scoreTable = '<table><thead><tr><th>量表</th><th>分值</th><th>风险等级</th></tr></thead><tbody>' +
+      scaleMeta.map(function (m) {
+        var hasData = (["nssi", "cssrs", "pss10", "sias6", "aslec", "phq9", "gad7"].indexOf(m.key) >= 0)
+          ? (((r[m.key] || []).length || 0) > 0)
+          : (m.key === "psqi" ? (r.psqi !== null && r.psqi !== undefined) : true);
+        return '<tr><td>' + m.label + '</td><td>' + (hasData ? (m.score(r) ?? 0) : "未采集") + '</td><td>' + (hasData ? reportBadge(m.risk(r)) : "—") + '</td></tr>';
+      }).join("") +
+      '<tr><td><b>整体风险</b></td><td>—</td><td>' + reportBadge(r.risk) + '</td></tr></tbody></table>';
+    var psqiBlock = function () {
+      if (!r.psqi) return '<p style="font-size:12.5px;color:#86817A">该记录未采集 PSQI 数据（量表未启用或旧版本记录）。</p>';
+      var p = r.psqi;
+      var numRow = function (k, v, u) {
+        return '<tr><td>' + k + '</td><td>' + (v === -1 || v === undefined ? "未填写" : v + (u || "")) + '</td></tr>';
+      };
+      var html = '<table><tbody>' +
+        numRow("通常上床时间", p.bed, " 点") + numRow("入睡时长", p.latency, " 分钟") +
+        numRow("通常起床时间", p.wake, " 点") + numRow("实际睡眠时长", p.hours, " 小时") +
+        '</tbody></table>' +
+        '<div style="margin-top:12px">' + reportItemsTable(psqiDisturbanceItems, p.d, psqiFreqOpts) + '</div>' +
+        '<table style="margin-top:8px"><tbody>' +
+        numRow("总体睡眠质量", (psqiQualityOpts || [])[p.quality] || "未填写") +
+        numRow("催眠药物使用", (psqiFreqOpts || [])[p.meds] || "未填写") +
+        numRow("白天困倦频率", (psqiFreqOpts || [])[p.day] || "未填写") +
+        numRow("精力不足频率", (psqiFreqOpts || [])[p.energy] || "未填写") +
+        '</tbody></table>';
+      return html;
+    };
+    var nssiBlock = function () {
+      var n = r.nssi || [];
+      if (n.length === 0) return '<p style="font-size:12.5px;color:#86817A">未采集 NSSI 数据。</p>';
+      return reportItemsTable(nssiQ, n, nssiHasOpts) +
+        (n[0] === 1 ? '<div style="margin-top:10px"><b style="font-size:12.5px">自伤频率：</b>' + reportEsc((nssiFreqOpts || [])[n[1]] || "未填写") + '</div>' : '');
+    };
+    var behaviorBlock = function () {
+      var m = r.mouseMetrics;
+      if (!m) return '<p style="font-size:12.5px;color:#86817A">该记录无鼠标行为指标。</p>';
+      var rows = [
+        ["总时长", (m.duration / 1000).toFixed(1) + " s"], ["采样点数", m.points], ["点击数", m.clicks],
+        ["总位移", Math.round(m.distance) + " px"], ["平均速度", m.avgSpeed.toFixed(4) + " px/ms"],
+        ["速度变异系数", m.speedCV.toFixed(3)], ["峰值速度", m.maxSpeed.toFixed(4) + " px/ms"],
+        ["停顿次数", m.pauseCount], ["停顿占比", (m.pauseRatio * 100).toFixed(1) + " %"],
+        ["启动潜伏", m.initLatency + " ms"], ["方向反转(横/纵)", m.xFlips + " / " + m.yFlips],
+        ["弯曲度", m.curvature.toFixed(2)], ["抖动分", m.tremorScore]
+      ].map(function (x) { return '<tr><td style="width:160px">' + x[0] + '</td><td>' + x[1] + '</td></tr>'; }).join("");
+      var sigs = r.behaviorSignals || behaviorSignalsOf(m);
+      var sigHtml = sigs.length === 0
+        ? "未见明显异常信号。"
+        : sigs.map(function (s) { return '<span class="opt on">' + reportEsc(BEHAVIOR_SIGNAL_LABELS[s] || s) + '</span>'; }).join("");
+      return '<table><tbody>' + rows + '</tbody></table>' +
+        '<div style="margin-top:12px"><b style="font-size:12.5px">行为信号：</b>' + sigHtml + '</div>';
+    };
+    var cameraBlock = function () {
+      var mode = r.cam === "degraded" ? "降级（未采集）" : "正常";
+      var video = r.camVideo ? "已录制（可在数据导出中下载 .webm）" : "无视频文件";
+      return '<table><tbody><tr><td style="width:160px">采集模式</td><td>' + mode + '</td></tr>' +
+        '<tr><td>视频文件</td><td>' + video + '</td></tr></tbody></table>';
+    };
+    var customBlocks = (r.customScales || []).map(function (cs) {
+      return repSection("自定义量表 · " + cs.name, cs.items.length + " 条", reportItemsTable(cs.items, cs.answers, cs.options));
+    }).join("");
+    function repSection(title, sub, body) {
+      return '<div class="sec"><h2>' + reportEsc(title) + '<span class="sub">' + reportEsc(sub) + '</span></h2>' + body + '</div>';
+    }
+    var body =
+      repSection("基本信息", privacy ? "隐私化版本：学号已脱敏，年龄/专业等个人信息已隐去" : "未隐私化版本：包含完整个人信息", '<div class="kv">' + basicKv + '</div>') +
+      repSection("量表得分与风险等级", "", scoreTable) +
+      repSection("PHQ-9 抑郁症筛查量表", "总分 " + (r.p ?? 0) + " / 27 · " + depRiskOf(r.p ?? 0, thrOf("phq9")), reportItemsTable(phq9Q, r.phq9, riskOptions)) +
+      repSection("GAD-7 广泛性焦虑量表", "总分 " + (r.g ?? 0) + " / 21 · " + anxRiskOf(r.g ?? 0, thrOf("gad7")), reportItemsTable(gad7Q, r.gad7, riskOptions)) +
+      repSection("C-SSRS 自杀严重度评定量表", "阳性条目 " + (r.cssrsPositive || 0) + " / 4", (r.cssrs || []).length ? reportItemsTable(cssrsQ, r.cssrs, cssrsOpts) : "未采集") +
+      repSection("NSSI 非自杀性自伤筛查", (r.nssi || [])[0] === 1 ? "自伤行为阳性" : "无自伤行为", nssiBlock()) +
+      repSection("PSS-10 感知压力量表", "总分 " + (r.pss10Score ?? 0) + " / 40", (r.pss10 || []).length ? reportItemsTable(pss10Q, r.pss10, pss10Opts) : "未采集") +
+      repSection("PSQI 匹兹堡睡眠质量指数", r.psqi ? ("总分 " + (r.psqiScore ?? 0) + " / 21 · " + psqiLevelOf(r.psqiScore ?? 0)) : "未采集", psqiBlock()) +
+      repSection("SIAS-6 社交焦虑简化筛查", "总分 " + (r.sias6Score ?? 0) + " / 24", (r.sias6 || []).length ? reportItemsTable(sias6Q, r.sias6, sias6Opts) : "未采集") +
+      repSection("ASLEC 青少年生活事件量表", "发生 " + (r.aslecCount ?? 0) + " 件 · 影响总分 " + (r.aslecScore ?? 0), (r.aslec || []).length ? reportItemsTable(aslecItems, r.aslec, aslecImpactOpts) : "未采集") +
+      customBlocks +
+      repSection("鼠标行为数据", "行为动力学特征（启发式规则 · 非诊断）", behaviorBlock()) +
+      repSection("摄像头采集", "", cameraBlock());
+    var foot = '<div class="foot">本报告由迹心心理测评服务平台自动生成。量表结果为筛查参考而非临床诊断；行为指标为启发式规则的探索性解读。' +
+      (privacy ? "本报告为隐私化版本，已脱敏学号、年龄与专业等个人信息。" : "本报告为未隐私化版本，包含学号等个人信息，请妥善保管。") +
+      '请结合专业访谈与原始记录综合判断，重要结论需专业人员复核。生成时间：' + genTime + '</div>';
+    return '<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><title>测评报告_' + reportEsc(r.id) + '</title>' + reportStyle() + '</head><body><div class="wrap">' +
+      '<div class="head"><h1>测评记录报告</h1><div class="meta">' +
+      '<span>记录编号：<b>' + reportEsc(r.id) + '</b></span><span>测评时间：<b>' + reportEsc(r.time) + '</b></span>' +
+      '<span>整体风险：' + reportBadge(r.risk) + '</span>' +
+      '<span>报告形式：<b>' + (privacy ? "隐私化（已脱敏学号与个人信息）" : "未隐私化（含完整信息）") + '</b></span>' +
+      '</div></div>' + body + foot + '</div></body></html>';
+  }
+  function handleReportConfirm() {
+    if (!reportTarget) return;
+    var privacy = !(document.querySelector('input[name="rep-priv"]:checked') || {}).value ||
+      (document.querySelector('input[name="rep-priv"]:checked') || {}).value === "on";
+    var html = buildRecordReportHtml(reportTarget, privacy);
+    downloadTextFile(html, "测评报告_" + reportTarget.id + "_" + expDateStamp() + ".html", "text/html;charset=utf-8");
+    document.getElementById("report-mask").style.display = "none";
+  }
+  document.getElementById("rep-cancel").addEventListener("click", function () { document.getElementById("report-mask").style.display = "none"; });
+  document.getElementById("rep-close").addEventListener("click", function () { document.getElementById("report-mask").style.display = "none"; });
+  document.getElementById("rep-confirm").addEventListener("click", handleReportConfirm);
 
   /* ============ 数据分析页（探索性分析，与正式版 analysis 模块一致） ============ */
   var ANL_RISK_ORDER = ["低风险", "轻度风险", "中度风险", "高风险"];
@@ -1633,18 +2782,261 @@ suppDetailHtml(r) +
     }).join("");
     return '<svg width="100%" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" role="img">' + rowSvg + '</svg>';
   }
+  /* ---- 分析对象选择与分区状态（需求 8：目标性分析 + 条理分区） ---- */
+  var anlSelIds = null; // null = 全部记录；数组 = 勾选的记录 id
+  var anlShowTargets = false;
+  var anlSection = "overview";
+  var ANL_SECTION_DEFS = [
+    { key: "overview", icon: "i-chart", labelKey: "ana_section_overview" },
+    { key: "scales", icon: "i-doc", labelKey: "ana_section_scales" },
+    { key: "behavior", icon: "i-mouse", labelKey: "ana_section_behavior" },
+    { key: "corr", icon: "i-activity", labelKey: "ana_section_corr" },
+    { key: "video", icon: "i-video", labelKey: "ana_section_video" }
+  ];
+  var ANL_SCALE_INFO = {
+    phq9: { full: "PHQ-9 抑郁症筛查量表", max: 27 }, gad7: { full: "GAD-7 广泛性焦虑量表", max: 21 },
+    cssrs: { full: "C-SSRS 自杀严重度评定量表", max: 4 }, nssi: { full: "NSSI 非自杀性自伤筛查", max: 1 },
+    pss10: { full: "PSS-10 感知压力量表", max: 40 }, psqi: { full: "PSQI 匹兹堡睡眠质量指数", max: 21 },
+    sias6: { full: "SIAS-6 社交焦虑简化筛查", max: 24 }, aslec: { full: "ASLEC 青少年生活事件量表", max: 135 }
+  };
+  function anlHasScaleData(key, r) {
+    if (["nssi", "cssrs", "pss10", "sias6", "aslec", "phq9", "gad7"].indexOf(key) >= 0) return ((r[key] || []).length || 0) > 0;
+    if (key === "psqi") return r.psqi !== null && r.psqi !== undefined;
+    return true;
+  }
+  function anlSelectedRecords() {
+    if (anlSelIds === null) return dataRecords || [];
+    return (dataRecords || []).filter(function (r) { return anlSelIds.indexOf(r.id) >= 0; });
+  }
+  function anlToggleTarget(id) {
+    var base = anlSelIds === null ? (dataRecords || []).map(function (r) { return r.id; }) : anlSelIds.slice();
+    var i = base.indexOf(id);
+    if (i >= 0) base.splice(i, 1); else base.push(id);
+    anlSelIds = base;
+    renderAnalysis();
+  }
+  function anlSelectAll() { anlSelIds = null; renderAnalysis(); }
+  function anlSelectHigh() { anlSelIds = (dataRecords || []).filter(function (r) { return r.risk === "高风险"; }).map(function (r) { return r.id; }); renderAnalysis(); }
+  function anlClearTargets() { anlSelIds = []; renderAnalysis(); }
+  function anlToggleList() { anlShowTargets = !anlShowTargets; renderAnalysis(); }
+  function anlSetSection(key) { anlSection = key; renderAnalysis(); }
+  // IIFE 内函数需挂到 window 供内联 onclick 调用
+  window.anlSelectAll = anlSelectAll;
+  window.anlSelectHigh = anlSelectHigh;
+  window.anlClearTargets = anlClearTargets;
+  window.anlToggleList = anlToggleList;
+  window.anlToggleTarget = anlToggleTarget;
+  window.anlSetSection = anlSetSection;
+  function anlScaleDist(records) {
+    return scaleMeta.map(function (m) {
+      var info = ANL_SCALE_INFO[m.key] || { full: m.label, max: 0 };
+      var recs = (records || []).filter(function (r) { return anlHasScaleData(m.key, r); });
+      var counts = ANL_RISK_ORDER.map(function (lv) { return recs.filter(function (r) { return m.risk(r) === lv; }).length; });
+      var scores = recs.map(function (r) { return m.score(r) ?? 0; });
+      return { key: m.key, label: m.label, full: info.full, max: info.max, n: recs.length, counts: counts, sum: anlSummarize(scores) };
+    });
+  }
+
+  /* ---- 批次分析报告（需求 8：HTML 导出 / 打印为 PDF） ---- */
+  function anlReportStyle() {
+    return reportStyle() + '<style>' +
+      '.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }' +
+      '.stat { background: #FBFAF9; border: 1px solid #E6E3DE; border-radius: 10px; padding: 12px 14px; }' +
+      '.stat .l { font-size: 12px; color: #86817A; } .stat .v { font-size: 22px; font-weight: 700; margin-top: 2px; color: #3A362F; } .stat .s { font-size: 11px; color: #B9B1A7; }' +
+      '.donut-wrap { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; justify-content: center; }' +
+      '.legend { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #6B6258; }' +
+      '.legend .lg { display: inline-flex; align-items: center; gap: 6px; } .legend .lg i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; } .legend .lg b { color: #3A362F; }' +
+      '.sb-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }' +
+      '.sb-label { width: 66px; font-size: 12px; color: #6B6258; text-align: right; flex-shrink: 0; font-weight: 600; }' +
+      '.sb-track { flex: 1; display: flex; height: 14px; border-radius: 4px; overflow: hidden; background: #F1EFEC; }' +
+      '.sb-track span { height: 100%; } .sb-num { width: 30px; font-size: 12px; color: #86817A; }' +
+      '.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }' +
+      '@media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }' +
+      'td.corr, th.corr { text-align: center; } .corr-sub { font-size: 10px; opacity: .85; font-weight: 400; }' +
+      '</style>';
+  }
+  function anlReportDonut(items, centerValue, centerLabel) {
+    var size = 180, th = 26, rr = (size - th) / 2, circ = 2 * Math.PI * rr;
+    var total = 0; items.forEach(function (it) { total += it.value; });
+    var acc = 0;
+    var segs = items.filter(function (it) { return it.value > 0 && total > 0; }).map(function (it) {
+      var frac = it.value / total;
+      var dash = Math.max(frac * circ - 2, 0.5);
+      var seg = '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + rr + '" fill="none" stroke="' + it.color + '" stroke-width="' + th + '" stroke-dasharray="' + dash + ' ' + (circ - dash) + '" stroke-dashoffset="' + (-acc * circ).toFixed(2) + '" transform="rotate(-90 ' + size / 2 + ' ' + size / 2 + ')"/>';
+      acc += frac;
+      return seg;
+    }).join("");
+    var legend = items.map(function (it) {
+      return '<span class="lg"><i style="background:' + it.color + '"></i>' + reportEsc(it.label) + ' <b>' + it.value + '</b></span>';
+    }).join("");
+    return '<div class="donut-wrap"><svg viewBox="0 0 ' + size + ' ' + size + '" style="width:180px;height:180px">' +
+      '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + rr + '" fill="none" stroke="#F1EFEC" stroke-width="' + th + '"/>' + segs +
+      '<text x="50%" y="47%" text-anchor="middle" font-size="26" font-weight="700" fill="#3A362F">' + centerValue + '</text>' +
+      '<text x="50%" y="62%" text-anchor="middle" font-size="11" fill="#86817A">' + reportEsc(centerLabel) + '</text></svg>' +
+      '<div class="legend">' + legend + '</div></div>';
+  }
+  function buildAnalysisReportHtml(records) {
+    var now = new Date();
+    var pad2 = function (n) { return (n < 10 ? "0" : "") + n; };
+    var genTime = now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate()) + " " + pad2(now.getHours()) + ":" + pad2(now.getMinutes());
+    var total = records.length;
+    var withTraj = records.filter(function (r) { return r.traj && r.traj.length > 0; }).length;
+    var withM = records.filter(function (r) { return r.mouseMetrics; }).length;
+    var highN = records.filter(function (r) { return r.risk === "高风险"; }).length;
+    var pct = function (x) { return total > 0 ? Math.round(x / total * 100) + "%" : "0%"; };
+    function sec(title, sub, bodyHtml) {
+      return '<div class="sec"><h2>' + reportEsc(title) + '<span class="sub">' + reportEsc(sub) + '</span></h2>' + bodyHtml + '</div>';
+    }
+    function stat(l, v, s) {
+      return '<div class="stat"><div class="l">' + reportEsc(l) + '</div><div class="v">' + v + '</div>' + (s ? '<div class="s">' + reportEsc(s) + '</div>' : '') + '</div>';
+    }
+    // 一、总览
+    var riskItems = ANL_RISK_ORDER.filter(function (lv) { return records.filter(function (r) { return r.risk === lv; }).length > 0; })
+      .map(function (lv) { return { label: lv, value: records.filter(function (r) { return r.risk === lv; }).length, color: ANL_RISK_COLORS[lv] }; });
+    var camMap = {};
+    records.forEach(function (r) { var m = r.cam || r.cameraMode || "unknown"; camMap[m] = (camMap[m] || 0) + 1; });
+    var camItems = Object.keys(camMap).map(function (m) { return { label: ANL_CAMERA_LABELS[m] || m, value: camMap[m], color: ANL_CAM_COLORS[m] || "#86817A" }; });
+    var overview = '<div class="stat-grid">' +
+      stat("测评记录总数", total) + stat("含鼠标轨迹", withTraj, pct(withTraj)) +
+      stat("含行为指标", withM, pct(withM)) + stat("高风险记录", highN) + '</div>' +
+      '<div class="two-col">' + anlReportDonut(riskItems, total, "记录总数") + anlReportDonut(camItems, total, "记录总数") + '</div>';
+    // 二、量表分布
+    var sd = anlScaleDist(records);
+    var maxTotal = Math.max.apply(null, sd.map(function (s) { return s.counts.reduce(function (a, b) { return a + b; }, 0); }).concat([1]));
+    var bars = sd.map(function (s) {
+      var tt = s.counts.reduce(function (a, b) { return a + b; }, 0);
+      var segs = s.counts.map(function (c, i) {
+        return c > 0 ? '<span style="flex:' + Math.max(c, maxTotal / 40) + ';background:' + ANL_RISK_COLORS[ANL_RISK_ORDER[i]] + '"></span>' : '';
+      }).join("");
+      return '<div class="sb-row"><span class="sb-label">' + reportEsc(s.label) + '</span><div class="sb-track">' + segs + '</div><span class="sb-num">' + tt + '</span></div>';
+    }).join("");
+    var legend = '<div class="legend" style="flex-direction:row;gap:14px;flex-wrap:wrap">' +
+      ANL_RISK_ORDER.map(function (lv) { return '<span class="lg"><i style="background:' + ANL_RISK_COLORS[lv] + '"></i>' + lv + '</span>'; }).join("") + '</div>';
+    var scaleTable = '<table style="margin-top:14px"><thead><tr><th>量表</th><th>满分</th><th>n</th><th>均值</th><th>中位数</th><th>标准差</th>' +
+      ANL_RISK_ORDER.map(function (lv) { return '<th>' + lv + '</th>'; }).join("") + '</tr></thead><tbody>' +
+      sd.map(function (s) {
+        var n = s.counts.reduce(function (a, b) { return a + b; }, 0);
+        return '<tr><td>' + reportEsc(s.full) + '</td><td>' + s.max + '</td><td>' + n + '</td>' +
+          '<td>' + (s.sum ? s.sum.mean.toFixed(1) : "—") + '</td><td>' + (s.sum ? s.sum.median.toFixed(1) : "—") + '</td><td>' + (s.sum ? s.sum.sd.toFixed(1) : "—") + '</td>' +
+          s.counts.map(function (c) { return '<td>' + c + '</td>'; }).join("") + '</tr>';
+      }).join("") + '</tbody></table>';
+    var scalesSec = bars + legend + scaleTable;
+    // 三、行为指标
+    var metricRows = ANL_METRIC_KEYS.map(function (key) {
+      var vals = records.filter(function (r) { return r.mouseMetrics; }).map(function (r) { return anlMetricsRow(r.mouseMetrics)[key]; })
+        .filter(function (v) { return v !== undefined && v !== null && !isNaN(v); });
+      return { label: ANL_METRIC_LABELS[key], sum: anlSummarize(vals) };
+    });
+    var metricTable = '<table><thead><tr><th>指标</th><th>n</th><th>均值</th><th>中位数</th><th>标准差</th><th>最小</th><th>最大</th></tr></thead><tbody>' +
+      metricRows.map(function (m) {
+        return '<tr><td>' + reportEsc(m.label) + '</td><td>' + (m.sum ? m.sum.n : 0) + '</td><td>' + (m.sum ? m.sum.mean.toFixed(2) : "—") + '</td>' +
+          '<td>' + (m.sum ? m.sum.median.toFixed(2) : "—") + '</td><td>' + (m.sum ? m.sum.sd.toFixed(2) : "—") + '</td>' +
+          '<td>' + (m.sum ? m.sum.min.toFixed(0) : "—") + '</td><td>' + (m.sum ? m.sum.max.toFixed(0) : "—") + '</td></tr>';
+      }).join("") + '</tbody></table>';
+    var signals = anlSignalRows(records);
+    var sigTable = signals.length === 0
+      ? '<p style="font-size:12.5px;color:#86817A;margin-top:14px">暂无命中行为信号的记录。</p>'
+      : '<table style="margin-top:14px"><thead><tr><th>行为信号</th><th>记录数</th>' +
+        ANL_RISK_ORDER.map(function (lv) { return '<th>' + lv + '</th>'; }).join("") + '<th>高风险占比</th></tr></thead><tbody>' +
+        signals.map(function (s) {
+          return '<tr><td>' + reportEsc(ANL_SIGNAL_LABELS[s.signal] || s.signal) + '</td><td>' + s.count + '</td><td>' + s.low + '</td><td>' + s.mild + '</td><td>' + s.moderate + '</td><td>' + s.high + '</td><td>' + s.highPct + '%</td></tr>';
+        }).join("") + '</tbody></table>';
+    // 四、关联探索
+    var corr = anlCorrMatrix(records);
+    var corrHead = ANL_SCALE_COLS.map(function (c) {
+      var lb = c.label.length > 6 ? c.label.slice(0, 6) + "…" : c.label;
+      return '<th class="corr">' + reportEsc(lb) + '</th>';
+    }).join("");
+    var corrBody = ANL_METRIC_KEYS.map(function (rk, ri) {
+      var tds = ANL_SCALE_COLS.map(function (c, ci) {
+        var cell = corr.cells[ri][ci];
+        if (cell.rho === null) return '<td class="corr" style="background:#F7F6F4;color:#B9B1A7">–</td>';
+        var tt = Math.min(Math.abs(cell.rho), 1);
+        var bg = cell.rho >= 0 ? "rgba(217,119,6," + (0.12 + tt * 0.6).toFixed(2) + ")" : "rgba(37,99,235," + (0.12 + tt * 0.6).toFixed(2) + ")";
+        var color = Math.abs(cell.rho) >= 0.55 ? "#fff" : "#55504A";
+        return '<td class="corr" style="background:' + bg + ';color:' + color + '">' + (cell.rho >= 0 ? "+" : "") + cell.rho.toFixed(2) +
+          '<div class="corr-sub">' + cell.effect + '·n=' + cell.n + '</div></td>';
+      }).join("");
+      return '<tr><td style="white-space:nowrap;font-weight:500">' + reportEsc(ANL_METRIC_LABELS[rk]) + '</td>' + tds + '</tr>';
+    }).join("");
+    var corrNote = '<p style="font-size:11.5px;color:#86817A;margin-top:10px">Spearman 秩相关（探索性）；橙红为正相关、蓝为负相关，格内标注效应强度与样本量 n。相关≠因果，不作显著性检验' +
+      (corr.maxN < 5 ? '；当前样本量不足 5 条，结果仅供直观参考' : '') + '。</p>';
+    var corrSec = '<table><thead><tr><th style="width:150px">轨迹指标</th>' + corrHead + '</tr></thead><tbody>' + corrBody + '</tbody></table>' + corrNote;
+    // 五、视频采集
+    var camera = anlCameraRows(records);
+    var camSec = '<table><thead><tr><th>采集状态</th><th>记录数</th><th>高风险数</th><th>高风险占比</th><th>平均 PHQ-9</th><th>平均 PSS-10</th></tr></thead><tbody>' +
+      camera.map(function (row) {
+        return '<tr><td>' + reportEsc(ANL_CAMERA_LABELS[row.mode] || row.mode) + '</td><td>' + row.count + '</td><td>' + row.high + '</td><td>' + row.highPct + '%</td><td>' + (row.avgPhq9 === null ? "–" : row.avgPhq9) + '</td><td>' + (row.avgPss10 === null ? "–" : row.avgPss10) + '</td></tr>';
+      }).join("") + '</tbody></table>' +
+      '<p style="font-size:11.5px;color:#86817A;margin-top:10px">视频行为信号（面部动作单元、表情贫乏度、注视等）的心理学依据详见调研文档；当前版本以采集状态为主，待帧级指标落库后可扩展关联分析。</p>';
+    var bodyHtml = sec("一、总览", "样本构成与采集概况", overview) +
+      sec("二、量表分布", "各量表独立风险等级构成与得分描述统计", scalesSec) +
+      sec("三、行为指标", "鼠标轨迹指标描述统计与行为信号交叉", metricTable + sigTable) +
+      sec("四、关联探索", "量表分数 × 鼠标轨迹指标相关矩阵", corrSec) +
+      sec("五、视频采集", "采集状态 × 量表分数概况", camSec);
+    var foot = '<div class="foot">本报告为探索性分析：样本量、个体差异与情境噪声均可能影响结果，不构成心理健康评估结论；相关关系不代表因果关系。请结合原始测评记录与量表结果综合判断，重要结论需专业人员复核。报告由迹心心理测评服务平台自动生成。生成时间：' + genTime + '</div>';
+    return '<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><title>数据分析报告_' + reportEsc(expDateStamp()) + '</title>' + anlReportStyle() + '</head><body><div class="wrap">' +
+      '<div class="head"><h1>数据分析报告（探索性）</h1><div class="meta">' +
+      '<span>样本量：<b>' + total + ' 条</b></span><span>含鼠标轨迹：<b>' + withTraj + '</b></span>' +
+      '<span>含行为指标：<b>' + withM + '</b></span><span>高风险记录：<b>' + highN + '</b></span>' +
+      '<span>生成时间：<b>' + genTime + '</b></span></div></div>' + bodyHtml + foot + '</div></body></html>';
+  }
+  function printReportHtml(html) {
+    var w = window.open("", "_blank");
+    if (!w) return;
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+    setTimeout(function () { try { w.print(); } catch (e) {} }, 400);
+  }
   function renderAnalysis() {
-    var records = dataRecords || [];
+    var all = dataRecords || [];
     var body = document.getElementById("anal-content");
     var note = document.getElementById("anal-note");
     if (!body) return;
-    if (records.length === 0) {
+    if (all.length === 0) {
       note.style.display = "block";
       note.innerHTML = '<div style="background:#FBFAF9;border:1px solid #E6E3DE;border-radius:10px;padding:40px 20px;text-align:center;color:#524E48">暂无测评记录。完成至少一份心理测评后，即可在此查看探索性分析。</div>';
       body.innerHTML = "";
       return;
     }
     note.style.display = "none";
+    var records = anlSelectedRecords();
+    var badgeOf = function (risk) {
+      var cls = { "高风险": "b-red", "中度风险": "b-orange", "轻度风险": "b-yellow", "低风险": "b-green" }[risk] || "b-green";
+      return '<span class="badge ' + cls + '">' + anlEsc(risk) + '</span>';
+    };
+    /* ---- 分析对象选择器（需求 8：目标性分析） ---- */
+    var tgtCard = '<div class="table-card">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+      '<div style="display:flex;align-items:center;gap:12px;color:#E05A3C">' + icon("i-target", 20) +
+      '<div><div style="font-weight:600;color:#3A362F;font-size:14.5px">' + t("ana_target") + '</div>' +
+      '<div style="font-size:12px;color:#86817A;margin-top:2px">' + tfmt("ana_selected", { n: records.length, total: all.length }) + ' · ' + t("ana_target_desc") + '</div></div></div>' +
+      '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+      '<button type="button" class="btn btn-ghost" style="padding:5px 12px;font-size:12px" onclick="anlSelectAll()">' + icon("i-check", 13) + ' ' + t("ana_select_all") + '</button>' +
+      '<button type="button" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;font-size:12px;font-family:inherit;border:1px solid rgba(213,73,65,.35);border-radius:8px;background:rgba(213,73,65,.08);color:#d54941;cursor:pointer;transition:background .15s" onclick="anlSelectHigh()">' + icon("i-alert", 13) + ' ' + t("ana_select_high") + '</button>' +
+      '<button type="button" style="padding:5px 4px;font-size:12px;border:none;background:transparent;color:#86817A;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:inherit" onclick="anlClearTargets()">' + t("ana_select_clear") + '</button>' +
+      '<button type="button" class="btn btn-ghost" style="padding:5px 12px;font-size:12px" onclick="anlToggleList()">' + t(anlShowTargets ? "btn_collapse_list" : "btn_expand_list") + ' ' + icon("i-chev-d", 13) + '</button>' +
+      '</div></div>' +
+      (anlShowTargets
+        ? '<div style="padding:14px 18px;border-top:1px solid #F1EFEC;max-height:260px;overflow-y:auto"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:6px">' +
+          all.map(function (r) {
+            var checked = anlSelIds === null || anlSelIds.indexOf(r.id) >= 0;
+            return '<label class="tgt-row' + (checked ? ' checked' : '') + '">' +
+              '<input type="checkbox"' + (checked ? ' checked' : '') + ' onchange="anlToggleTarget(&quot;' + r.id + '&quot;)" style="accent-color:#E05A3C">' +
+              '<span style="font-weight:500;color:#55504A">' + anlEsc(r.id) + '</span>' +
+              '<span style="font-size:11.5px;color:#86817A">' + anlEsc(r.sid) + ' · ' + anlEsc(r.time) + '</span>' +
+              '<span style="margin-left:auto">' + badgeOf(r.risk) + '</span></label>';
+          }).join("") + '</div></div>'
+        : '') +
+      '</div>';
+    if (records.length === 0) {
+      body.innerHTML = tgtCard +
+        '<div class="table-card" style="margin-top:16px;padding:44px 20px;text-align:center;color:#524E48">当前未勾选任何记录，请至少选择一条记录进行分析。' +
+        '<div style="margin-top:14px"><button type="button" class="btn btn-primary" onclick="anlSelectAll()">' + t("ana_select_all") + '</button></div></div>';
+      return;
+    }
     var total = records.length;
     var withTraj = records.filter(function (r) { return r.traj && r.traj.length > 0; }).length;
     var withM = records.filter(function (r) { return r.mouseMetrics; }).length;
@@ -1674,7 +3066,7 @@ suppDetailHtml(r) +
         '<div style="font-size:10px;color:#a5a5a5;font-weight:400">' + cell.effect + '·n=' + cell.n + '</div></div>';
     };
     var html = "";
-    // 样本概况
+    // 样本概况（总览分区）
     html += '<div class="stat-grid">' +
       '<div class="stat-card"><div class="stat-head"><span class="stat-label">测评记录总数</span></div><div class="stat-num">' + total + '</div></div>' +
       '<div class="stat-card"><div class="stat-head"><span class="stat-label">含鼠标轨迹</span></div><div class="stat-num">' + withTraj + '</div><div style="font-size:12px;color:#524E48">' + pct(withTraj) + '</div></div>' +
@@ -1691,7 +3083,7 @@ suppDetailHtml(r) +
     var camDistItems = Object.keys(camDistMap).map(function (m) { return { label: ANL_CAMERA_LABELS[m] || m, value: camDistMap[m], color: ANL_CAM_COLORS[m] || "#86817A" }; });
     html += '<div class="table-card" style="margin-top:16px">' +
       '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE"><h3 class="sec-title" style="margin:0">样本构成（分析图）</h3>' +
-      '<p style="font-size:12px;color:#524E48;margin-top:4px">风险等级与摄像头采集状态在全部记录中的占比分布。</p></div>' +
+      '<p style="font-size:12px;color:#524E48;margin-top:4px">风险等级与摄像头采集状态在所选记录中的占比分布。</p></div>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;padding:18px">' +
       '<div style="display:flex;flex-direction:column;align-items:center;gap:10px">' +
       anlDonut(riskDistItems, 170, 24, total, "记录总数") +
@@ -1700,8 +3092,38 @@ suppDetailHtml(r) +
       anlDonut(camDistItems, 170, 24, total, "记录总数") +
       anlLegend(camDistItems) + '</div>' +
       '</div></div>';
-    // 量表 x 轨迹相关矩阵
-    html += '<div class="table-card" style="margin-top:16px">' +
+    var overviewHtml = html;
+    // 各量表独立风险等级构成（量表分布分区）
+    var scaleDistRows = anlScaleDist(records);
+    var scalesHtml = '<div class="table-card">' +
+      '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE"><h3 class="sec-title" style="margin:0">各量表风险等级构成</h3>' +
+      '<p style="font-size:12px;color:#524E48;margin-top:4px">每个量表按各自切分点独立评级（低 / 轻度 / 中度 / 高），同一记录可同时出现在多个量表的高风险档。</p></div>' +
+      '<div style="padding:16px 18px;border-bottom:1px solid #F1EFEC">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px"><span style="font-size:12px;font-weight:500;color:#6B665F">分析图 · 各量表风险等级堆叠分布</span>' +
+      anlLegend(ANL_RISK_ORDER.map(function (r) { return { label: r, color: ANL_RISK_COLORS[r] }; })) + '</div>' +
+      anlStackedBars(scaleDistRows.map(function (s) { return { label: s.label, parts: s.counts, total: s.n }; }),
+        ANL_RISK_ORDER.map(function (r) { return { label: r, color: ANL_RISK_COLORS[r] }; })) + '</div>' +
+      '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E6E3DE">' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px;white-space:nowrap">量表</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px;white-space:nowrap">n</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px;white-space:nowrap">均值</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px;white-space:nowrap">中位数</th>' +
+      '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px;white-space:nowrap">标准差</th>' +
+      ANL_RISK_ORDER.map(function (r) { return '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px;white-space:nowrap">' + r + '</th>'; }).join("") +
+      '</tr></thead><tbody>' +
+      scaleDistRows.map(function (s) {
+        return '<tr style="border-bottom:1px solid #F1EFEC">' +
+          '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px;white-space:nowrap;font-weight:500">' + anlEsc(s.full) + '</td>' +
+          '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + s.n + '</td>' +
+          '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s.sum ? s.sum.mean.toFixed(1) : "–") + '</td>' +
+          '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s.sum ? s.sum.median.toFixed(1) : "–") + '</td>' +
+          '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s.sum ? s.sum.sd.toFixed(1) : "–") + '</td>' +
+          s.counts.map(function (c, i) {
+            return '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (c > 0 ? c + ' ' + badgeOf(ANL_RISK_ORDER[i]) : c) + '</td>';
+          }).join("") + '</tr>';
+      }).join("") + '</tbody></table></div></div>';
+    // 量表 x 轨迹相关矩阵（关联探索分区）
+    var corrHtml = '<div class="table-card">' +
       '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE">' +
       '<h3 class="sec-title" style="margin:0">量表分数 × 鼠标轨迹指标（Spearman 相关）</h3>' +
       '<p style="font-size:12px;color:#524E48;margin-top:4px">探索性相关，样本 n 显示在各格；方向为正号表示指标随分数同向变化。相关≠因果，不作显著性检验。' +
@@ -1748,7 +3170,8 @@ suppDetailHtml(r) +
             '<td style="padding:10px 14px">' + riskBadge("高风险", s.high) + '</td>' +
             '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + s.highPct + '%</td></tr>';
         }).join("") + '</tbody></table></div>';
-    html += '<div class="table-card" style="margin-top:16px">' +
+    // 行为信号 x 风险等级（行为指标分区 · 交叉表）
+    var behaviorSigHtml = '<div class="table-card" style="margin-top:16px">' +
       '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE">' +
       '<h3 class="sec-title" style="margin:0">行为信号 × 风险等级交叉</h3>' +
       '<p style="font-size:12px;color:#524E48;margin-top:4px">命中各行为信号（鼠标轨迹启发式规则）的记录在四档风险中的分布；同一记录可命中多个信号。</p></div>' + sigChart + sigRows + '</div>';
@@ -1786,7 +3209,8 @@ suppDetailHtml(r) +
             '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (row.avgPhq9 === null ? "–" : row.avgPhq9) + '</td>' +
             '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (row.avgPss10 === null ? "–" : row.avgPss10) + '</td></tr>';
         }).join("") + '</tbody></table></div>';
-    html += '<div class="table-card" style="margin-top:16px">' +
+    // 视频采集状态 x 量表/风险（视频采集分区）
+    var videoHtml = '<div class="table-card">' +
       '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE">' +
       '<h3 class="sec-title" style="margin:0">视频采集状态 × 量表分数</h3>' +
       '<p style="font-size:12px;color:#524E48;margin-top:4px">当前平台摄像头仅做可用性检测（normal / degraded），未存储视频帧；该交叉表展示不同采集状态下量表分数的概况，用于排查采集环境（如降级样本是否系统性地伴随特定作答模式）。</p></div>' +
@@ -1794,7 +3218,7 @@ suppDetailHtml(r) +
       camRows +
       '<div style="padding:12px 18px;border-top:1px solid #F1EFEC;background:#FBFAF9;font-size:12px;color:#524E48">' +
       '视频行为信号（面部动作单元、表情贫乏度、注视等）的采集建议与心理学依据详见《调研-摄像头信息心理学研究.md》，当前版本尚未落库帧级指标，待阶段化增强后此卡将扩展为帧级特征关联分析。</div></div>';
-    // 轨迹指标分布
+    // 轨迹指标分布（行为指标分区 · 描述统计）
     var distRowsHave = distRows.filter(function (m) { return m.sum; });
     var rangeRows = distRowsHave.map(function (m) {
       return { label: m.label, min: m.sum.min, max: m.sum.max, median: m.sum.median, mean: m.sum.mean, n: m.sum.n };
@@ -1819,10 +3243,10 @@ suppDetailHtml(r) +
         '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s ? s.min.toFixed(0) : "–") + '</td>' +
         '<td style="padding:10px 14px;color:#1F1D1A;font-size:13px">' + (s ? s.max.toFixed(0) : "–") + '</td></tr>';
     }).join("");
-    html += '<div class="table-card" style="margin-top:16px">' +
+    var behaviorDistHtml = '<div class="table-card">' +
       '<div style="padding:14px 18px;border-bottom:1px solid #E6E3DE">' +
       '<h3 class="sec-title" style="margin:0">鼠标轨迹指标分布（描述统计）</h3>' +
-      '<p style="font-size:12px;color:#524E48;margin-top:4px">基于全部含行为指标记录；均值/中位数/标准差/最小/最大，用于观察批次分布与异常作答。</p></div>' +
+      '<p style="font-size:12px;color:#524E48;margin-top:4px">基于所选含行为指标记录；均值/中位数/标准差/最小/最大，用于观察批次分布与异常作答。</p></div>' +
       distChart +
       '<div style="overflow-x:auto"><table><thead><tr style="border-bottom:1px solid #E6E3DE">' +
       '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">指标</th>' +
@@ -1833,13 +3257,38 @@ suppDetailHtml(r) +
       '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">最小</th>' +
       '<th style="text-align:left;padding:10px 14px;color:#524E48;font-size:13px">最大</th>' +
       '</tr></thead><tbody>' + distRowsHtml + '</tbody></table></div></div>';
-    // 免责声明
-    html += '<div style="margin-top:16px;border:1px solid #fde68a;background:#fffbeb;border-radius:10px;padding:14px 18px;font-size:13px;color:#b45309">' +
+    /* ---- 分区导航与组装（需求 8：条理性） ---- */
+    var sections = {
+      overview: overviewHtml,
+      scales: scalesHtml,
+      behavior: behaviorDistHtml + behaviorSigHtml,
+      corr: corrHtml,
+      video: videoHtml
+    };
+    var navHtml = '<div class="anl-nav">' + ANL_SECTION_DEFS.map(function (s) {
+      return '<button type="button" class="' + (anlSection === s.key ? "active" : "") + '" onclick="anlSetSection(&quot;' + s.key + '&quot;)">' +
+        icon(s.icon, 15) + '<span>' + t(s.labelKey) + '</span></button>';
+    }).join("") + '</div>';
+    var disclaimer = '<div style="margin-top:16px;border:1px solid #fde68a;background:#fffbeb;border-radius:10px;padding:14px 18px;font-size:13px;color:#b45309">' +
       '<b>本页面所有统计与相关均为探索性分析</b>，样本量小、存在个体差异与情境噪声，不构成心理健康评估结论；相关关系不代表因果关系。' +
       '请结合原始测评记录与量表结果综合判断，重要结论需专业人员复核。</div>';
-    body.innerHTML = html;
+    body.innerHTML = tgtCard + '<div class="anl-layout" style="margin-top:16px">' +
+      navHtml +
+      '<div class="anl-main">' + (sections[anlSection] || sections.overview) + disclaimer + '</div></div>';
   }
   document.getElementById("btn-analysis-refresh").addEventListener("click", renderAnalysis);
+  /* ---- 分析报告导出（需求 8：HTML / 打印为 PDF） ---- */
+  document.getElementById("btn-anl-report-html").addEventListener("click", function () {
+    var records = anlSelectedRecords();
+    if (records.length === 0) return;
+    var html = buildAnalysisReportHtml(records);
+    downloadTextFile(html, "数据分析报告_" + expDateStamp() + ".html", "text/html;charset=utf-8");
+  });
+  document.getElementById("btn-anl-report-pdf").addEventListener("click", function () {
+    var records = anlSelectedRecords();
+    if (records.length === 0) return;
+    printReportHtml(buildAnalysisReportHtml(records));
+  });
 
   /* ============ 系统设置页 ============ */
   var subBtns = document.querySelectorAll("#sub-nav .sub-btn");
@@ -1849,7 +3298,6 @@ suppDetailHtml(r) +
 
   var capture = { ms: 50, md: 30, cfps: 30, cres: "640x480", cdur: 60 };
   var privacy = { local: true, delraw: true, enc: true, ano: true };
-  var warn = { pm: 5, pmo: 10, ps: 15, gm: 5, gmo: 10, gs: 15, mail: true, push: true };
   var sys = { path: "/data/assessments", theme: "light", autosave: true, debug: false };
   var pwdMsg = null;
   // 采集设置调试状态
@@ -1893,34 +3341,7 @@ suppDetailHtml(r) +
           '<div style="flex:1"><div class="flex-center" style="gap:8px">' + icon(it.i, 16) + '<span class="text-sm" style="color:#3A362F;font-weight:500">' + it.t + '</span></div>' +
           '<p class="check-desc">' + it.d + '</p></div></div>';
       });
-    } else if (key === "warning") {
-      html =
-        '<h2 class="sec-title">' + icon("i-bell", 20) + '预警阈值配置</h2>' +
-        '<div style="background:#FBFAF9;border-radius:8px;padding:16px" class="mb-4">' +
-        '<h3 style="font-size:14px;font-weight:600;color:#3A362F;margin-bottom:12px">PHQ-9 阈值</h3>' +
-        '<div class="form-grid">' +
-        '<div><label class="field-label">轻度阈值</label><input type="number" value="' + warn.pm + '" data-wk="pm"></div>' +
-        '<div><label class="field-label">中度阈值</label><input type="number" value="' + warn.pmo + '" data-wk="pmo"></div>' +
-        '<div><label class="field-label">重度阈值</label><input type="number" value="' + warn.ps + '" data-wk="ps"></div>' +
-        '</div></div>' +
-        '<div style="background:#FBFAF9;border-radius:8px;padding:16px" class="mb-4">' +
-        '<h3 style="font-size:14px;font-weight:600;color:#3A362F;margin-bottom:12px">GAD-7 阈值</h3>' +
-        '<div class="form-grid">' +
-        '<div><label class="field-label">轻度阈值</label><input type="number" value="' + warn.gm + '" data-wk="gm"></div>' +
-        '<div><label class="field-label">中度阈值</label><input type="number" value="' + warn.gmo + '" data-wk="gmo"></div>' +
-        '<div><label class="field-label">重度阈值</label><input type="number" value="' + warn.gs + '" data-wk="gs"></div>' +
-        '</div></div>' +
-        '<div style="background:#FBFAF9;border-radius:8px;padding:16px">' +
-        '<h3 style="font-size:14px;font-weight:600;color:#3A362F;margin-bottom:12px">通知设置</h3>' +
-        '<div style="display:flex;flex-direction:column;gap:8px">' +
-        '<label class="check-simple"><input type="checkbox" data-wk="mail" ' + (warn.mail ? "checked" : "") + '><span class="text-sm" style="color:#55504A">高风险时发送邮件通知</span></label>' +
-        '<label class="check-simple"><input type="checkbox" data-wk="push" ' + (warn.push ? "checked" : "") + '><span class="text-sm" style="color:#55504A">高风险时发送推送通知</span></label>' +
-        '</div></div>';
     } else {
-      var pwdHtml = '';
-      if (pwdMsg) {
-        pwdHtml = '<p style="font-size:12px;margin-top:8px;color:' + (pwdMsg.ok ? '#2ba344' : '#d54941') + '">' + pwdMsg.text + '</p>';
-      }
       html =
         '<h2 class="sec-title">' + icon("i-sliders", 20) + '系统选项</h2>' +
         '<div class="mb-4"><label class="field-label">数据存储路径</label><div style="display:flex;gap:8px">' +
@@ -1934,15 +3355,8 @@ suppDetailHtml(r) +
         '<div><div class="text-sm" style="color:#3A362F;font-weight:500">自动保存</div><p class="check-desc">测评完成后自动保存结果</p></div></div>' +
         '<div class="check-row"><input type="checkbox" id="debug-mode" ' + (sys.debug ? "checked" : "") + '>' +
         '<div><div class="text-sm" style="color:#3A362F;font-weight:500">调试模式</div><p class="check-desc">启用详细的日志输出和调试信息</p></div></div>' +
-        '<div style="background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:16px" class="mt-4">' +
-        '<h3 style="font-size:14px;font-weight:600;color:#3A362F;margin-bottom:4px">' + icon("i-lock", 16) + ' 管理密码</h3>' +
-        '<p class="check-desc mb-2">数据管理、系统设置、关于系统页面的访问密码（至少 6 位）</p>' +
-        '<div class="form-grid">' +
-        '<div><label class="field-label">原密码</label><input type="password" id="pwd-old" placeholder="原密码"></div>' +
-        '<div><label class="field-label">新密码</label><input type="password" id="pwd-new" placeholder="至少 6 位"></div>' +
-        '<div><label class="field-label">确认新密码</label><input type="password" id="pwd-confirm-input" placeholder="再次输入"></div>' +
-        '<div style="display:flex;align-items:flex-end"><button class="btn btn-primary" id="btn-pwd-change" style="width:100%">修改</button></div>' +
-        '</div>' + pwdHtml + '</div>';
+        '<div style="background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:14px 16px" class="mt-4">' +
+        '<p class="check-desc" style="margin:0">' + icon("i-info", 14) + ' 量表启用、预警阈值、行为数据采集与管理密码已分别移至「测评设置」与「首页概览」。</p></div>';
     }
     subContent.innerHTML = html;
     bindSettingsEvents(key);
@@ -1979,32 +3393,6 @@ suppDetailHtml(r) +
     subContent.querySelectorAll('input[type="checkbox"][data-pk]').forEach(function (c) {
       c.addEventListener("change", function () { privacy[c.getAttribute("data-pk")] = c.checked; });
     });
-    subContent.querySelectorAll('input[data-wk]').forEach(function (c) {
-      if (c.type === "checkbox") {
-        c.addEventListener("change", function () { warn[c.getAttribute("data-wk")] = c.checked; });
-      } else {
-        c.addEventListener("input", function () { warn[c.getAttribute("data-wk")] = parseInt(c.value, 10) || 0; });
-      }
-    });
-    var pwdChange = document.getElementById("btn-pwd-change");
-    if (pwdChange) {
-      pwdChange.addEventListener("click", function () {
-        var oldPwd = document.getElementById("pwd-old").value;
-        var newPwd = document.getElementById("pwd-new").value;
-        var confirmPwd = document.getElementById("pwd-confirm-input").value;
-        if (oldPwd !== getAdminPwd()) {
-          pwdMsg = { ok: false, text: "原密码不正确" };
-        } else if (newPwd.length < 6) {
-          pwdMsg = { ok: false, text: "新密码不能少于 6 位" };
-        } else if (newPwd !== confirmPwd) {
-          pwdMsg = { ok: false, text: "两次输入的新密码不一致" };
-        } else {
-          try { localStorage.setItem("psyc_admin_pwd", newPwd); } catch (e) {}
-          pwdMsg = { ok: true, text: "管理密码修改成功" };
-        }
-        renderSettings();
-      });
-    }
     if (key === "capture") bindCaptureDebug();
   }
 
@@ -2351,22 +3739,74 @@ suppDetailHtml(r) +
   var agreed = false;
   var phq9 = new Array(9).fill(-1);
   var gad7 = new Array(7).fill(-1);
-  // ---- 补充量表作答状态 ----
+  // ---- 补充量表作答状态（默认均无选项，需求 6） ----
   var cssrsAns = new Array(4).fill(-1);
   var nssiAns = [-1, -1];
   var pss10Ans = new Array(10).fill(-1);
-  var psqiAns = { bed: 23, latency: 15, wake: 7, hours: 7, d: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], quality: 0, meds: 0, day: 0, energy: 0 };
+  var psqiAns = blankPsqi();
   var sias6Ans = new Array(6).fill(-1);
-  var aslecAns = new Array(27).fill(0);
-  var mouseStatus = "idle", mouseProgress = 0;
-  var camStatus = "idle", camProgress = 0;
-  var mouseTimer = null, camTimer = null;
+  var aslecAns = new Array(27).fill(-1);
+  // 自定义量表作答（量表 id → 与条目一一对应，-1 未作答）
+  var customAns = {};
+  // 步骤 3 问卷分页游标（每份问卷单独一页，不展示量表名称）
+  var qPage = 0;
+  var mouseStatus = "idle";
   var mouseTraj = [];       // 鼠标轨迹采样点 {x, y, t(相对首点ms)}
   var mouseStopFn = null;   // 移除 mousemove 监听
-  var camMode = "normal";   // 摄像头采集模式：normal | degraded
-  var camStream = null;     // 摄像头 MediaStream（真实采集时持有，用于停止轨道）
+  var camMode = "normal";   // 摄像头采集模式：normal | degraded（知情同意时预授权，需求 3）
+  var camStream = null;     // 知情同意时一次性授权持有的 MediaStream
+  var camRecorder = null, camChunks = [];
+  var videoBlobs = {};      // 记录 id → 录制视频 Blob（模拟 IndexedDB 存储，导出时下载）
   var fsActive = false;
   var formState = { sid: "", age: "", gender: "male", edu: "本科", grade: "", major: "" };
+
+  /* ---- 分页问卷（需求 6：按启用顺序，不显示问卷名称） ---- */
+  var BUILTIN_ORDER = ["phq9", "gad7", "cssrs", "nssi", "pss10", "psqi", "sias6", "aslec"];
+  var PAGE_INTRO = {
+    phq9: "在过去两周里，以下问题困扰您的频率如何？",
+    gad7: "在过去两周里，以下问题困扰您的频率如何？",
+    cssrs: "请根据过去一个月内的实际情况作答。",
+    nssi: "请根据过去一年内的实际情况作答。",
+    pss10: "过去一个月里，以下情况发生的频率如何？",
+    psqi: "请根据过去一个月的睡眠情况填写。",
+    sias6: "过去两周里，以下情况与您的符合程度如何？",
+    aslec: "过去一年内是否发生过以下事件？若发生过，请评估其影响程度。",
+    custom: "请根据您的实际情况作答。"
+  };
+  function blankPsqi() {
+    return { bed: -1, latency: -1, wake: -1, hours: -1, d: new Array(10).fill(-1), quality: -1, meds: -1, day: -1, energy: -1 };
+  }
+  function psqiFullOk(a) {
+    return a.bed >= 0 && a.latency >= 0 && a.wake >= 0 && a.hours >= 0 &&
+      a.quality >= 0 && a.meds >= 0 && a.day >= 0 && a.energy >= 0 &&
+      a.d.every(function (v) { return v >= 0; });
+  }
+  function buildQPages() {
+    var pages = BUILTIN_ORDER.filter(function (k) { return assessCfg.enabled[k] !== false; })
+      .map(function (k) { return { type: k }; });
+    (assessCfg.custom || []).forEach(function (cs) {
+      if (!customAns[cs.id] || customAns[cs.id].length !== cs.items.length) {
+        customAns[cs.id] = new Array(cs.items.length).fill(-1);
+      }
+      pages.push({ type: "custom", scale: cs });
+    });
+    return pages;
+  }
+  function pageComplete(p) {
+    if (!p) return true;
+    if (p.type === "custom") return (customAns[p.scale.id] || []).every(function (a) { return a >= 0; });
+    switch (p.type) {
+      case "phq9": return phq9.every(function (a) { return a >= 0; });
+      case "gad7": return gad7.every(function (a) { return a >= 0; });
+      case "cssrs": return cssrsAns.every(function (a) { return a >= 0; });
+      case "nssi": return nssiAns[0] >= 0 && (nssiAns[0] === 0 || nssiAns[1] >= 0);
+      case "pss10": return pss10Ans.every(function (a) { return a >= 0; });
+      case "psqi": return psqiFullOk(psqiAns);
+      case "sias6": return sias6Ans.every(function (a) { return a >= 0; });
+      case "aslec": return aslecAns.every(function (a) { return a >= 0; });
+      default: return true;
+    }
+  }
 
   var stepsBar = document.getElementById("steps-bar");
   var stepContent = document.getElementById("step-content");
@@ -2387,116 +3827,103 @@ suppDetailHtml(r) +
     stepsBar.innerHTML = html;
   }
 
-function questionCard(title, iconId, qList, answers, mark, answered, opts, note, revIdx) {
-    var optList = opts || riskOptions;
-    var noteTxt = note || "在过去两周里，以下问题困扰您的频率如何？";
-    var revList = revIdx || [];
-    var html = '<div class="card p-6"><div class="flex-between" style="margin-bottom:4px">' +
-      '<h3 class="sec-title" style="margin-bottom:0">' + icon(iconId, 20) + title + '</h3>' +
-      '<span class="badge ' + (answered ? "b-green" : "b-blue") + '">' + (answered ? "已完成" : "已答 " + answers.filter(function (a) { return a >= 0; }).length + "/" + qList.length) + '</span>' +
-      '</div>' +
-      '<p class="text-sm text-slate-400 mb-4">' + noteTxt + '</p>' +
-      '<div style="display:flex;flex-direction:column;gap:12px">' +
+  /* ---- 问卷页渲染（需求 6：不显示问卷名称，仅条目） ---- */
+  function optBtn(sel, oi, label, attrs) {
+    return '<button class="opt ' + (sel === oi ? "sel" : "") + '" ' + attrs + ' data-o="' + oi + '">' + label + '</button>';
+  }
+  function itemBox(idx, text, optsHtml) {
+    return '<div class="question-box"><div class="question-text">' + (idx + 1) + '. ' + text +
+      '</div><div class="option-row">' + optsHtml + '</div></div>';
+  }
+  function itemsBlock(qList, answers, mark, opts) {
+    return '<div style="display:flex;flex-direction:column;gap:12px">' +
       qList.map(function (q, i) {
-        return '<div class="question-box"><div class="question-text">' + (i + 1) + '. ' + q +
-          (revList.indexOf(i) >= 0 ? ' <span class="badge" style="background:#fff;color:#86817A;border:1px solid #E6E3DE;margin-left:4px;font-weight:400">反向计分</span>' : '') +
-          '</div><div class="option-row">' +
-          optList.map(function (o, oi) {
-            return '<button class="opt ' + (answers[i] === oi ? "sel" : "") + '" ' + mark + '="' + i + '" data-o="' + oi + '">' + o + '</button>';
-          }).join("") + '</div></div>';
-      }).join("") + '</div></div>';
-    return html;
+        return itemBox(i, q, opts.map(function (o, oi) {
+          return optBtn(answers[i], oi, o, mark + '="' + i + '"');
+        }).join(""));
+      }).join("") + '</div>';
   }
 
-  /* NSSI/PSQI/ASLEC 专用卡片 */
-  function nssiCard(answered) {
-    var done = nssiAns[0] >= 0;
-    var html = '<div class="card p-6"><div class="flex-between" style="margin-bottom:4px">' +
-      '<h3 class="sec-title" style="margin-bottom:0">' + icon("i-chart", 20) + 'NSSI 非自杀性自伤筛查</h3>' +
-      '<span class="badge ' + (answered ? "b-green" : "b-blue") + '">' + (answered ? "已完成" : nssiAns[0] >= 0 ? "已答 1/2" : "已答 0/2") + '</span>' +
-      '</div>' +
-      '<p class="text-sm text-slate-400 mb-4">过去一年内，是否曾有意伤害自己的身体（并非为了结束生命）？</p>' +
-      '<div style="display:flex;flex-direction:column;gap:12px">' +
-      '<div class="question-box"><div class="question-text">1. ' + nssiQ[0] + '</div><div class="option-row">' +
-      nssiHasOpts.map(function (o, oi) {
-        return '<button class="opt ' + (nssiAns[0] === oi ? "sel" : "") + '" data-n="0" data-o="' + oi + '">' + o + '</button>';
-      }).join("") + '</div></div>';
+  /* NSSI/PSQI/ASLEC 专用条目（仅条目，无量表名称） */
+  function nssiItems() {
+    var html = '<div style="display:flex;flex-direction:column;gap:12px">' +
+      itemBox(0, nssiQ[0], nssiHasOpts.map(function (o, oi) {
+        return optBtn(nssiAns[0], oi, o, 'data-n="0"');
+      }).join(""));
     if (nssiAns[0] === 1) {
-      html += '<div class="question-box"><div class="question-text">2. ' + nssiQ[1] + '</div><div class="option-row">' +
-        nssiFreqOpts.map(function (o, oi) {
-          return '<button class="opt ' + (nssiAns[1] === oi ? "sel" : "") + '" data-n="1" data-o="' + oi + '">' + o + '</button>';
-        }).join("") + '</div></div>';
+      html += itemBox(1, nssiQ[1], nssiFreqOpts.map(function (o, oi) {
+        return optBtn(nssiAns[1], oi, o, 'data-n="1"');
+      }).join(""));
     }
-    return html + '</div></div>';
+    return html + '</div>';
   }
-  function psqiCard(valid) {
-    var html = '<div class="card p-6"><div class="flex-between" style="margin-bottom:4px">' +
-      '<h3 class="sec-title" style="margin-bottom:0">' + icon("i-chart", 20) + 'PSQI 匹兹堡睡眠质量指数</h3>' +
-      '<span class="badge ' + (valid ? "b-green" : "b-blue") + '">' + (valid ? "已完成" : "请完善睡眠信息") + '</span>' +
-      '</div>' +
-      '<p class="text-sm text-slate-400 mb-4">请根据过去一个月的睡眠情况填写。</p>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+  function psqiItems() {
+    return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
       numField("p-bed", "通常几点上床睡觉（小时 0-23）", psqiAns.bed, 0, 23) +
       numField("p-latency", "通常需要多少分钟入睡", psqiAns.latency, 0, 240) +
       numField("p-wake", "通常几点起床（小时 0-23）", psqiAns.wake, 0, 23) +
       numField("p-hours", "每晚实际睡眠大约几小时（0-12）", psqiAns.hours, 0, 12) +
       '</div>' +
-      '<div class="text-sm text-slate-500 mb-2">过去一个月里，以下睡眠障碍发生频率如何？</div>' +
+      '<div class="text-sm text-slate-500" style="margin-bottom:8px">过去一个月里，以下睡眠障碍发生频率如何？</div>' +
       '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">' +
       psqiDisturbanceItems.map(function (item, i) {
         return '<div class="question-box" style="padding:10px 12px"><div class="question-text" style="margin-bottom:8px">' + (i + 1) + '. ' + item + '</div><div class="option-row">' +
           psqiFreqOpts.map(function (o, oi) {
-            return '<button class="opt ' + (psqiAns.d[i] === oi ? "sel" : "") + '" data-pd="' + i + '" data-o="' + oi + '">' + o + '</button>';
+            return optBtn(psqiAns.d[i], oi, o, 'data-pd="' + i + '"');
           }).join("") + '</div></div>';
       }).join("") + '</div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
       selField("p-quality", "总体睡眠质量", psqiQualityOpts, psqiAns.quality) +
-      selField("p-meds", "催眠药物使用频率", psqiFreqOpts, psqiAns.meds) +
-      selField("p-day", "白天困倦频率", psqiFreqOpts, psqiAns.day) +
-      selField("p-energy", "精力不足频率", psqiFreqOpts, psqiAns.energy) +
-      '</div></div>';
-    return html;
+      selField("p-meds", "服用催眠药物的频率", psqiFreqOpts, psqiAns.meds) +
+      selField("p-day", "白天保持清醒的困难程度", psqiFreqOpts, psqiAns.day) +
+      selField("p-energy", "做事时精力不足的频率", psqiFreqOpts, psqiAns.energy) +
+      '</div>';
   }
   function numField(id, labelTxt, val, min, max) {
     return '<div><label class="text-sm" style="color:#6B665F;display:block;margin-bottom:4px">' + labelTxt + '</label>' +
-      '<input type="number" id="' + id + '" min="' + min + '" max="' + max + '" value="' + val + '" class="psqi-num" style="width:100%;background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:8px 10px;font-size:14px;color:#55504A" /></div>';
+      '<input type="number" id="' + id + '" min="' + min + '" max="' + max + '" value="' + (val < 0 ? "" : val) + '" placeholder="请输入" class="psqi-num" style="width:100%;background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:8px 10px;font-size:14px;color:#55504A" /></div>';
   }
   function selField(id, labelTxt, opts, val) {
     return '<div><label class="text-sm" style="color:#6B665F;display:block;margin-bottom:4px">' + labelTxt + '</label>' +
       '<select id="' + id + '" class="psqi-sel" style="width:100%;background:#FBFAF9;border:1px solid #E6E3DE;border-radius:8px;padding:8px 10px;font-size:14px;color:#55504A">' +
+      (val < 0 ? '<option value="-1" selected disabled>请选择</option>' : '') +
       opts.map(function (o, oi) {
         return '<option value="' + oi + '"' + (val === oi ? " selected" : "") + '>' + o + '</option>';
       }).join("") +
       '</select></div>';
   }
-  function aslecCard() {
-    var html = '<div class="card p-6"><div class="flex-between" style="margin-bottom:4px">' +
-      '<h3 class="sec-title" style="margin-bottom:0">' + icon("i-chart", 20) + 'ASLEC 青少年生活事件量表</h3>' +
-      '<span class="badge b-blue">27 项事件</span>' +
-      '</div>' +
-      '<p class="text-sm text-slate-400 mb-4">过去一年内，以下事件对您的影响程度如何？（未发生请选择"未发生"）</p>' +
-      '<div style="display:flex;flex-direction:column;gap:8px;max-height:480px;overflow-y:auto">' +
+  function aslecPageItems() {
+    return '<div style="display:flex;flex-direction:column;gap:8px;max-height:520px;overflow-y:auto">' +
       aslecItems.map(function (item, i) {
         return '<div class="question-box" style="padding:8px 10px"><div class="question-text" style="margin-bottom:6px;font-size:13px">' + (i + 1) + '. ' + item + '</div><div class="option-row">' +
           aslecImpactOpts.map(function (o, oi) {
-            return '<button class="opt ' + (aslecAns[i] === oi ? "sel" : "") + '" data-a="' + i + '" data-o="' + oi + '">' + o + '</button>';
+            return optBtn(aslecAns[i], oi, o, 'data-a="' + i + '"');
           }).join("") + '</div></div>';
-      }).join("") + '</div></div>';
-    return html;
+      }).join("") + '</div>';
   }
 
-  function s3Overview() {
-    var pn = phq9.filter(function (a) { return a >= 0; }).length;
-    var gn = gad7.filter(function (a) { return a >= 0; }).length;
-    var cn = cssrsAns.filter(function (a) { return a >= 0; }).length;
-    var nn = nssiAns[0] >= 0 ? (nssiAns[0] === 0 || nssiAns[1] >= 0 ? 2 : 1) : 0;
-    var pssn = pss10Ans.filter(function (a) { return a >= 0; }).length;
-    var sn = sias6Ans.filter(function (a) { return a >= 0; }).length;
-    var answered = pn + gn + cn + nn + pssn + sn;
-    return '<div class="s3-overview">' +
-      '<span>量表答题进度：<b>' + answered + '/38</b></span>' +
-      '<span class="fs-hint">温馨提示：作答过程中系统将自动同步采集行为与生理数据，无需额外操作。</span>' +
-      '</div>';
+  function renderQPage(p) {
+    if (p.type === "custom") {
+      var cs = p.scale, ca = customAns[cs.id] || [];
+      return '<div style="display:flex;flex-direction:column;gap:12px">' +
+        cs.items.map(function (q, i) {
+          return itemBox(i, q, cs.options.map(function (o, oi) {
+            return optBtn(ca[i], oi, o, 'data-cs="' + cs.id + '" data-csi="' + i + '"');
+          }).join(""));
+        }).join("") + '</div>';
+    }
+    if (p.type === "psqi") return psqiItems();
+    if (p.type === "nssi") return nssiItems();
+    if (p.type === "aslec") return aslecPageItems();
+    var cfg = {
+      phq9:  { q: phq9Q,  a: phq9,     m: "data-q", o: riskOptions },
+      gad7:  { q: gad7Q,  a: gad7,     m: "data-g", o: riskOptions },
+      cssrs: { q: cssrsQ, a: cssrsAns, m: "data-c", o: cssrsOpts },
+      pss10: { q: pss10Q, a: pss10Ans, m: "data-p", o: pss10Opts },
+      sias6: { q: sias6Q, a: sias6Ans, m: "data-s", o: sias6Opts }
+    }[p.type];
+    if (!cfg) return "";
+    return itemsBlock(cfg.q, cfg.a, cfg.m, cfg.o);
   }
 
   function renderStep() {
@@ -2519,14 +3946,14 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       '<div class="card p-6">' +
         '<h3 class="sec-title">' + icon("i-shield", 20) + '知情同意书</h3>' +
         '<div style="font-size:14px;line-height:1.7;color:#55504A;display:flex;flex-direction:column;gap:12px">' +
-        '<p>本系统旨在通过多模态数据采集（包括量表评估、鼠标行为追踪和面部微表情分析）进行心理问题早期预警。</p>' +
+        '<p>本系统通过量表评估与答题过程行为记录（鼠标轨迹、摄像头视频）辅助心理健康评估。</p>' +
         '<p>在参与测评前，请您了解以下事项：</p>' +
         '<ul class="consent-list">' +
         '<li>所有数据仅用于心理健康评估目的</li>' +
+        '<li>测评答题过程中，系统将自动记录鼠标行为，并在获得您授权后开启摄像头录制答题过程，您无需进行任何额外操作</li>' +
         '<li>您的个人信息将被加密存储和匿名化处理</li>' +
         '<li>您可以随时终止测评过程</li>' +
         '<li>测评结果仅供参考，不作为临床诊断依据</li>' +
-        '<li>数据采集过程不会记录可识别个人身份的视频图像</li>' +
         '</ul>' +
         '<p style="color:#86817A">请仔细阅读以上内容，确认理解并同意后继续。</p></div></div>' +
         '<div style="display:flex;gap:16px" class="mt-4">' +
@@ -2534,26 +3961,23 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
         '<button class="agree-btn ' + (!agreed ? "agree-off selected" : "agree-off") + '" id="btn-disagree">' + icon("i-x", 16) + ' 我不同意</button>' +
         '</div>';
     } else if (step === 3) {
-      var phq9Done = phq9.every(function (a) { return a >= 0; });
-      var gad7Done = gad7.every(function (a) { return a >= 0; });
-      var cssrsDone = cssrsAns.every(function (a) { return a >= 0; });
-      var nssiDone = nssiAns[0] >= 0 && (nssiAns[0] === 0 || nssiAns[1] >= 0);
-      var pss10Done = pss10Ans.every(function (a) { return a >= 0; });
-      var psqiValid = psqiAns.latency >= 0 && psqiAns.hours > 0;
-      var sias6Done = sias6Ans.every(function (a) { return a >= 0; });
-      var aslecDone = aslecAns.every(function (a) { return a >= 0; });
-      html =
-        '<div style="display:flex;flex-direction:column;gap:24px">' +
-        s3Overview() +
-        questionCard("PHQ-9 抑郁症筛查量表", "i-chart", phq9Q, phq9, "data-q", phq9Done) +
-        questionCard("GAD-7 广泛性焦虑量表", "i-chart", gad7Q, gad7, "data-g", gad7Done) +
-        questionCard("C-SSRS 自杀严重度评定量表", "i-chart", cssrsQ, cssrsAns, "data-c", cssrsDone, cssrsOpts, "过去一个月内，是否出现过以下想法或行为？（任一选择\u201c是\u201d即触发高危预警）") +
-        nssiCard(nssiDone) +
-        questionCard("PSS-10 感知压力量表", "i-chart", pss10Q, pss10Ans, "data-p", pss10Done, pss10Opts, "过去一个月里，以下情况发生的频率如何？（标注 * 的题目为反向计分题）", PSS10_REV) +
-        psqiCard(psqiValid) +
-        questionCard("SIAS-6 社交焦虑量表", "i-chart", sias6Q, sias6Ans, "data-s", sias6Done, sias6Opts, "过去两周里，在社交情境中的体验如何？") +
-        aslecCard() +
+      var pages = buildQPages();
+      if (pages.length === 0) {
+        html = '<div class="card p-6" style="padding:44px 24px;text-align:center;font-size:14px;color:#86817A">' + t("q_empty") + '</div>';
+      } else {
+        if (qPage > pages.length - 1) qPage = pages.length - 1;
+        var pg = pages[qPage];
+        html =
+        '<div class="card p-4" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+          '<span style="font-size:14px;color:#55504A;display:inline-flex;align-items:center;gap:8px">' + icon("i-doc", 16) +
+            tfmt("q_progress", { x: qPage + 1, n: pages.length }) + '</span>' +
+          '<span style="font-size:12px;color:#86817A">' + t("q_pager_hint") + '</span>' +
+        '</div>' +
+        '<div class="card p-6" style="margin-top:16px">' +
+          '<p style="font-size:14px;color:#86817A;margin-bottom:16px">' + (PAGE_INTRO[pg.type === "custom" ? "custom" : pg.type] || "") + '</p>' +
+          renderQPage(pg) +
         '</div>';
+      }
     } else if (step === 4) {
       html =
       '<div class="card p-6" style="padding:48px 24px;text-align:center">' +
@@ -2565,7 +3989,7 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     }
     stepContent.innerHTML = html;
     bindStepEvents();
-    autoStartCollect();
+    startSilentRecording();
   }
 
   function bindStepEvents() {
@@ -2584,8 +4008,8 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
 
     var agree = document.getElementById("btn-agree");
     var disagree = document.getElementById("btn-disagree");
-    if (agree) agree.addEventListener("click", function () { agreed = true; renderStep(); updateNav(); });
-    if (disagree) disagree.addEventListener("click", function () { agreed = false; renderStep(); updateNav(); });
+    if (agree) agree.addEventListener("click", function () { agreed = true; preAuthCamera(); renderStep(); updateNav(); });
+    if (disagree) disagree.addEventListener("click", function () { agreed = false; declineCamera(); renderStep(); updateNav(); });
 
     stepContent.querySelectorAll(".opt").forEach(function (b) {
       b.addEventListener("click", function () {
@@ -2606,12 +4030,15 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
           aslecAns[parseInt(b.getAttribute("data-a"), 10)] = oi;
         } else if (b.hasAttribute("data-pd")) {
           psqiAns.d[parseInt(b.getAttribute("data-pd"), 10)] = oi;
+        } else if (b.hasAttribute("data-cs")) {
+          var csId = b.getAttribute("data-cs");
+          if (!customAns[csId]) customAns[csId] = [];
+          customAns[csId][parseInt(b.getAttribute("data-csi"), 10)] = oi;
         }
         renderStep(); updateNav();
       });
     });
     bindPsqiEvents();
-    bindAslecEvents();
 
     var fsBtn = document.getElementById("btn-fs");
     if (fsBtn) fsBtn.addEventListener("click", function () {
@@ -2633,20 +4060,20 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
 
     var restart = document.getElementById("btn-restart");
     if (restart) restart.addEventListener("click", function () {
-      step = 1; agreed = false;
+      step = 1; agreed = false; qPage = 0;
       phq9 = new Array(9).fill(-1); gad7 = new Array(7).fill(-1);
       cssrsAns = new Array(4).fill(-1); nssiAns = [-1, -1];
       pss10Ans = new Array(10).fill(-1);
-      psqiAns = { bed: 23, latency: 15, wake: 7, hours: 7, d: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], quality: 0, meds: 0, day: 0, energy: 0 };
+      psqiAns = blankPsqi();
       sias6Ans = new Array(6).fill(-1);
-      aslecAns = new Array(27).fill(0);
-      mouseStatus = "idle"; mouseProgress = 0;
-      camStatus = "idle"; camProgress = 0;
+      aslecAns = new Array(27).fill(-1);
+      customAns = {};
+      mouseStatus = "idle";
       if (mouseStopFn) { mouseStopFn(); mouseStopFn = null; }
       mouseTraj = [];
-      if (mouseTimer) { clearTimeout(mouseTimer); mouseTimer = null; }
-      if (camTimer) { clearTimeout(camTimer); camTimer = null; }
-      if (camStream) { camStream.getTracks().forEach(function (t) { t.stop(); }); camStream = null; }
+      try { if (camRecorder && camRecorder.state !== "inactive") camRecorder.stop(); } catch (e) {}
+      camRecorder = null; camChunks = [];
+      stopCamStreamNow();
       renderSteps(); renderStep(); updateNav();
     });
     updateFsUI();
@@ -2677,14 +4104,12 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       if (!el) return;
       var k = mapSel[id];
       el.addEventListener("change", function () {
-        psqiAns[k] = parseInt(el.value, 10) || 0;
+        var v = parseInt(el.value, 10);
+        psqiAns[k] = isNaN(v) ? -1 : v;
         updateNav();
       });
     });
   }
-
-  /* ASLEC 选项点击事件（data-a 行 + data-o 档位） */
-  function bindAslecEvents() {}
 
   /* ============ 全屏按钮 UI 同步 ============ */
   function updateFsUI() {
@@ -2698,20 +4123,37 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     if (fsNote) fsNote.style.display = fsActive ? "block" : "none";
   }
 
-  /* 进入心理测评步骤时自动开始数据采集（随答题并行，无需单独操作） */
-  function finishMouseTrack() {
-    if (mouseStopFn) { mouseStopFn(); mouseStopFn = null; }
-    if (mouseTimer) { clearTimeout(mouseTimer); mouseTimer = null; }
-    mouseStatus = "completed";
-    mouseProgress = 100;
-    renderStep(); updateNav();
+  /* ============ 需求 3：摄像头在知情同意时一次性预授权，答题全程无感录制 ============ */
+  function preAuthCamera() {
+    if (!assessCfg.cam) { camMode = "degraded"; return; }
+    if (typeof navigator === "undefined" || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      camMode = "degraded"; return;
+    }
+    navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 }, audio: false })
+      .then(function (stream) {
+        if (camStream) { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
+        camStream = stream;
+        camMode = "normal";
+      })
+      .catch(function () { camMode = "degraded"; });
   }
-  function autoStartCollect() {
+  function declineCamera() {
+    stopCamStreamNow();
+    camMode = "degraded";
+  }
+  function stopCamStreamNow() {
+    if (camStream) {
+      camStream.getTracks().forEach(function (t) { t.stop(); });
+      camStream = null;
+    }
+  }
+
+  /* 进入步骤 3 时静默开始采集：鼠标轨迹（若启用）+ 摄像头录制（使用预授权流，全程无感） */
+  function startSilentRecording() {
     if (step !== 3) return;
-    if (mouseStatus === "idle") {
-      // 全量采集：监听每一次 mousemove（鼠标挪动的所有动作）与 click（点击动作），
-      // 直到提交测评（saveAssessmentRecord）时停止，覆盖整个答题过程
-      mouseStatus = "running"; mouseProgress = 0;
+    if (assessCfg.mouse && mouseStatus === "idle") {
+      // 全量采集：监听每一次 mousemove 与 click，直到提交测评时停止，覆盖整个答题过程
+      mouseStatus = "running";
       mouseTraj = [];
       var t0 = performance.now();
       function pushPt(e, k) {
@@ -2731,49 +4173,56 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
         document.removeEventListener("mousemove", onMove);
         document.removeEventListener("click", onClick);
       };
-      // 全量采集：不设 80ms 节流、不设 60 点上限，直至提交测评时停止
     }
-    if (camStatus === "idle") {
-      camStatus = "running"; camProgress = 0; camMode = "normal";
-      var camSettled = false;
-      function camSettle(mode) {
-        if (camSettled) return;
-        camSettled = true;
-        camMode = mode;
-        if (camStream) { camStream.getTracks().forEach(function (t) { t.stop(); }); camStream = null; }
-        camProgress = 100;
-        camStatus = "completed";
-        renderStep(); updateNav();
-      }
-      // 8 秒兜底：权限弹窗未响应或环境不支持时降级，避免流程卡死
-      var camFail = setTimeout(function () { camSettle("degraded"); }, 8000);
-      camTimer = camFail;
-      function camWindow() {
-        camTimer = setTimeout(function () { camSettle("normal"); }, 2500);
-      }
-      var hasCam = typeof navigator !== "undefined" && navigator.mediaDevices && navigator.mediaDevices.getUserMedia;
-      if (!hasCam) {
-        clearTimeout(camFail);
-        camSettle("degraded");
-      } else {
-        try {
-          navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 }, audio: false })
-            .then(function (stream) {
-              if (camSettled) { stream.getTracks().forEach(function (t) { t.stop(); }); return; }
-              clearTimeout(camFail);
-              camStream = stream;
-              camWindow();
-            })
-            .catch(function () {
-              clearTimeout(camFail);
-              camSettle("degraded");
-            });
-        } catch (e) {
-          clearTimeout(camFail);
-          camSettle("degraded");
-        }
-      }
+    if (!camStream || typeof MediaRecorder === "undefined") {
+      if (!camStream) camMode = "degraded";
+      return;
     }
+    if (camRecorder && camRecorder.state !== "inactive") return;
+    try {
+      var mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9")
+        ? "video/webm;codecs=vp9"
+        : MediaRecorder.isTypeSupported("video/webm") ? "video/webm" : "";
+      var rec = mime ? new MediaRecorder(camStream, { mimeType: mime }) : new MediaRecorder(camStream);
+      camChunks = [];
+      rec.ondataavailable = function (e) { if (e.data && e.data.size > 0) camChunks.push(e.data); };
+      rec.start(2000);
+      camRecorder = rec;
+      camMode = "normal";
+    } catch (e) {
+      camMode = "degraded";
+    }
+  }
+
+  /* 提交测评时停止采集：鼠标采样立即停止，录制器异步收尾并返回视频 Blob */
+  function finishSilentCollect() {
+    if (mouseStopFn) { mouseStopFn(); mouseStopFn = null; }
+    mouseStatus = "completed";
+    return stopRecordingGet();
+  }
+  function stopRecordingGet() {
+    return new Promise(function (resolve) {
+      var rec = camRecorder;
+      if (!rec || rec.state === "inactive") {
+        camRecorder = null;
+        stopCamStreamNow();
+        resolve(null);
+        return;
+      }
+      rec.onstop = function () {
+        var blob = new Blob(camChunks, { type: rec.mimeType || "video/webm" });
+        camRecorder = null;
+        stopCamStreamNow();
+        resolve(blob.size > 0 ? blob : null);
+      };
+      try {
+        rec.stop();
+      } catch (e) {
+        camRecorder = null;
+        stopCamStreamNow();
+        resolve(null);
+      }
+    });
   }
 
   function canProceed() {
@@ -2783,15 +4232,10 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     }
     if (step === 2) return agreed;
     if (step === 3) {
-      var cssrsDone3 = cssrsAns.every(function (a) { return a >= 0; });
-      var nssiDone3 = nssiAns[0] >= 0 && (nssiAns[0] === 0 || nssiAns[1] >= 0);
-      var pss10Done3 = pss10Ans.every(function (a) { return a >= 0; });
-      var psqiDone3 = psqiAns.latency >= 0 && psqiAns.hours > 0;
-      var sias6Done3 = sias6Ans.every(function (a) { return a >= 0; });
-      return phq9.every(function (a) { return a >= 0; }) &&
-        gad7.every(function (a) { return a >= 0; }) &&
-        cssrsDone3 && nssiDone3 && pss10Done3 && psqiDone3 && sias6Done3 &&
-        camStatus === "completed";
+      var pages = buildQPages();
+      if (pages.length === 0) return true;
+      if (qPage > pages.length - 1) qPage = pages.length - 1;
+      return pageComplete(pages[qPage]);
     }
     return true;
   }
@@ -2800,12 +4244,17 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     btnPrev.disabled = step === 1;
     stepNav.style.display = step < totalSteps ? "flex" : "none";
     if (step < totalSteps) {
-      btnNext.innerHTML = (step === 3 ? "完成测评" : "下一步") + ' ' + icon("i-chev-r", 16);
+      var pagesLen = buildQPages().length;
+      btnPrev.innerHTML = icon("i-chev-l", 16) + ' ' + ((step === 3 && qPage > 0) ? t("q_prev") : t("btn_prev"));
+      btnNext.innerHTML = (step === 3
+        ? (qPage < pagesLen - 1 ? t("q_next") : t("btn_finish"))
+        : t("btn_next")) + ' ' + icon("i-chev-r", 16);
       btnNext.disabled = !canProceed();
     }
   }
 
   btnPrev.addEventListener("click", function () {
+    if (step === 3 && qPage > 0) { qPage--; renderSteps(); renderStep(); updateNav(); return; }
     if (step > 1) { step--; renderSteps(); renderStep(); updateNav(); }
   });
   function riskLevel(score) { if (score <= 4) return 0; if (score <= 9) return 1; if (score <= 14) return 2; return 3; }
@@ -2852,18 +4301,26 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     for (var i = 0; i < bounds.length; i++) if (score <= bounds[i][0]) return bounds[i][1];
     return "高风险";
   }
-  function depRiskOf(score) { return riskLevelOfScore(score, [[4, "低风险"], [9, "轻度风险"], [14, "中度风险"]]); }
-  function anxRiskOf(score) { return depRiskOf(score); }
+  // 可调阈值版：读取「测评设置 → 量表管理」自定义切分点；未自定义时回退默认
+  function riskLevelOfScoreT(score, thr, fallback) {
+    if (!thr) return fallback(score);
+    if (score < thr.mild) return "低风险";
+    if (score < thr.moderate) return "轻度风险";
+    if (score < thr.severe) return "中度风险";
+    return "高风险";
+  }
+  function depRiskOf(score, thr) { return riskLevelOfScoreT(score, thr, function (s) { return riskLevelOfScore(s, [[4, "低风险"], [9, "轻度风险"], [14, "中度风险"]]); }); }
+  function anxRiskOf(score, thr) { return depRiskOf(score, thr); }
   function cssrsRiskOf(pos) { return pos > 0 ? "高风险" : "低风险"; }
   function nssiRiskOf(n, p) {
     if ((n[0] || 0) !== 1) return "低风险";
     if (p && (p[8] || -1) > 0) return "高风险";
     return "中度风险";
   }
-  function pss10RiskOf(score) { return riskLevelOfScore(score, [[13, "低风险"], [19, "轻度风险"], [26, "中度风险"]]); }
-  function psqiRiskOf(score) { return riskLevelOfScore(score, [[5, "低风险"], [10, "轻度风险"], [15, "中度风险"]]); }
-  function sias6RiskOf(score) { return riskLevelOfScore(score, [[6, "低风险"], [12, "轻度风险"], [18, "中度风险"]]); }
-  function aslecRiskOf(score) { return riskLevelOfScore(score, [[15, "低风险"], [35, "轻度风险"], [60, "中度风险"]]); }
+  function pss10RiskOf(score, thr) { return riskLevelOfScoreT(score, thr, function (s) { return riskLevelOfScore(s, [[13, "低风险"], [19, "轻度风险"], [26, "中度风险"]]); }); }
+  function psqiRiskOf(score, thr) { return riskLevelOfScoreT(score, thr, function (s) { return riskLevelOfScore(s, [[5, "低风险"], [10, "轻度风险"], [15, "中度风险"]]); }); }
+  function sias6RiskOf(score, thr) { return riskLevelOfScoreT(score, thr, function (s) { return riskLevelOfScore(s, [[6, "低风险"], [12, "轻度风险"], [18, "中度风险"]]); }); }
+  function aslecRiskOf(score, thr) { return riskLevelOfScoreT(score, thr, function (s) { return riskLevelOfScore(s, [[15, "低风险"], [35, "轻度风险"], [60, "中度风险"]]); }); }
   function buildRisk(p, g, c, n) {
     var flags = [];
     var pScore = p.reduce(function (s, a) { return s + (a >= 0 && a <= 3 ? a : 0); }, 0);
@@ -2876,23 +4333,27 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
     if (nssiPos) { flags.push("nssi"); level = Math.max(level, 2); if (phq9Item9) level = Math.max(level, 3); }
     return { level: level, label: ["低风险", "轻度风险", "中度风险", "高风险"][level], flags: flags };
   }
-  function saveAssessmentRecord() {
-    // 提交测评时停止轨迹采样，确保覆盖整个答题过程的全部轨迹点
-    if (mouseStopFn) { mouseStopFn(); mouseStopFn = null; }
-    if (mouseTimer) { clearTimeout(mouseTimer); mouseTimer = null; }
+  function saveAssessmentRecord(videoBlob) {
     if (!formState.sid.trim()) return;
+    var enabled = assessCfg.enabled;
     var now = new Date();
     var pad = function (n) { return (n < 10 ? "0" : "") + n; };
     var time = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate()) + " " + pad(now.getHours()) + ":" + pad(now.getMinutes());
-    var psqiRes = scorePsqi(psqiAns);
-    var aslecRes = scoreAslec(aslecAns);
-    var riskRes = buildRisk(phq9, gad7, cssrsAns, nssiAns);
+    // 未启用的量表不写入作答与分值（数据管理 / 报告中显示「未采集」）
+    var psqiRes = enabled.psqi !== false ? scorePsqi(psqiAns) : null;
+    var aslecRes = enabled.aslec !== false ? scoreAslec(aslecAns) : { total: 0, count: 0 };
+    var riskRes = buildRisk(
+      enabled.phq9 !== false ? phq9 : [],
+      enabled.gad7 !== false ? gad7 : [],
+      enabled.cssrs !== false ? cssrsAns : [],
+      enabled.nssi !== false ? nssiAns : [-1, -1]
+    );
     var trajFinal = (function (arr) {
         var first = arr && arr.length ? arr[0] : null;
         return arr.map(function (p) {
           return { x: p.x, y: p.y, t: Math.max(0, (p.t || 0) - (first ? first.t : 0)), k: p.k };
         });
-      })(typeof mouseTraj !== "undefined" ? mouseTraj : []);
+      })(assessCfg.mouse ? mouseTraj : []);
      var mmFinal = computeMouseMetrics(trajFinal);
      var rec = {
       id: "A" + String(Date.now()).slice(-5),
@@ -2903,20 +4364,21 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       grade: formState.grade,
       major: formState.major,
       time: time,
-      phq9: phq9.slice(), gad7: gad7.slice(),
-      p: phq9.reduce(function (s, a) { return s + (a >= 0 ? a : 0); }, 0),
-      g: gad7.reduce(function (s, a) { return s + (a >= 0 ? a : 0); }, 0),
-      cssrs: cssrsAns.slice(),
-      cssrsPositive: cssrsAns.filter(function (v) { return v === 1; }).length,
-      nssi: nssiAns.slice(),
-      pss10: pss10Ans.slice(),
-      pss10Score: scorePss10(pss10Ans),
-      psqi: JSON.parse(JSON.stringify(psqiAns)),
-      psqiComps: psqiRes.comps,
-      psqiScore: psqiRes.total,
-      sias6: sias6Ans.slice(),
-      sias6Score: scoreSias6(sias6Ans),
-      aslec: aslecAns.slice(),
+      phq9: enabled.phq9 !== false ? phq9.slice() : [],
+      gad7: enabled.gad7 !== false ? gad7.slice() : [],
+      p: enabled.phq9 !== false ? phq9.reduce(function (s, a) { return s + (a >= 0 ? a : 0); }, 0) : null,
+      g: enabled.gad7 !== false ? gad7.reduce(function (s, a) { return s + (a >= 0 ? a : 0); }, 0) : null,
+      cssrs: enabled.cssrs !== false ? cssrsAns.slice() : [],
+      cssrsPositive: enabled.cssrs !== false ? cssrsAns.filter(function (v) { return v === 1; }).length : null,
+      nssi: enabled.nssi !== false ? nssiAns.slice() : [],
+      pss10: enabled.pss10 !== false ? pss10Ans.slice() : [],
+      pss10Score: enabled.pss10 !== false ? scorePss10(pss10Ans) : null,
+      psqi: enabled.psqi !== false ? JSON.parse(JSON.stringify(psqiAns)) : null,
+      psqiComps: psqiRes ? psqiRes.comps : null,
+      psqiScore: psqiRes ? psqiRes.total : null,
+      sias6: enabled.sias6 !== false ? sias6Ans.slice() : [],
+      sias6Score: enabled.sias6 !== false ? scoreSias6(sias6Ans) : null,
+      aslec: enabled.aslec !== false ? aslecAns.slice() : [],
       aslecScore: aslecRes.total,
       aslecCount: aslecRes.count,
       risk: riskRes.label,
@@ -2925,8 +4387,13 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
       traj: trajFinal,
       mouseMetrics: mmFinal,
       behaviorSignals: behaviorSignalsOf(mmFinal),
-      cam: (typeof camMode !== "undefined" ? camMode : "normal")
+      cam: (typeof camMode !== "undefined" ? camMode : "normal"),
+      camVideo: !!videoBlob,
+      customScales: (assessCfg.custom || []).map(function (cs) {
+        return { id: cs.id, name: cs.name, items: cs.items, options: cs.options, answers: (customAns[cs.id] || []).slice() };
+      })
     };
+    if (videoBlob) videoBlobs[rec.id] = videoBlob;
     dataRecords.push(rec);
     persistRecsLocal();
   }
@@ -2936,7 +4403,21 @@ function questionCard(title, iconId, qList, answers, mark, answered, opts, note,
   }
   btnNext.addEventListener("click", function () {
     if (!canProceed()) return;
-    if (step === 3 && step < totalSteps) saveAssessmentRecord();
+    if (step === 3) {
+      var pages = buildQPages();
+      if (qPage < pages.length - 1) {
+        qPage++;
+        renderSteps(); renderStep(); updateNav();
+        return;
+      }
+      // 最后一份问卷：停止采集 → 归档记录（含视频）→ 进入结束页
+      finishSilentCollect().then(function (videoBlob) {
+        saveAssessmentRecord(videoBlob);
+        step++;
+        renderSteps(); renderStep(); updateNav();
+      });
+      return;
+    }
     if (step < totalSteps) { step++; }
     renderSteps(); renderStep(); updateNav();
   });
