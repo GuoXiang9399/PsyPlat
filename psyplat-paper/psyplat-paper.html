@@ -376,6 +376,7 @@
             <span><strong>Contact:</strong> guoxiang@henu.edu.cn</span>
             <span><strong>Manuscript:</strong> System paper (draft for submission)</span>
             <span><strong>Software version:</strong> v2.1.0</span>
+            <span><strong>Code:</strong> github.com/GuoXiang9399/PsyPlat (fully open source)</span>
             <span><strong>Date:</strong> 2026-09-18</span>
           </div>
         </div>
@@ -402,16 +403,18 @@
             <p><strong>Methods.</strong> PsyTrace is implemented as a Tauri&nbsp;2 (Rust + WebView) desktop application
               with a Next.js&nbsp;14 / TypeScript user interface. Assessment methodology comprises eight built-in
               validated scales (PHQ-9, GAD-7, C-SSRS, NSSI, PSS-10, PSQI, SIAS-6, ASLEC) plus locally uploaded custom
-              scales, a four-tier risk taxonomy with per-scale adjustable thresholds, and a two-layer early-warning
-              logic. Behavioral sensing captures mouse trajectories throughout the questionnaire (14 kinematic
-              features, 5 heuristic signals), a camera feed at 320×240 with automatic degraded-mode fallback, and an
+              scales, a four-tier risk taxonomy with per-scale adjustable thresholds, and crisis-first escalation
+              of positive suicidal-risk indicators. Behavioral sensing captures mouse trajectories throughout the
+              questionnaire (14 kinematic features, 5 heuristic signals), a camera feed at 320×240 with automatic
+              degraded-mode fallback, and an
               HRV interface contract. All records, videos, and settings persist locally (SQLite, IndexedDB), and
               exports support privacy-masking modes.</p>
             <p><strong>Results.</strong> The full screening workflow — informed consent, silent sensing, four-tier
               risk classification, per-scale risk dashboards, exploratory correlation analytics, and privacy-aware
               report export — is demonstrated end-to-end. Engineering verification includes successful type-checking,
               a production build, and 26 DOM-level smoke tests; the interface ships with 545+ translation keys in
-              Chinese and English.</p>
+              Chinese and English. The platform is fully open source, and the complete source code is available on
+              GitHub.</p>
             <p><strong>Conclusions.</strong> PsyTrace demonstrates a feasible engineering foundation for multimodal,
               privacy-preserving college mental health screening. Running on ubiquitous hardware with no additional
               peripherals, it is also a low-cost, easily promotable screening infrastructure. It is a research
@@ -462,7 +465,8 @@
           <p>We designed PsyTrace to close this gap. The platform (i) keeps all personal data local on the device by
             default; (ii) layers mouse-dynamics and camera sensing onto an existing validated scale battery without
             changing the respondent's interaction model; (iii) exposes a transparent, threshold-configurable
-            four-tier risk model with a two-layer early-warning logic; and (iv) provides bilingual (Chinese/English)
+            four-tier risk model with crisis-first escalation of positive suicidal-risk indicators; and (iv)
+            provides bilingual (Chinese/English)
             interfaces for global deployment. The main contributions of this work are:</p>
           <ul class="contrib-list">
             <li><span class="contrib-num">1</span><span><strong>A local-first architecture</strong> combining Tauri&nbsp;2
@@ -470,7 +474,7 @@
               persist exclusively on-device (SQLite + IndexedDB), with optional privacy-masked exports.</span></li>
             <li><span class="contrib-num">2</span><span><strong>A multi-scale screening methodology</strong> with eight
               built-in validated instruments, custom-scale upload (JSON/TXT), a four-tier risk taxonomy, per-scale
-              adjustable thresholds, and a two-layer early-warning logic that escalates suicidal-risk indicators
+              adjustable thresholds, and crisis-first escalation that prioritizes positive suicidal-risk indicators
               above the general severity pipeline.</span></li>
             <li><span class="contrib-num">3</span><span><strong>A behavior-sensing pipeline</strong> that computes 14
               mouse-dynamics features and 5 rule-based behavioral signals during the questionnaire, together with a
@@ -626,29 +630,29 @@ flowchart TD
               mild ≤ moderate ≤ severe; values shown are the shipped defaults, aligned with common scoring practice.
               C-SSRS and NSSI are binary screening scales (positive-indicator alerts) and are not user-adjustable.</p>
           </div>
-          <h3>4.2 Four-tier risk model and two-layer early warning</h3>
+          <h3>4.2 Four-tier risk model with crisis-first escalation</h3>
           <p>Each scale is scored independently into a four-tier risk label — <em>low, mild, moderate, high</em> —
-            against its thresholds. The overall risk is the maximum level of the PHQ-9 and GAD-7 scores. A
-            <em>two-layer early-warning logic</em> then overrides the general pipeline for crisis-relevant
-            indicators: <strong>Layer&nbsp;1</strong> treats any positive C-SSRS item as high risk with a suicide
-            flag, and NSSI positivity as moderate, escalated to high when the concurrent PHQ-9 item&nbsp;9
-            (self-harm ideation) is endorsed; <strong>Layer&nbsp;2</strong> enriches the profile with the
-            stress, sleep, social-anxiety, and life-event scales. Figure 2 formalizes this logic.</p>
+            against its thresholds. The overall risk is the maximum level of the PHQ-9 and GAD-7 scores.
+            Crisis-relevant indicators override the general severity pipeline: any positive C-SSRS item is treated
+            as high risk with a suicide flag, and NSSI positivity as moderate, escalated to high when the concurrent
+            PHQ-9 item&nbsp;9 (self-harm ideation) is endorsed. The stress, sleep, social-anxiety, and life-event
+            scales contribute context to the record without overriding this core signal. Figure 2 formalizes this
+            logic.</p>
           <figure>
             <pre class="mermaid">
 flowchart TD
-  Q["Assessment record submitted"] --> L1{"C-SSRS any positive?"}
-  L1 -->|"yes"| H["High Risk — suicide flag"]
-  L1 -->|"no"| L2{"NSSI positive?"}
-  L2 -->|"yes"| L2A{"PHQ-9 item 9 positive?"}
-  L2A -->|"yes"| H
-  L2A -->|"no"| M["Moderate Risk"]
-  L2 -->|"no"| G["Overall level — max(PHQ-9, GAD-7)"]
+  Q["Assessment record submitted"] --> C1{"C-SSRS any positive?"}
+  C1 -->|"yes"| H["High Risk — suicide flag"]
+  C1 -->|"no"| C2{"NSSI positive?"}
+  C2 -->|"yes"| C2A{"PHQ-9 item 9 positive?"}
+  C2A -->|"yes"| H
+  C2A -->|"no"| M["Moderate Risk"]
+  C2 -->|"no"| G["Overall level — max(PHQ-9, GAD-7)"]
   G --> L["Low / Mild / Moderate / High"]
   M --> L
   H --> L
   L --> T["Per-scale risk with adjustable thresholds"]
-  T --> W["Two-layer early warning: L1 C-SSRS / NSSI + L2 enrichment"]
+  T --> W["Crisis-first early warning: C-SSRS / NSSI override the severity pipeline"]
             </pre>
             <figcaption><strong>Figure 2.</strong> Risk escalation logic. Crisis-relevant indicators (C-SSRS, NSSI)
               override the general severity pipeline; the overall label is the maximum of the PHQ-9/GAD-7 levels,
@@ -765,7 +769,7 @@ flowchart TD
           <h3>6.1 Record dashboard and per-scale risk</h3>
           <p>Data Management presents every record with all per-scale scores and independent risk labels in a
             sortable table, plus search and multi-dimension filtering (overall risk and each scale's risk). A detail
-            view reconstructs the full answer sheet, the two-layer warning summary, behavior metrics, and the raw
+            view reconstructs the full answer sheet, the early-warning summary, behavior metrics, and the raw
             mouse trajectory rendered as an SVG path with start/end markers.</p>
           <h3>6.2 Exploratory analysis workbench</h3>
           <p>The Analysis module supports targetable analysis over selected records: sample composition by risk and
@@ -819,8 +823,8 @@ flowchart TD
             mental-health data — particularly suicide-risk indicators — are transmitted and stored remotely. The
             architecture also reduces deployment cost: no backend provisioning is required for a counseling center,
             and data retention is governed by local policy.</p>
-          <p>The two-layer early-warning logic encodes a defensible clinical-prioritization principle: crisis
-            indicators (C-SSRS, NSSI) outrank general severity scores, and enrichment scales (PSS-10, PSQI, SIAS-6,
+          <p>The early-warning logic encodes a defensible clinical-prioritization principle: crisis
+            indicators (C-SSRS, NSSI) outrank general severity scores, and the remaining scales (PSS-10, PSQI, SIAS-6,
             ASLEC) provide context rather than overriding the core signal. Keeping per-scale risk independent of the
             overall label supports the multi-dimensional review that counselors actually perform — a depressed
             respondent with good sleep and a sleeping-problem respondent without mood symptoms are distinguishable
@@ -864,10 +868,22 @@ flowchart TD
           <p>We presented PsyTrace, a privacy-aware, local-first platform that integrates an eight-scale screening
             battery with unobtrusive behavioral sensing for college mental health. Its contributions lie in a
             deployable architecture that keeps sensitive data on-device, a transparent four-tier risk model with
-            two-layer early warning, a compact and interpretable mouse-dynamics feature and signal set, and an
+            crisis-first escalation, a compact and interpretable mouse-dynamics feature and signal set, and an
             exploratory analysis workbench for counseling staff. The system is a validated engineering prototype
             with a complete demonstration; the decisive next step is clinical validation with longitudinal cohorts,
-            for which the platform's data and export infrastructure are already prepared.</p>
+            for which the platform's data and export infrastructure are already prepared. The platform is fully
+            open source and publicly available on GitHub
+            (<a href="https://github.com/GuoXiang9399/PsyPlat" target="_blank" rel="noopener">https://github.com/GuoXiang9399/PsyPlat</a>).</p>
+        </section>
+
+        <!-- ============ Code Availability ============ -->
+        <section id="code-availability">
+          <h2>Code Availability</h2>
+          <p>PsyTrace is fully open source. The complete source code — the Tauri&nbsp;2 Rust core, the Next.js&nbsp;14
+            front end, the built-in scale battery with its scoring logic, the demonstration dataset, and the
+            smoke-test harness — is available on GitHub at
+            <a href="https://github.com/GuoXiang9399/PsyPlat" target="_blank" rel="noopener">https://github.com/GuoXiang9399/PsyPlat</a>,
+            enabling other institutions to inspect, audit, and reuse the platform.</p>
         </section>
 
       </main>
