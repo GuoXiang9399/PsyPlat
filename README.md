@@ -7,7 +7,7 @@
 
 ---
 
-## 简介 | Overview
+### 简介 | Overview
 
 **中文**
 
@@ -19,7 +19,7 @@ PsyTrace is a mental health screening platform for college counseling centers. W
 
 ---
 
-## 核心特性 | Key Features
+### 核心特性 | Key Features
 
 | # | 中文 | English |
 |---|---|---|
@@ -33,7 +33,7 @@ PsyTrace is a mental health screening platform for college counseling centers. W
 
 ---
 
-## 内置量表 | Built-in Scales
+### 内置量表 | Built-in Scales
 
 | 量表 Scale | 条目 Items | 测量窗口 Window | 构念 Construct | 默认切分 Default cutoffs |
 |---|---|---|---|---|
@@ -47,7 +47,7 @@ PsyTrace is a mental health screening platform for college counseling centers. W
 
 ---
 
-## 技术栈 | Tech Stack
+### 技术栈 | Tech Stack
 
 | 层 Layer | 技术 Technology |
 |---|---|
@@ -59,15 +59,15 @@ PsyTrace is a mental health screening platform for college counseling centers. W
 
 ---
 
-## 快速开始 | Getting Started
+### 快速开始 | Getting Started
 
-### 环境要求 | Prerequisites
+#### 环境要求 | Prerequisites
 
 - Node.js ≥ 18 与 npm / Node.js ≥ 18 and npm
 - Rust 工具链（rustup）/ Rust toolchain
 - Windows：WebView2 运行时与 Visual Studio Build Tools（Tauri 依赖）/ Windows: WebView2 runtime and Visual Studio Build Tools (Tauri requirements)
 
-### 安装与运行 | Install & Run
+#### 安装与运行 | Install & Run
 
 ```bash
 npm install          # 安装前端依赖 / install front-end dependencies
@@ -85,7 +85,7 @@ npm run dev
 
 ---
 
-## 使用流程 | Workflow
+### 使用流程 | Workflow
 
 1. **管理员配置**：在"测评设置 → 量表管理"中启用量表、调整阈值、上传自定义量表。/ **Admin setup**: enable scales, adjust thresholds, and upload custom scales in Assessment Setup → Scale Management.
 2. **学生作答**：填写基本信息 → 阅读知情同意（摄像头在此预授权，可拒绝）→ 作答量表；期间鼠标轨迹静默采样，摄像头按同意情况录制。/ **Respondent assessment**: basic info → informed consent (camera pre-authorized here, may be declined) → questionnaire battery, with silent mouse sampling and consent-based camera recording.
@@ -95,7 +95,7 @@ npm run dev
 
 ---
 
-## 量表版权说明 | Scale Licensing
+### 量表版权说明 | Scale Licensing
 
 **中文**
 
@@ -119,7 +119,7 @@ npm run dev
 
 ---
 
-## 免责声明 | Disclaimer
+### 免责声明 | Disclaimer
 
 **中文** 本平台输出（风险分级、行为信号、相关性分析）均为启发式筛查参考，不构成临床诊断；任何服务决策须由专业人员结合完整记录综合判断。
 
@@ -127,7 +127,7 @@ npm run dev
 
 ---
 
-## 引用 | Citation
+### 引用 | Citation
 
 如在工作中使用本软件，请引用 / If you use PsyTrace in your work, please cite:
 
@@ -135,7 +135,7 @@ npm run dev
 
 ---
 
-## 开源与联系方式 | Open Source & Contact
+### 开源与联系方式 | Open Source & Contact
 
 本项目完全开源，托管于 GitHub / This project is fully open source and hosted on GitHub:
 <https://github.com/GuoXiang9399/PsyPlat>
