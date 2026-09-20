@@ -1,11 +1,9 @@
 # 迹心 PsyTrace
 
-**低成本、易部署的本地大学生心理健康测评平台 — 问卷 + 鼠标轨迹行为传感**
-**A low-cost, easily deployable local platform for college mental health screening — questionnaires plus mouse-trajectory behavioral sensing**
+**低成本、易部署的本地大学生心理健康测评平台 — 问卷 + 非接触式行为感知**
+**A Low-Cost, Easily Deployable Local Platform for College Mental Health Screening Using Questionnaires and Unobtrusive Behavioral Sensing**
 
 完全开源 · 本地优先 · 零额外硬件 | Fully open source · Local-first · Zero additional hardware
-
-仓库地址 / Repository: <https://github.com/GuoXiang9399/PsyPlat>
 
 ---
 
@@ -13,11 +11,11 @@
 
 **中文**
 
-迹心（PsyTrace）是一个面向高校心理咨询中心的心理健康测评服务平台。学生在作答 8 套成熟量表（PHQ-9、GAD-7、C-SSRS、NSSI、PSS-10、PSQI、SIAS-6、ASLEC）的同时，平台同步采集鼠标轨迹与摄像头视频等行为数据，实现"自评问卷 + 客观行为信号"的互补式筛查。所有数据仅保存在本地（SQLite / IndexedDB），零网络依赖；无需脑电、手环等任何额外外设，普通办公电脑即可部署，硬件成本趋近于零。系统提供中英双语界面与隐私脱敏导出，完整源代码已在 GitHub 开源。
+迹心（PsyTrace）是一个面向高校心理咨询中心的心理健康测评服务平台。学生在作答 成熟量表（PHQ-9、GAD-7、C-SSRS、PSS-10、PSQI、SIAS-6、ASLEC）的同时，平台同步采集鼠标轨迹与摄像头视频等行为数据，实现"自评问卷 + 客观行为信号"的互补式筛查。所有数据仅保存在本地（SQLite / IndexedDB），零网络依赖；无需脑电、手环等任何额外外设，普通办公电脑即可部署，硬件成本趋近于零。系统提供中英双语界面与隐私脱敏导出，完整源代码已在 GitHub 开源。
 
 **English**
 
-PsyTrace is a mental health screening platform for college counseling centers. While respondents complete a battery of eight validated scales (PHQ-9, GAD-7, C-SSRS, NSSI, PSS-10, PSQI, SIAS-6, ASLEC), the platform silently captures behavioral data — mouse trajectories and optional camera video — combining self-report questionnaires with objective behavioral signals. All data stays on-device (SQLite / IndexedDB) with zero network dependency; no extra peripherals such as EEG headsets or wristbands are required, so a standard workstation is enough and the marginal hardware cost is effectively zero. The interface is bilingual (Chinese/English), exports support privacy masking, and the complete source code is openly available on GitHub.
+PsyTrace is a mental health screening platform for college counseling centers. While respondents complete a battery of validated scales (PHQ-9, GAD-7, C-SSRS, PSS-10, PSQI, SIAS-6, ASLEC), the platform silently captures behavioral data — mouse trajectories and optional camera video — combining self-report questionnaires with objective behavioral signals. All data stays on-device (SQLite / IndexedDB) with zero network dependency; no extra peripherals such as EEG headsets or wristbands are required, so a standard workstation is enough and the marginal hardware cost is effectively zero. The interface is bilingual (Chinese/English), exports support privacy masking, and the complete source code is openly available on GitHub.
 
 ---
 
@@ -26,14 +24,12 @@ PsyTrace is a mental health screening platform for college counseling centers. W
 | # | 中文 | English |
 |---|---|---|
 | 1 | **本地优先与隐私保护**：测评记录、行为流、摄像头视频与设置仅存本地（SQLite + IndexedDB），不经过任何服务器 | **Local-first & privacy-preserving**: records, behavioral streams, camera video, and settings persist exclusively on-device (SQLite + IndexedDB); no server involved |
-| 2 | **八量表 + 自定义量表**：8 套内置量表独立启用/停用，支持 JSON/TXT 上传自定义量表 | **8 built-in scales + custom scales**: each scale can be enabled/disabled independently; custom scales uploadable from JSON/TXT |
-| 3 | **四级风险模型**：低/轻/中/高四级风险，每套量表阈值可调；危机指标（C-SSRS、NSSI）优先于一般严重度分级 | **Four-tier risk model**: low/mild/moderate/high per scale with adjustable thresholds; crisis indicators (C-SSRS, NSSI) take priority over general severity |
-| 4 | **鼠标轨迹传感**：作答全程采样指针位置与点击事件，提取 14 个运动学特征与 5 个可解释行为信号 | **Mouse-trajectory sensing**: pointer position and clicks sampled throughout the questionnaire, yielding 14 kinematic features and 5 interpretable behavioral signals |
-| 5 | **摄像头采集与降级模式**：320×240 WebM 录制；拒绝授权或无摄像头时自动降级，测评流程不中断 | **Camera capture with degraded mode**: 320×240 WebM recording; falls back gracefully when permission is denied, with the assessment flow never blocked |
-| 6 | **HRV 接口契约**：Rust 核心预留心率变异性分析接口，面向未来多模态融合 | **HRV interface contract**: an R-R interval analysis interface in the Rust core, wired for future multimodal fusion |
-| 7 | **数据管理与探索性分析**：多维度筛选、逐量表风险分布、行为信号 × 风险交叉表、量表-行为相关性热力矩阵 | **Data management & exploratory analysis**: multi-dimension filtering, per-scale risk distributions, signal × risk cross-tabulations, scale-behavior correlation heatmaps |
-| 8 | **隐私脱敏导出**：CSV / JSON / 自包含 HTML 报告与单记录报告均支持一键脱敏；视频可独立导出并附带处理警示 | **Privacy-aware export**: CSV/JSON/self-contained HTML reports and per-record reports with one-click de-identification; video exportable separately with an explicit handling warning |
-| 9 | **中英双语界面**：545+ 国际化键，文档标题与元信息随语言切换 | **Bilingual interface**: 545+ i18n keys in Chinese and English; document title and meta update with the active language |
+| 2 | **量表 + 自定义量表**：7套内置量表独立启用/停用，支持 JSON/TXT 上传自定义量表 | **7 built-in scales + custom scales**: each scale can be enabled/disabled independently; custom scales uploadable from JSON/TXT |
+| 3 | **鼠标轨迹传感**：作答全程采样指针位置与点击事件，提取 14 个运动学特征与 5 个可解释行为信号 | **Mouse-trajectory sensing**: pointer position and clicks sampled throughout the questionnaire, yielding 14 kinematic features and 5 interpretable behavioral signals |
+| 4 | **摄像头采集与降级模式**：320×240 WebM 录制；拒绝授权或无摄像头时自动降级，测评流程不中断 | **Camera capture with degraded mode**: 320×240 WebM recording; falls back gracefully when permission is denied, with the assessment flow never blocked |
+| 5 | **数据管理与探索性分析**：多维度筛选、逐量表风险分布、行为信号 × 风险交叉表、量表-行为相关性热力矩阵 | **Data management & exploratory analysis**: multi-dimension filtering, per-scale risk distributions, signal × risk cross-tabulations, scale-behavior correlation heatmaps |
+| 6 | **隐私脱敏导出**：CSV / JSON / 自包含 HTML 报告与单记录报告均支持一键脱敏；视频可独立导出并附带处理警示 | **Privacy-aware export**: CSV/JSON/self-contained HTML reports and per-record reports with one-click de-identification; video exportable separately with an explicit handling warning |
+| 7 | **中英双语界面**：545+ 国际化键，文档标题与元信息随语言切换 | **Bilingual interface**: 545+ i18n keys in Chinese and English; document title and meta update with the active language |
 
 ---
 
@@ -44,13 +40,10 @@ PsyTrace is a mental health screening platform for college counseling centers. W
 | PHQ-9 | 9 | 近 2 周 | 抑郁严重度 | 0–4 / 5–9 / 10–14 / ≥15 |
 | GAD-7 | 7 | 近 2 周 | 广泛性焦虑 | 0–4 / 5–9 / 10–14 / ≥15 |
 | C-SSRS（筛查版） | 4 | 近 1 月 | 自杀意念/行为 | 任一阳性 → 高风险 |
-| NSSI | 2 | 近 1 年 | 非自杀性自伤 | 无 → 低；有 → 中；+ PHQ-9 第 9 题 → 高 |
 | PSS-10 | 10 | 近 1 月 | 感知压力 | 0–13 / 14–19 / 20–26 / ≥27 |
 | PSQI | 19（7 成分） | 近 1 月 | 睡眠质量 | 0–5 / 6–10 / 11–15 / ≥16 |
 | SIAS-6 | 6 | 近 2 周 | 社交互动焦虑 | 0–6 / 7–12 / 13–18 / ≥19 |
 | ASLEC | 27 | 近 1 年 | 负性生活事件 | 0–15 / 16–35 / 36–60 / ≥61 |
-
-注：除 C-SSRS 与 NSSI 为二分筛查（阳性即警示）外，其余阈值均可在"测评设置 → 量表管理"中调整。/ Note: apart from the binary screens C-SSRS and NSSI, all thresholds are adjustable per scale in Assessment Setup → Scale Management.
 
 ---
 
@@ -138,7 +131,7 @@ npm run dev
 
 如在工作中使用本软件，请引用 / If you use PsyTrace in your work, please cite:
 
-> Guo X. PsyTrace: A Low-Cost, Easily Deployable Local Platform for College Mental Health Screening Using Questionnaires and Mouse-Trajectory Sensing. Henan University; 2026.
+> Miaoling Luo, Guo X*. PsyTrace: A Low-Cost, Easily Deployable Local Platform for College Mental Health Screening Using Questionnaires and Unobtrusive Behavioral Sensing. Preprint. 2026. doi: 10.20944/preprints202609.1662.v1
 
 ---
 
@@ -147,5 +140,5 @@ npm run dev
 本项目完全开源，托管于 GitHub / This project is fully open source and hosted on GitHub:
 <https://github.com/GuoXiang9399/PsyPlat>
 
-作者 / Author: **Xiang Guo**（郭响）— Henan University, Kaifeng, China
+作者 / Author: **Xiang Guo**— Henan University, Kaifeng, China
 邮箱 / Email: <guoxiang@henu.edu.cn>
